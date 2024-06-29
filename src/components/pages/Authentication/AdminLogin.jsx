@@ -2,22 +2,42 @@ import React, { useState, useEffect } from "react";
 import "owl.carousel/dist/assets/owl.carousel.css";
 import "owl.carousel/dist/assets/owl.theme.default.css";
 import { adminlogin } from "../../imagepath";
-import { Link, useHistory } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Eye, EyeOff } from "react-feather";
 import { adminLogin, fetchAdminData} from "../../../ApiService"; // Import the API service
+import { useDispatch, useSelector } from "react-redux";
+import { selectAdminInfo, setCredentials, setRole } from "./authSlice";
+import Cookies from 'js-cookie';
+import useSelection from "antd/es/table/hooks/useSelection";
+import { CheckPermission } from "../../../utils/isPermissionFound";
+
+//import { useLoginAsAdminMutation } from "./authApiSlice";
 
 const AdminLogin = () => {
+  //const [loginAsAdmin, {isLoading}] = useLoginAsAdminMutation()
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [password, setPassword] = useState("");
   const [email, setEmail] = useState("");
   const [greeting, setGreeting] = useState("");
   const [error, setError] = useState(null);
-  const history = useHistory();
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
 
+  //example of get redux state
+  const admindatainfo = useSelector(selectAdminInfo);
+  //console.log(admindatainfo, "sjkjf")
+  // use Cookies to get token of the user
+    Cookies.get('token0');
+
+  //user permission
+  if(CheckPermission('create_admin')){
+    console.log("user permission found")
+  }
+  
   const togglePasswordVisibility = () => {
     setPasswordVisible(!passwordVisible);
   };
-
+  
   useEffect(() => {
     const currentHour = new Date().getHours();
     if (currentHour < 12) {
@@ -26,33 +46,36 @@ const AdminLogin = () => {
       setGreeting("مساء الخير مشرف");
     }
   }, []);
-
+  
+  
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
       const response = await adminLogin(email, password);
       // Check response status and handle accordingly
       if (response.status === 200) {
-          console.log( response.data);
+          console.log(response.data);
           let data = response.data.data;
-          localStorage.setItem('token', data.token);
-          console.log(localStorage.getItem('token'));
-
+          //console.log(data.token)
+          //dispatch(setCredentials(data))
+          const token = data.token
+          //console.log(token)
+          
           // call admin me endpoint
-          const adminData = await fetchAdminData(localStorage.getItem('token'));
-          localStorage.setItem('me', JSON.stringify(adminData));
-          console.log(localStorage.getItem('me'));
-
-          console.log('Login successful:', adminData);
-
+          const adminData = await fetchAdminData(token);
+          const userData = {adminData , data:response.data.data }
+          //console.log('Login successful:', adminData);
+          dispatch(setCredentials(userData))
+          dispatch(setRole('admin'))
         // Handle success (e.g., save token, redirect to dashboard)
-        // history.push('/admindashboard'); // Replace with your admin dashboard route
+         navigate('/admindashboard'); // Replace with your admin dashboard route
       } else {
         setError('خطأ في تسجيل الدخول. يرجى المحاولة مرة أخرى.');
       }
     } catch (error) {
       if (error.message) {
         setError(error.message);
+        console.log(error.message)
       } else {
         setError('خطأ في تسجيل الدخول. يرجى المحاولة مرة أخرى.');
       }

@@ -1,25 +1,22 @@
 import React, { useEffect, useState } from "react";
-import { Link, withRouter } from "react-router-dom";
-
+import { Link, useLocation } from "react-router-dom";
 import FeatherIcon from "feather-icons-react";
 import Scrollbars from "react-custom-scrollbars-2";
-// import { LogoImg, LogoSmallImg } from "../_components/imagepath";
 
-const Sidebar = (props) => {
+const Sidebar = () => {
   const [isSideMenu, setSideMenu] = useState("");
   const [isSideMenuLevel, setSideMenuLevel] = useState("");
   const [isSideMenuLevel2, setSideMenuLevel2] = useState("");
 
   const toggleSidebar = (value) => {
-    console.log(value);
     setSideMenu(value);
   };
+  
   const toggleSidebar1 = (value) => {
-    console.log(value);
     setSideMenuLevel(value);
   };
+
   const toggleSidebar2 = (value) => {
-    console.log(value);
     setSideMenuLevel2(value);
   };
 
@@ -72,14 +69,10 @@ const Sidebar = (props) => {
 	        $('.header-one .header-left-one .logo:not(.logo-small), .header-five .header-left-five .logo:not(.logo-small)').removeClass('hide-logo');
 	    }
 	});
-  }, [])
+  }, []);
   
-  
-
-  let pathName = props.location.pathname;
-
-  console.log("Working", pathName);
-
+  const location = useLocation();
+  let pathName = location.pathname;
 
   return (
     <>
@@ -111,18 +104,18 @@ const Sidebar = (props) => {
                 >
                   <Link
                     to="#"
-                    className={isSideMenu == "index" ? "subdrop" : ""}
+                    className={isSideMenu === "index" ? "subdrop" : ""}
                     onClick={() =>
-                      toggleSidebar(isSideMenu == "index" ? "" : "index")
+                      toggleSidebar(isSideMenu === "index" ? "" : "index")
                     }
                   >
                     <FeatherIcon icon="grid" /> <span>Dashboard</span>{" "}
                     <span className="menu-arrow"></span>
                   </Link>
-                  {isSideMenu == "index" ? (
+                  {isSideMenu === "index" ? (
                     <ul
                       style={{
-                        display: isSideMenu == "index" ? "block" : "none",
+                        display: isSideMenu === "index" ? "block" : "none",
                       }}
                     >
                       <li>
@@ -172,18 +165,18 @@ const Sidebar = (props) => {
                 >
                   <Link
                     to="#"
-                    className={isSideMenu == "Students" ? "subdrop" : ""}
+                    className={isSideMenu === "Students" ? "subdrop" : ""}
                     onClick={() =>
-                      toggleSidebar(isSideMenu == "Students" ? "" : "Students")
+                      toggleSidebar(isSideMenu === "Students" ? "" : "Students")
                     }
                   >
                     <i className="fas fa-graduation-cap" />{" "}
                     <span> Students</span> <span className="menu-arrow" />
                   </Link>
-                  {isSideMenu == "Students" ? (
+                  {isSideMenu === "Students" ? (
                     <ul
                       style={{
-                        display: isSideMenu == "Students" ? "block" : "none",
+                        display: isSideMenu === "Students" ? "block" : "none",
                       }}
                     >
                       <li>
@@ -243,18 +236,18 @@ const Sidebar = (props) => {
                 >
                   <Link
                     to="#"
-                    className={isSideMenu == "Teachers" ? "subdrop" : ""}
+                    className={isSideMenu === "Teachers" ? "subdrop" : ""}
                     onClick={() =>
-                      toggleSidebar(isSideMenu == "Teachers" ? "" : "Teachers")
+                      toggleSidebar(isSideMenu === "Teachers" ? "" : "Teachers")
                     }
                   >
                     <i className="fas fa-chalkboard-teacher" />{" "}
                     <span> Teachers</span> <span className="menu-arrow" />
                   </Link>
-                  {isSideMenu == "Teachers" ? (
+                  {isSideMenu === "Teachers" ? (
                     <ul
                       style={{
-                        display: isSideMenu == "Teachers" ? "block" : "none",
+                        display: isSideMenu === "Teachers" ? "block" : "none",
                       }}
                     >
                       <li>
@@ -313,20 +306,20 @@ const Sidebar = (props) => {
                 >
                   <Link
                     to="#"
-                    className={isSideMenu == "Departments" ? "subdrop" : ""}
+                    className={isSideMenu === "Departments" ? "subdrop" : ""}
                     onClick={() =>
                       toggleSidebar(
-                        isSideMenu == "Departments" ? "" : "Departments"
+                        isSideMenu === "Departments" ? "" : "Departments"
                       )
                     }
                   >
                     <i className="fas fa-building" /> <span> Departments</span>{" "}
                     <span className="menu-arrow" />
                   </Link>
-                  {isSideMenu == "Departments" ? (
+                  {isSideMenu === "Departments" ? (
                     <ul
                       style={{
-                        display: isSideMenu == "Departments" ? "block" : "none",
+                        display: isSideMenu === "Departments" ? "block" : "none",
                       }}
                     >
                       <li>
@@ -375,18 +368,18 @@ const Sidebar = (props) => {
                 >
                   <Link
                     to="#"
-                    className={isSideMenu == "Subjects" ? "subdrop" : ""}
+                    className={isSideMenu === "Subjects" ? "subdrop" : ""}
                     onClick={() =>
-                      toggleSidebar(isSideMenu == "Subjects" ? "" : "Subjects")
+                      toggleSidebar(isSideMenu === "Subjects" ? "" : "Subjects")
                     }
                   >
                     <i className="fas fa-book-reader" /> <span> Subjects</span>{" "}
                     <span className="menu-arrow" />
                   </Link>
-                  {isSideMenu == "Subjects" ? (
+                  {isSideMenu === "Subjects" ? (
                     <ul
                       style={{
-                        display: isSideMenu == "Subjects" ? "block" : "none",
+                        display: isSideMenu === "Subjects" ? "block" : "none",
                       }}
                     >
                       <li>
@@ -438,18 +431,18 @@ const Sidebar = (props) => {
                 >
                   <Link
                     to="#"
-                    className={isSideMenu == "Invoices" ? "subdrop" : ""}
+                    className={isSideMenu === "Invoices" ? "subdrop" : ""}
                     onClick={() =>
-                      toggleSidebar(isSideMenu == "Invoices" ? "" : "Invoices")
+                      toggleSidebar(isSideMenu === "Invoices" ? "" : "Invoices")
                     }
                   >
                     <i className="fas fa-clipboard" /> <span> Invoices</span>{" "}
                     <span className="menu-arrow" />
                   </Link>
-                  {isSideMenu == "Invoices" ? (
+                  {isSideMenu === "Invoices" ? (
                     <ul
                       style={{
-                        display: isSideMenu == "Invoices" ? "block" : "none",
+                        display: isSideMenu === "Invoices" ? "block" : "none",
                       }}
                     >
                       <li>
@@ -538,18 +531,18 @@ const Sidebar = (props) => {
                 >
                   <Link
                     to="#"
-                    className={isSideMenu == "Accounts" ? "subdrop" : ""}
+                    className={isSideMenu === "Accounts" ? "subdrop" : ""}
                     onClick={() =>
-                      toggleSidebar(isSideMenu == "Accounts" ? "" : "Accounts")
+                      toggleSidebar(isSideMenu === "Accounts" ? "" : "Accounts")
                     }
                   >
                     <i className="fas fa-file-invoice-dollar" />{" "}
                     <span> Accounts</span> <span className="menu-arrow" />
                   </Link>
-                  {isSideMenu == "Accounts" ? (
+                  {isSideMenu === "Accounts" ? (
                     <ul
                       style={{
-                        display: isSideMenu == "Accounts" ? "block" : "none",
+                        display: isSideMenu === "Accounts" ? "block" : "none",
                       }}
                     >
                       <li>
@@ -619,9 +612,6 @@ const Sidebar = (props) => {
                 </li>
                 <li
                   className={`${
-                    // "/customers" === pathName ||
-                    // "/active-customers" === pathName ||
-                    // "/deactive-customers" === pathName ||
                     "/holiday" === pathName || "/addholiday" === pathName
                       ? "active"
                       : ""
@@ -710,18 +700,18 @@ const Sidebar = (props) => {
                 >
                   <Link
                     to="#"
-                    className={isSideMenu == "Blogs" ? "subdrop" : ""}
+                    className={isSideMenu === "Blogs" ? "subdrop" : ""}
                     onClick={() =>
-                      toggleSidebar(isSideMenu == "Blogs" ? "" : "Blogs")
+                      toggleSidebar(isSideMenu === "Blogs" ? "" : "Blogs")
                     }
                   >
                     <i className="fa fa-newspaper" /> <span> Blogs</span>
                     <span className="menu-arrow" />
                   </Link>
-                  {isSideMenu == "Blogs" ? (
+                  {isSideMenu === "Blogs" ? (
                     <ul
                       style={{
-                        display: isSideMenu == "Blogs" ? "block" : "none",
+                        display: isSideMenu === "Blogs" ? "block" : "none",
                       }}
                     >
                       <li>
@@ -794,10 +784,10 @@ const Sidebar = (props) => {
                 >
                   <Link
                     to="#"
-                    className={isSideMenu == "Authentication" ? "subdrop" : ""}
+                    className={isSideMenu === "Authentication" ? "subdrop" : ""}
                     onClick={() =>
                       toggleSidebar(
-                        isSideMenu == "Authentication" ? "" : "Authentication"
+                        isSideMenu === "Authentication" ? "" : "Authentication"
                       )
                     }
                   >
@@ -805,11 +795,11 @@ const Sidebar = (props) => {
                     <span> Authentication </span>{" "}
                     <span className="menu-arrow" />
                   </Link>
-                  {isSideMenu == "Authentication" ? (
+                  {isSideMenu === "Authentication" ? (
                     <ul
                       style={{
                         display:
-                          isSideMenu == "Authentication" ? "block" : "none",
+                          isSideMenu === "Authentication" ? "block" : "none",
                       }}
                     >
                       <li>
@@ -949,18 +939,18 @@ const Sidebar = (props) => {
                 >
                   <Link
                     to="#"
-                    className={isSideMenu == "Alerts" ? "subdrop" : ""}
+                    className={isSideMenu === "Alerts" ? "subdrop" : ""}
                     onClick={() =>
-                      toggleSidebar(isSideMenu == "Alerts" ? "" : "Alerts")
+                      toggleSidebar(isSideMenu === "Alerts" ? "" : "Alerts")
                     }
                   >
                     <i className="fab fa-get-pocket" /> <span>Base UI </span>{" "}
                     <span className="menu-arrow" />
                   </Link>
-                  {isSideMenu == "Alerts" ? (
+                  {isSideMenu === "Alerts" ? (
                     <ul
                       style={{
-                        display: isSideMenu == "Alerts" ? "block" : "none",
+                        display: isSideMenu === "Alerts" ? "block" : "none",
                       }}
                     >
                       <li>
@@ -1249,18 +1239,18 @@ const Sidebar = (props) => {
                 >
                   <Link
                     to="#"
-                    className={isSideMenu == "ribbon" ? "subdrop" : ""}
+                    className={isSideMenu === "ribbon" ? "subdrop" : ""}
                     onClick={() =>
-                      toggleSidebar(isSideMenu == "ribbon" ? "" : "ribbon")
+                      toggleSidebar(isSideMenu === "ribbon" ? "" : "ribbon")
                     }
                   >
                     <FeatherIcon icon="box" /> <span>Elements</span>
                     <span className="menu-arrow"></span>
                   </Link>
-                  {isSideMenu == "ribbon" ? (
+                  {isSideMenu === "ribbon" ? (
                     <ul
                       style={{
-                        display: isSideMenu == "ribbon" ? "block" : "none",
+                        display: isSideMenu === "ribbon" ? "block" : "none",
                       }}
                     >
                       <li>
@@ -1402,20 +1392,20 @@ const Sidebar = (props) => {
                 >
                   <Link
                     to="#"
-                    className={isSideMenu == "apexchart" ? "subdrop" : ""}
+                    className={isSideMenu === "apexchart" ? "subdrop" : ""}
                     onClick={() =>
                       toggleSidebar(
-                        isSideMenu == "apexchart" ? "" : "apexchart"
+                        isSideMenu === "apexchart" ? "" : "apexchart"
                       )
                     }
                   >
                     <FeatherIcon icon="bar-chart" /> <span>Charts</span>
                     <span className="menu-arrow"></span>
                   </Link>
-                  {isSideMenu == "apexchart" ? (
+                  {isSideMenu === "apexchart" ? (
                     <ul
                       style={{
-                        display: isSideMenu == "apexchart" ? "block" : "none",
+                        display: isSideMenu === "apexchart" ? "block" : "none",
                       }}
                     >
                       <li>
@@ -1502,11 +1492,11 @@ const Sidebar = (props) => {
                   <Link
                     to="#"
                     className={
-                      isSideMenu == "fontawesomeicons" ? "subdrop" : ""
+                      isSideMenu === "fontawesomeicons" ? "subdrop" : ""
                     }
                     onClick={() =>
                       toggleSidebar(
-                        isSideMenu == "fontawesomeicons"
+                        isSideMenu === "fontawesomeicons"
                           ? ""
                           : "fontawesomeicons"
                       )
@@ -1515,11 +1505,11 @@ const Sidebar = (props) => {
                     <FeatherIcon icon="award" /> <span>Icons</span>
                     <span className="menu-arrow"></span>
                   </Link>
-                  {isSideMenu == "fontawesomeicons" ? (
+                  {isSideMenu === "fontawesomeicons" ? (
                     <ul
                       style={{
                         display:
-                          isSideMenu == "fontawesomeicons" ? "block" : "none",
+                          isSideMenu === "fontawesomeicons" ? "block" : "none",
                       }}
                     >
                       <li>
@@ -1641,20 +1631,20 @@ const Sidebar = (props) => {
                 >
                   <Link
                     to="#"
-                    className={isSideMenu == "basicinput" ? "subdrop" : ""}
+                    className={isSideMenu === "basicinput" ? "subdrop" : ""}
                     onClick={() =>
                       toggleSidebar(
-                        isSideMenu == "basicinput" ? "" : "basicinput"
+                        isSideMenu === "basicinput" ? "" : "basicinput"
                       )
                     }
                   >
                     <FeatherIcon icon="sidebar" /> <span>Forms</span>
                     <span className="menu-arrow"></span>
                   </Link>
-                  {isSideMenu == "basicinput" ? (
+                  {isSideMenu === "basicinput" ? (
                     <ul
                       style={{
-                        display: isSideMenu == "basicinput" ? "block" : "none",
+                        display: isSideMenu === "basicinput" ? "block" : "none",
                       }}
                     >
                       <li>
@@ -1731,20 +1721,20 @@ const Sidebar = (props) => {
                 >
                   <Link
                     to="#"
-                    className={isSideMenu == "basictable" ? "subdrop" : ""}
+                    className={isSideMenu === "basictable" ? "subdrop" : ""}
                     onClick={() =>
                       toggleSidebar(
-                        isSideMenu == "basictable" ? "" : "basictable"
+                        isSideMenu === "basictable" ? "" : "basictable"
                       )
                     }
                   >
                     <FeatherIcon icon="layout" /> <span>Tables</span>
                     <span className="menu-arrow"></span>
                   </Link>
-                  {isSideMenu == "basictable" ? (
+                  {isSideMenu === "basictable" ? (
                     <ul
                       style={{
-                        display: isSideMenu == "basictable" ? "block" : "none",
+                        display: isSideMenu === "basictable" ? "block" : "none",
                       }}
                     >
                       <li>
@@ -1779,20 +1769,20 @@ const Sidebar = (props) => {
                 >
                   <Link
                     to="#"
-                    className={isSideMenu == "Multilevel" ? "subdrop" : ""}
+                    className={isSideMenu === "Multilevel" ? "subdrop" : ""}
                     onClick={() =>
                       toggleSidebar(
-                        isSideMenu == "Multilevel" ? "" : "Multilevel"
+                        isSideMenu === "Multilevel" ? "" : "Multilevel"
                       )
                     }
                   >
                     <i className="fas fa-code" /> <span>Multi Level</span>{" "}
                     <span className="menu-arrow" />
                   </Link>
-                  {isSideMenu == "Multilevel" ? (
+                  {isSideMenu === "Multilevel" ? (
                     <ul
                       style={{
-                        display: isSideMenu == "Multilevel" ? "block" : "none",
+                        display: isSideMenu === "Multilevel" ? "block" : "none",
                       }}
                     >
                             <li
@@ -1803,22 +1793,22 @@ const Sidebar = (props) => {
                               <Link
                                 to="#"
                                 className={
-                                  isSideMenuLevel == ">Level 1" ? "subdrop" : ""
+                                  isSideMenuLevel === ">Level 1" ? "subdrop" : ""
                                 }
                                 onClick={() =>
                                   toggleSidebar1(
-                                    isSideMenuLevel == ">Level 1" ? "" : ">Level 1"
+                                    isSideMenuLevel === ">Level 1" ? "" : ">Level 1"
                                   )
                                 }
                               >
                                 <span>Level 1</span>{" "}
                                 <span className="menu-arrow"></span>
                               </Link>
-                              {isSideMenuLevel == ">Level 1" ? (
+                              {isSideMenuLevel === ">Level 1" ? (
                                 <ul
                                   style={{
                                     display:
-                                      isSideMenuLevel == ">Level 1"
+                                      isSideMenuLevel === ">Level 1"
                                         ? "block"
                                         : "none",
                                   }}
@@ -1841,11 +1831,11 @@ const Sidebar = (props) => {
                                                 <Link
                                                   to="#"
                                                   className={
-                                                    isSideMenuLevel2 == ">Level 2" ? "subdrop" : ""
+                                                    isSideMenuLevel2 === ">Level 2" ? "subdrop" : ""
                                                   }
                                                   onClick={() =>
                                                     toggleSidebar2(
-                                                      isSideMenuLevel2 == ">Level 2"
+                                                      isSideMenuLevel2 === ">Level 2"
                                                         ? ""
                                                         : ">Level 2"
                                                     )
@@ -1854,11 +1844,11 @@ const Sidebar = (props) => {
                                                   <span>Level 2</span>{" "}
                                                   <span className="menu-arrow"></span>
                                                 </Link>
-                                                {isSideMenuLevel2 == ">Level 2" ? (
+                                                {isSideMenuLevel2 === ">Level 2" ? (
                                                   <ul
                                                     style={{
                                                       display:
-                                                      isSideMenuLevel2 == ">Level 2"
+                                                      isSideMenuLevel2 === ">Level 2"
                                                           ? "block"
                                                           : "none",
                                                     }}
@@ -1925,4 +1915,5 @@ const Sidebar = (props) => {
     </>
   );
 };
-export default withRouter(Sidebar);
+export default Sidebar;
+
