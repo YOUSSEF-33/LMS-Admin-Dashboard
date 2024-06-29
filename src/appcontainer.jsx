@@ -1,8 +1,5 @@
 import React from "react";
-import {Route, Routes } from "react-router-dom";
-import { BrowserRouter as Router } from 'react-router-dom';
-import { Switch } from 'react-router-dom';
-
+import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 
 import Login from "./components/pages/Authentication/TeacherLogin";
 import LoginAdmin from "./components/pages/Authentication/AdminLogin";
@@ -61,7 +58,7 @@ import SocialSettings from "./components/pages/Settings/SocialSettings";
 import SocialLinks from "./components/pages/Settings/SocialLinks";
 import Seo from "./components/pages/Settings/Seo";
 import OtherSettings from "./components/pages/Settings/OtherSettings";
-//Library
+// Library
 import LibraryList from "./components/pages/Library/LibraryList";
 import AddBook from "./components/pages/Library/AddBook";
 import FeesCollection from "./components/pages/Accounts/FeesCollection";
@@ -157,199 +154,198 @@ import BreadCrumbs from "./components/pages/Base UI/BreadCrumbs";
 import Error404 from "./components/pages/Authentication/Error-404";
 import RangeSlider from "./components/pages/Base UI/RangeSlider";
 import DragDrop from "./components/pages/Elements/Drag&Drop";
-import Clipboard from "./components/pages/Elements/ClipBoard";
 import Dropdown from "./components/pages/Base UI/DropDown";
 import EditEvent from "./components/pages/Events/EditEvent";
+import RequireAuth from "./utils/RequireAuth";
+import RequirePermission from "./utils/RequierPermission";
 
-
-const appcontainer = (props) => {
+const AppContainer = () => {
   return (
-    <Router basename={`${config.publicPath}`}>
-      <Switch>
-        <Route path="/login" component={Login} />
-        <Route path="/login-admin" component={LoginAdmin} />
-        
-        {/* <Route path="/register" component={Register} />
-        <Route path="/forgotpassword" component={ForgotPassword} />
-        <Route path="/error404" component={Error404} /> */}
+    <Routes>
+      <Route path="/login" element={<Login />} />
+      <Route path="/login-admin" element={<LoginAdmin />} />
 
-        <Route path="/admindashboard" component={AdminDashboard} />
-        <Route path="/teacherdashboard" component={TeacherDashboard} />
-        <Route path="/studentdashboard" component={StudentsDashboard} />
+      <Route element={<RequireAuth allowedRole="admin" />}>
+        <Route element={<RequirePermission allowedPermission={"view_any_admin"} />}>
+          <Route path="/admindashboard" element={<AdminDashboard />} />
+        </Route>
+      </Route>
 
-        <Route path="/blog" component={BlogView} />
-        <Route path="/pendingblog" component={PendingBlog} />
-        <Route path="/addblog" component={AddBlog} />
-        <Route path="/editblog" component={EditBlog} />
-        <Route path="/blogdetails" component={Blogdetails} />
-        <Route path="/profile" component={Profile} />
+      <Route path="/teacherdashboard" element={<TeacherDashboard />} />
+      <Route path="/studentdashboard" element={<StudentsDashboard />} />
 
-        <Route path="/blankpage" component={BlankPage} />
-        <Route path="/basictable" component={BasicTable} />
-        <Route path="/datatable" component={DataTable} />
+      <Route path="/blog" element={<BlogView />} />
+      <Route path="/pendingblog" element={<PendingBlog />} />
+      <Route path="/addblog" element={<AddBlog />} />
+      <Route path="/editblog" element={<EditBlog />} />
+      <Route path="/blogdetails" element={<Blogdetails />} />
+      <Route path="/profile" element={<Profile />} />
 
-        <Route path="/students" component={Students} />
-        <Route path="/studentsview" component={StudentsView} />
-        <Route path="/addstudent" component={AddStudent} />
-        <Route path="/editstudent" component={EditStudent} />
-        <Route path="/studentgrid" component={StudentGrid} />
+      <Route path="/blankpage" element={<BlankPage />} />
+      <Route path="/basictable" element={<BasicTable />} />
+      <Route path="/datatable" element={<DataTable />} />
 
-        <Route path="/invoicegrid" component={InvoiceGrid} />
-        <Route path="/invoicepaid" component={InvoicePaid} />
-        <Route path="/invoiceoverdue" component={InvoiceOverdue} />
-        <Route path="/invoicedraft" component={InvoiceDraft} />
-        <Route path="/invoicerecurring" component={InvoiceRecurring} />
-        <Route path="/invoicecancelled" component={InvoiceCancelled} />
-        <Route path="/addinvoice" component={AddInvoice} />
-        <Route path="/editinvoice" component={EditInvoice} />
-        <Route path="/viewinvoice" component={ViewInvoice} />
-        <Route path="/invoicesetting" component={InvoiceSettings} />
-        <Route path="/invoicelist" component={InvoiceList} />
-        <Route path="/taxsetting" component={TaxSetting} />
-        <Route path="/banksetting" component={BankSetting} />
+      <Route path="/students" element={<Students />} />
+      <Route path="/studentsview" element={<StudentsView />} />
+      <Route path="/addstudent" element={<AddStudent />} />
+      <Route path="/editstudent" element={<EditStudent />} />
+      <Route path="/studentgrid" element={<StudentGrid />} />
 
-        <Route path="/inbox" component={Inbox} />
-        <Route path="/compose" component={Compose} />
+      <Route path="/invoicegrid" element={<InvoiceGrid />} />
+      <Route path="/invoicepaid" element={<InvoicePaid />} />
+      <Route path="/invoiceoverdue" element={<InvoiceOverdue />} />
+      <Route path="/invoicedraft" element={<InvoiceDraft />} />
+      <Route path="/invoicerecurring" element={<InvoiceRecurring />} />
+      <Route path="/invoicecancelled" element={<InvoiceCancelled />} />
+      <Route path="/addinvoice" element={<AddInvoice />} />
+      <Route path="/editinvoice" element={<EditInvoice />} />
+      <Route path="/viewinvoice" element={<ViewInvoice />} />
+      <Route path="/invoicesetting" element={<InvoiceSettings />} />
+      <Route path="/invoicelist" element={<InvoiceList />} />
+      <Route path="/taxsetting" element={<TaxSetting />} />
+      <Route path="/banksetting" element={<BankSetting />} />
 
-        {/* Settings */}
-        <Route path="/generalsettings" component={GendralSettings} />
-        <Route path="/localization" component={Localization} />
-        <Route path="/paymentsettings" component={PaymentSettings} />
-        <Route path="/emailsettings" component={EmailSettings} />
-        <Route path="/socialsettings" component={SocialSettings} />
-        <Route path="/sociallinks" component={SocialLinks} />
-        <Route path="/seo" component={Seo} />
-        <Route path="/othersettings" component={OtherSettings} />
+      <Route path="/inbox" element={<Inbox />} />
+      <Route path="/compose" element={<Compose />} />
 
-        <Route path="/librarylist" component={LibraryList} />
-        <Route path="/addbook" component={AddBook} />
-        <Route path="/editbook" component={EditBook} />
+      {/* Settings */}
+      <Route path="/generalsettings" element={<GendralSettings />} />
+      <Route path="/localization" element={<Localization />} />
+      <Route path="/paymentsettings" element={<PaymentSettings />} />
+      <Route path="/emailsettings" element={<EmailSettings />} />
+      <Route path="/socialsettings" element={<SocialSettings />} />
+      <Route path="/sociallinks" element={<SocialLinks />} />
+      <Route path="/seo" element={<Seo />} />
+      <Route path="/othersettings" element={<OtherSettings />} />
 
-        <Route path="/teacherslist" component={TeachersList} />
-        <Route path="/teachersprofile" component={TeachersProfile} />
-        <Route path="/addteacher" component={TeachersAdd} />
-        <Route path="/editteacher" component={TeachersEdit} />
-        <Route path="/teachersgrid" component={TeachersGrid} />
+      <Route path="/librarylist" element={<LibraryList />} />
+      <Route path="/addbook" element={<AddBook />} />
+      <Route path="/editbook" element={<EditBook />} />
 
-        <Route path="/department" component={DepartmentList} />
-        <Route path="/adddepartment" component={AddDepartment} />
-        <Route path="/editdepartment" component={EditDepartment} />
+      <Route path="/teacherslist" element={<TeachersList />} />
+      <Route path="/teachersprofile" element={<TeachersProfile />} />
+      <Route path="/addteacher" element={<TeachersAdd />} />
+      <Route path="/editteacher" element={<TeachersEdit />} />
+      <Route path="/teachersgrid" element={<TeachersGrid />} />
 
-        <Route path="/subject" component={SubjectList} />
-        <Route path="/addsubject" component={AddSubject} />
-        <Route path="/editsubject" component={EditSubject} />
+      <Route path="/department" element={<DepartmentList />} />
+      <Route path="/adddepartment" element={<AddDepartment />} />
+      <Route path="/editdepartment" element={<EditDepartment />} />
 
-        <Route path="/feescollection" component={FeesCollection} />
-        <Route path="/addfeescollection" component={AddFeesCollection} />
-        <Route path="/expenses" component={Expenses} />
-        <Route path="/addexpenses" component={AddExpenses} />
-        <Route path="/salary" component={Salary} />
-        <Route path="/addsalary" component={AddSalary} />
+      <Route path="/subject" element={<SubjectList />} />
+      <Route path="/addsubject" element={<AddSubject />} />
+      <Route path="/editsubject" element={<EditSubject />} />
 
-        <Route path="/holiday" component={Holiday} />
-        <Route path="/addholiday" component={AddHoliday} />
+      <Route path="/feescollection" element={<FeesCollection />} />
+      <Route path="/addfeescollection" element={<AddFeesCollection />} />
+      <Route path="/expenses" element={<Expenses />} />
+      <Route path="/addexpenses" element={<AddExpenses />} />
+      <Route path="/salary" element={<Salary />} />
+      <Route path="/addsalary" element={<AddSalary />} />
 
-        <Route path="/fees" component={Fees} />
-        <Route path="/addfees" component={AddFees} />
-        <Route path="/editfees" component={EditFees} />
+      <Route path="/holiday" element={<Holiday />} />
+      <Route path="/addholiday" element={<AddHoliday />} />
 
-        <Route path="/exam" component={Exam} />
-        <Route path="/addexam" component={AddExam} />
-        <Route path="/editexam" component={EditExam} />
+      <Route path="/fees" element={<Fees />} />
+      <Route path="/addfees" element={<AddFees />} />
+      <Route path="/editfees" element={<EditFees />} />
 
-        <Route path="/timetable" component={TimeTable} />
-        <Route path="/addtimetable" component={AddTimeTable} />
-        <Route path="/edittimetable" component={EditTimeTable} />
+      <Route path="/exam" element={<Exam />} />
+      <Route path="/addexam" element={<AddExam />} />
+      <Route path="/editexam" element={<EditExam />} />
 
-        <Route path="/sports" component={Sports} />
-        <Route path="/addsports" component={AddSports} />
-        <Route path="/editsports" component={EditSports} />
+      <Route path="/timetable" element={<TimeTable />} />
+      <Route path="/addtimetable" element={<AddTimeTable />} />
+      <Route path="/edittimetable" element={<EditTimeTable />} />
 
-        <Route path="/hostel" component={Hostel} />
-        <Route path="/addhostel" component={AddHostel} />
-        <Route path="/edithostel" component={EditHostel} />
+      <Route path="/sports" element={<Sports />} />
+      <Route path="/addsports" element={<AddSports />} />
+      <Route path="/editsports" element={<EditSports />} />
 
-        <Route path="/transport" component={Transport} />
-        <Route path="/addtransport" component={AddTransport} />
-        <Route path="/edittransport" component={EditTransport} />
+      <Route path="/hostel" element={<Hostel />} />
+      <Route path="/addhostel" element={<AddHostel />} />
+      <Route path="/edithostel" element={<EditHostel />} />
 
-        <Route path="/event" component={Event} />
-        <Route path="/addevent" component={AddEvent} />
-        <Route path="/editevent" component={EditEvent} />
+      <Route path="/transport" element={<Transport />} />
+      <Route path="/addtransport" element={<AddTransport />} />
+      <Route path="/edittransport" element={<EditTransport />} />
 
-        <Route path="/basictable" component={BasicTables} />
-        <Route path="/datatable" component={DataTables} />
+      <Route path="/event" element={<Event />} />
+      <Route path="/addevent" element={<AddEvent />} />
+      <Route path="/editevent" element={<EditEvent />} />
 
-        <Route path="/basicinput" component={BasicInputs} />
-        <Route path="/forminputgroup" component={FormInputGroups} />
-        <Route path="/formmask" component={FormMask} />
-        <Route path="/formvalidation" component={FormValidation} />
-        <Route path="/horizontalform" component={HorizontalForm} />
-        <Route path="/verticalform" component={VerticalForm} />
+      <Route path="/basictable" element={<BasicTables />} />
+      <Route path="/datatable" element={<DataTables />} />
 
-        <Route path="/feathericons" component={FeatherIcons} />
-        <Route path="/flagicons" component={FlagIcons} />
-        <Route path="/fontawesomeicons" component={FontawesomeIcons} />
-        <Route path="/iconicicons" component={IonicIcons} />
-        <Route path="/materialicons" component={MaterialIcons} />
-        <Route path="/flagicons" component={FlagIcons} />
-        <Route path="/pe7icons" component={PE7Icons} />
-        <Route path="/simplelineicons" component={SimplelineIcons} />
-        <Route path="/themifyicons" component={ThemifyIcons} />
-        <Route path="/weathericons" component={WeatherIcons} />
-        <Route path="/typiconicons" component={TypiconIcons} />
+      <Route path="/basicinput" element={<BasicInputs />} />
+      <Route path="/forminputgroup" element={<FormInputGroups />} />
+      <Route path="/formmask" element={<FormMask />} />
+      <Route path="/formvalidation" element={<FormValidation />} />
+      <Route path="/horizontalform" element={<HorizontalForm />} />
+      <Route path="/verticalform" element={<VerticalForm />} />
 
-        <Route path="/ribbon" component={Ribbon} />
-        <Route path="/dragdrop" component={DragDrop} />
-        <Route path="/clipboard" component={Clipboard} />
-        <Route path="/rating" component={Rating} />
-        <Route path="/texteditor" component={Texteditor} />
-        <Route path="/counter" component={Counter} />
-        <Route path="/scrollbar" component={Scrollbar} />
-        <Route path="/notification" component={Notification} />
-        <Route path="/stickynote" component={Stickynote} />
-        <Route path="/timeline" component={Timeline} />
-        <Route path="/horizontaltimeline" component={HorizontalTimeLine} />
-        <Route path="/formwizard" component={Formwizard} />
+      <Route path="/feathericons" element={<FeatherIcons />} />
+      <Route path="/flagicons" element={<FlagIcons />} />
+      <Route path="/fontawesomeicons" element={<FontawesomeIcons />} />
+      <Route path="/iconicicons" element={<IonicIcons />} />
+      <Route path="/materialicons" element={<MaterialIcons />} />
+      <Route path="/flagicons" element={<FlagIcons />} />
+      <Route path="/pe7icons" element={<PE7Icons />} />
+      <Route path="/simplelineicons" element={<SimplelineIcons />} />
+      <Route path="/themifyicons" element={<ThemifyIcons />} />
+      <Route path="/weathericons" element={<WeatherIcons />} />
+      <Route path="/typiconicons" element={<TypiconIcons />} />
 
-        <Route path="/apexchart" component={ApexCharts} />
-        <Route path="/chartjs" component={ChartJs} />
-        <Route path="/morrischart" component={MorrisCharts} />
-        <Route path="/flotchart" component={FlotCharts} />
-        <Route path="/peitychart" component={PeityChart} />
-        <Route path="/c3chart" component={C3Charts} />
+      <Route path="/ribbon" element={<Ribbon />} />
+      <Route path="/dragdrop" element={<DragDrop />} />
+      <Route path="/clipboard" element={<ClipBoard />} />
+      <Route path="/rating" element={<Rating />} />
+      <Route path="/texteditor" element={<Texteditor />} />
+      <Route path="/counter" element={<Counter />} />
+      <Route path="/scrollbar" element={<Scrollbar />} />
+      <Route path="/notification" element={<Notification />} />
+      <Route path="/stickynote" element={<Stickynote />} />
+      <Route path="/timeline" element={<Timeline />} />
+      <Route path="/horizontaltimeline" element={<HorizontalTimeLine />} />
+      <Route path="/formwizard" element={<Formwizard />} />
 
-        <Route path="/tooltip" component={UiTooltip} />
-        <Route path="/toast" component={Toastr} />
-        <Route path="/spinner" component={Spinner} />
-        <Route path="/popover" component={PopOver} />
-        <Route path="/rangeslider" component={RangeSlider} />
-        <Route path="/lightbox" component={LightBox} />
-        <Route path="/cards" component={Cards} />
-        <Route path="/dropdown" component={Dropdown} />
-        <Route path="/pagination" component={Pagination} />
-        <Route path="/avatar" component={Tableavatar} />
-        <Route path="/tabs" component={Tabs} />
-        <Route path="/typography" component={Typography} />
-        <Route path="/progressbar" component={Progressbar} />
-        <Route path="/buttons" component={Buttons} />
-        <Route path="/video" component={Video} />
-        <Route path="/sweetalert" component={Sweetalert} />
-        <Route path="/images" component={Images} />
-        <Route path="/grid" component={Grid} />
-        <Route path="/buttongroup" component={ButtonGroup} />
-        <Route path="/badge" component={Badge} />
-        <Route path="/accordion" component={Accordion} />
-        <Route path="/alert" component={Alert} />
-        <Route path="/placeholder" component={PlaceHolder} />
-        <Route path="/offcanvas" component={OffCanvas} />
-        <Route path="/media" component={Media} />
-        <Route path="/carousel" component={Carousel} />
-        <Route path="/breadcrumbs" component={BreadCrumbs} />
-        <Route path="/modal" component={Modal} />
-      </Switch>
-    </Router>
+      <Route path="/apexchart" element={<ApexCharts />} />
+      <Route path="/chartjs" element={<ChartJs />} />
+      <Route path="/morrischart" element={<MorrisCharts />} />
+      <Route path="/flotchart" element={<FlotCharts />} />
+      <Route path="/peitychart" element={<PeityChart />} />
+      <Route path="/c3chart" element={<C3Charts />} />
+
+      <Route path="/tooltip" element={<UiTooltip />} />
+      <Route path="/toast" element={<Toastr />} />
+      <Route path="/spinner" element={<Spinner />} />
+      <Route path="/popover" element={<PopOver />} />
+      <Route path="/rangeslider" element={<RangeSlider />} />
+      <Route path="/lightbox" element={<LightBox />} />
+      <Route path="/cards" element={<Cards />} />
+      <Route path="/dropdown" element={<Dropdown />} />
+      <Route path="/pagination" element={<Pagination />} />
+      <Route path="/avatar" element={<Tableavatar />} />
+      <Route path="/tabs" element={<Tabs />} />
+      <Route path="/typography" element={<Typography />} />
+      <Route path="/progressbar" element={<Progressbar />} />
+      <Route path="/buttons" element={<Buttons />} />
+      <Route path="/video" element={<Video />} />
+      <Route path="/sweetalert" element={<Sweetalert />} />
+      <Route path="/images" element={<Images />} />
+      <Route path="/grid" element={<Grid />} />
+      <Route path="/buttongroup" element={<ButtonGroup />} />
+      <Route path="/badge" element={<Badge />} />
+      <Route path="/accordion" element={<Accordion />} />
+      <Route path="/alert" element={<Alert />} />
+      <Route path="/placeholder" element={<PlaceHolder />} />
+      <Route path="/offcanvas" element={<OffCanvas />} />
+      <Route path="/media" element={<Media />} />
+      <Route path="/carousel" element={<Carousel />} />
+      <Route path="/breadcrumbs" element={<BreadCrumbs />} />
+      <Route path="/modal" element={<Modal />} />
+    </Routes>
   );
-}
+};
 
-export default appcontainer
+export default AppContainer;
