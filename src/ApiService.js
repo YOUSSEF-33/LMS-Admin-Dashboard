@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_BASE_URL = 'http://knownlege.test/api/';
+const API_BASE_URL = 'https://bnu-api-staging.knownlege.com/api/';
 
 // Set up default config for axios
 const axiosInstance = axios.create({
