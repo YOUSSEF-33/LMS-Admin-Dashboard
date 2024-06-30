@@ -160,7 +160,8 @@ const Sidebar = () => {
                     "/admins" === pathName ||
                     "/studentview" === pathName ||
                     "/admins/create" === pathName ||
-                    "/editadmin" === pathName
+                    "/editadmin" === pathName||
+                    "/admins/roles"=== pathName
                       ? "active submenu"
                       : "submenu"
                   }`}
@@ -189,6 +190,16 @@ const Sidebar = () => {
                           }`}
                         >
                           المشرفون
+                        </Link>
+                      </li>
+                      <li>
+                        <Link
+                          to="/admins/roles"
+                          className={`${
+                            "/admins/roles" === pathName ? "active" : ""
+                          }`}
+                        >
+                          الصلاحيات
                         </Link>
                       </li>
                     </ul>

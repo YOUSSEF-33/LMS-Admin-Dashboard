@@ -30,7 +30,7 @@ const Admins = () => {
             console.error('Error fetching admin data:', error);
         }
     };
-
+     console.log(dataSource)
     const handleTableChange = (pagination) => {
         fetchData(pagination.current, pagination.pageSize);
         setPagination(pagination);
@@ -55,7 +55,12 @@ const Admins = () => {
         {
             title: "الدور",
             dataIndex: "role",
-            sorter: (a, b) => a.role.length - b.role.length,
+            sorter: (a, b) => a.roles?.[0].name.length - b.roles?.[0].name.length,
+            render: (text, record) => (
+                <>
+                        <Link to="/adminsview" className="text-dark">{record.roles?.[0]?.name}</Link>
+                </>
+            )
         },
         {
             title: "الإجراءات",
@@ -68,7 +73,7 @@ const Admins = () => {
                                 <FeatherIcon icon="eye" />
                             </i>
                         </Link>
-                        <Link to="/editadmin" className="btn btn-sm bg-danger-light">
+                        <Link to={`/admins/edit/${record.id}`} className="btn btn-sm bg-danger-light">
                             <i className="feather-edit">
                                 <FeatherIcon icon="edit" className="list-edit" />
                             </i>

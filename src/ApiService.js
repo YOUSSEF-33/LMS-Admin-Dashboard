@@ -26,6 +26,18 @@ axiosInstance.interceptors.request.use(
   }
 );
 
+axiosInstance.interceptors.response.use(
+  response => response,
+  error => {
+      if (error.response && error.response.status === 401) {
+          // Token is expired or invalid
+          Cookies.remove('token');
+          window.location.href = '/login';
+      }
+      return Promise.reject(error);
+  }
+);
+
 // Admin login API call
 export const adminLogin = async (email, password) => {
   try {
@@ -65,16 +77,16 @@ export const fetchAdmins = async (limit, page) => {
   }
 };
 
-axiosInstance.interceptors.response.use(
-  response => response,
-  error => {
-      if (error.response && error.response.status === 401) {
-          // Token is expired or invalid
-          Cookies.remove('token');
-          window.location.href = '/login';
-      }
-      return Promise.reject(error);
+export const fetchRoles = async (limit, page) => {
+  try {
+    const response = await axiosInstance.get(`/v1/admin/roles?limit=${limit}&page=${page}`);
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching admins:', error);
+    throw error;
   }
-);
+};
+
+
 
 export default axiosInstance;
