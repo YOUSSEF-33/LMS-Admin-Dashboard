@@ -43,9 +43,7 @@ const Admins = () => {
             sorter: (a, b) => a.name.length - b.name.length,
             render: (text, record) => (
                 <>
-                    <h2 className="table-avatar">
                         <Link to="/adminsview" className="text-dark">{record.name}</Link>
-                    </h2>
                 </>
             )
         },
@@ -105,10 +103,10 @@ const Admins = () => {
                             <div className="row">
                                 <div className="col-sm-12">
                                     <div className="page-sub-header">
-                                        <h3 className="page-title">المدراء</h3>
+                                        <h3 className="page-title">المشرفون</h3>
                                         <ul className="breadcrumb">
-                                            <li className="breadcrumb-item"><Link to="/admins">المديرين</Link></li>
-                                            <li className="breadcrumb-item active">جميع المديرين</li>
+                                            <li className="breadcrumb-item"><Link to="/admins">المشرفون</Link></li>
+                                            <li className="breadcrumb-item active">جميع المشرفون</li>
                                         </ul>
                                     </div>
                                 </div>
@@ -122,26 +120,16 @@ const Admins = () => {
                                         <div className="page-header">
                                             <div className="row align-items-center">
                                                 <div className="col">
-                                                    <h3 className="page-title">المدراء</h3>
+                                                    <h3 className="page-title">المشرفون</h3>
                                                 </div>
                                                 <div className="col-auto text-end float-end ms-auto download-grp">
-                                                    <Link
-                                                        to="/admins"
-                                                        className="btn btn-outline-gray me-2 active"
-                                                    >
-                                                        <FeatherIcon className="feather-list" icon="list" />
-                                                    </Link>
-                                                    <Link
-                                                        to="/admingrid"
-                                                        className="btn btn-outline-gray me-2"
-                                                    >
-                                                        <FeatherIcon className="feather-grid" icon="grid" />
-                                                    </Link>
                                                     <Link to="#" className="btn btn-outline-primary me-2">
-                                                        <i className="fas fa-download" /> تحميل
+                                                        <i className="fas fa-download" /> تصدير
                                                     </Link>
-                                                    <Link to="/addadmin" className="btn btn-primary">
-                                                        <i className="fas fa-plus" />
+                                                    &nbsp;
+                                                    &nbsp;
+                                                    <Link to="/admins/create" className="btn btn-primary">
+                                                        <i className="fas fa-plus" /> اضافة مشرف
                                                     </Link>
                                                 </div>
                                             </div>
