@@ -37,7 +37,7 @@ const ForgotPassword = () => {
                                             <button
                                                 className="btn btn-primary primary-reset btn-block"
                                                 type="submit"
-                                                onClick="./admindashboard"
+                                                onClick="./"
                                             >
                                                 Login
                                             </button>

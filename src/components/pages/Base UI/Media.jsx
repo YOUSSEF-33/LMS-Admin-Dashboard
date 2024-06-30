@@ -26,7 +26,7 @@ const Media = () => {
                   <h3 className="page-title">Media</h3>
                   <ul className="breadcrumb">
                     <li className="breadcrumb-item">
-                      <Link to="/admindashboard">Dashboard</Link>
+                      <Link to="/">Dashboard</Link>
                     </li>
                     <li className="breadcrumb-item active">Components</li>
                   </ul>

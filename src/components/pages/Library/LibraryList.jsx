@@ -203,7 +203,7 @@ const LibraryList = () => {
           <h3 className="page-title">Library</h3>
           <ul className="breadcrumb">
             <li className="breadcrumb-item">
-              <Link to="/admindashboard">Dashboard</Link>
+              <Link to="/">Dashboard</Link>
             </li>
             <li className="breadcrumb-item active">Library</li>
           </ul>

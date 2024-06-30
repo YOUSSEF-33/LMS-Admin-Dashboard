@@ -158,7 +158,7 @@ const Expenses = () => {
                   <h3 className="page-title">Expenses</h3>
                   <ul className="breadcrumb">
                     <li className="breadcrumb-item">
-                      <Link to="/admindashboard">Dashboard</Link>
+                      <Link to="/">Dashboard</Link>
                     </li>
                     <li className="breadcrumb-item active">Expenses</li>
                   </ul>

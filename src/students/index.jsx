@@ -1,4 +1,3 @@
-
 import React, {useEffect,useState} from 'react';
 import { Row, Col, Card, Media } from "react-bootstrap";
 import { Link } from 'react-router-dom'
@@ -18,16 +17,11 @@ import Img7 from '../assets/img/profiles/avatar-08.jpg';
 import Img8 from '../assets/img/profiles/avatar-09.jpg';
 import Img9 from '../assets/img/profiles/avatar-10.jpg';
 
-
-
-
-
 const Students = () => {
 	useEffect(() => {
 		$('#datatables').DataTable({
 			"bFilter": false,
 			"paging": true,	
-				
 		});				
 	},[]);
 

@@ -393,7 +393,7 @@ class ApexCharts extends Component {
                   <h3 className="page-title">Apex Chart</h3>
                   <ul className="breadcrumb">
                     <li className="breadcrumb-item">
-                      <Link to="/admindashboard">Dashboard</Link>
+                      <Link to="/">Dashboard</Link>
                     </li>
                     <li className="breadcrumb-item active">Components</li>
                   </ul>

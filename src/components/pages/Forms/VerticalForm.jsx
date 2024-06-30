@@ -56,7 +56,7 @@ const VerticalForm = () => {
                   <h3 className="page-title">Vertical Form</h3>
                   <ul className="breadcrumb">
                     <li className="breadcrumb-item">
-                      <Link to="/admindashboard">Dashboard</Link>
+                      <Link to="/">Dashboard</Link>
                     </li>
                     <li className="breadcrumb-item active">Vertical Form</li>
                   </ul>

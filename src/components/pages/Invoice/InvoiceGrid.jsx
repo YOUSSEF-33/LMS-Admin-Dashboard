@@ -24,7 +24,7 @@ const InvoiceGrid = () => {
                                     <h3 className="page-title">Invoice Grid</h3>
                                     <ul className="breadcrumb">
                                         <li className="breadcrumb-item">
-                                            <Link to="/admindashboard">Dashboard</Link>
+                                            <Link to="/">Dashboard</Link>
                                         </li>
                                         <li className="breadcrumb-item active">Invoice Grid</li>
                                     </ul>
