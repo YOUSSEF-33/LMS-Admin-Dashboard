@@ -13,6 +13,7 @@ import BasicTable from "./components/pages/Table/BasicTable";
 import DataTable from "./components/pages/Table/DataTable";
 import Students from "./components/pages/Students/StudentsList";
 import Admins from "./components/pages/Admins/AdminsList";
+import AddAdmin from "./components/pages/Admins/AddAdmin";
 import InvoiceGrid from "./components/pages/Invoice/InvoiceGrid";
 import AddInvoice from "./components/pages/Invoice/AddInvoice";
 import EditInvoice from "./components/pages/Invoice/EditInvoice";
@@ -167,9 +168,12 @@ const AppContainer = () => {
       <Route path="/login-admin" element={<LoginAdmin />} />
 
       <Route element={<RequireAuth allowedRole="admin" />}>
-        <Route element={<RequirePermission allowedPermission={"view_any_admin"} />}>
           <Route path="/" element={<AdminDashboard />} />
+        <Route element={<RequirePermission allowedPermission={"view_any_admin"} />}>
           <Route path="/admins" element={<Admins />} />
+        </Route>
+        <Route element={<RequirePermission allowedPermission="view_any_admin" />}>
+          <Route path="/admins/create" element={<AddAdmin />} />
         </Route>
       </Route>
 

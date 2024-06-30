@@ -1,315 +1,166 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
-import DatePicker from "react-datepicker";
-import "react-datepicker/dist/react-datepicker.css";
+import { Link, useNavigate } from "react-router-dom";
 import Header from "../../Header/Header";
 import SideBar from "../../SideBar/SideBar";
-import FeatherIcon from "feather-icons-react/build/FeatherIcon";
-import Select from "react-select";
+import FeatherIcon from "feather-icons-react";
+import axiosInstance from "../../../ApiService";
 
-const AddStudent = () => {
-  const [startDate, setStartDate] = useState(new Date());
-  const [selectedOption1, setSelectedOption1] = useState(null);
-  const [selectedOption2, setSelectedOption2] = useState(null);
-  const [selectedOption3, setSelectedOption3] = useState(null);
-  const [selectedOption4, setSelectedOption4] = useState(null);
-  const [selectedOption5, setSelectedOption5] = useState(null);
+const AddAdmin = () => {
+  const navigate = useNavigate();
+  const [formData, setFormData] = useState({
+    email: "",
+    name: "",
+    password: "",
+    password_confirmation: "",
+  });
+  const [errors, setErrors] = useState({});
 
-  const options1 = [
-    { value: 1, label: "Select Gender" },
-    { value: 2, label: "Female" },
-    { value: 3, label: "Male" },
-    { value: 4, label: "Others" },
-  ];
-
-  const options2 = [
-    { value: 1, label: "Please Select Group" },
-    { value: 2, label: "B+" },
-    { value: 3, label: "A+" },
-    { value: 4, label: "O+" },
-  ];
-
-  const options3 = [
-    { value: 1, label: "Please Select Religion" },
-    { value: 2, label: "Hindu" },
-    { value: 3, label: "Christian" },
-    { value: 4, label: "Others" },
-  ];
-
-  const options4 = [
-    { value: 1, label: "Please Select Class" },
-    { value: 2, label: "12" },
-    { value: 3, label: "11" },
-    { value: 4, label: "10" },
-  ];
-
-  const options5 = [
-    { value: 1, label: "Please Select Section" },
-    { value: 2, label: "A" },
-    { value: 3, label: "B" },
-    { value: 4, label: "C" },
-  ];
-
-  const handleOption1Change = (selectedOption) => {
-    setSelectedOption1(selectedOption);
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
   };
 
-  const handleOption2Change = (selectedOption) => {
-    setSelectedOption2(selectedOption);
+  const validateForm = () => {
+    const newErrors = {};
+    if (!formData.email) newErrors.email = "البريد الإلكتروني مطلوب";
+    if (!formData.name) newErrors.name = "الاسم مطلوب";
+    if (!formData.password) newErrors.password = "كلمة المرور مطلوبة";
+    if (formData.password !== formData.password_confirmation) {
+      newErrors.password_confirmation = "تأكيد كلمة المرور لا يتطابق";
+    }
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
   };
 
-  const handleOption3Change = (selectedOption) => {
-    setSelectedOption3(selectedOption);
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!validateForm()) return;
+    try {
+      await axiosInstance.post("v1/admins/register", formData);
+      navigate("/admins");
+    } catch (error) {
+      console.error("Error creating admin:", error);
+    }
   };
 
-  const handleOption4Change = (selectedOption) => {
-    setSelectedOption4(selectedOption);
-  };
-
-  const handleOption5Change = (selectedOption) => {
-    setSelectedOption5(selectedOption);
-  };
   return (
     <>
       <div className="main-wrapper">
-        {/* Header */}
         <Header />
-
-        {/* Sidebar */}
         <SideBar />
-
-        {/* Page Wrapper */}
         <div className="page-wrapper">
           <div className="content container-fluid">
-            {/* Page Header */}
             <div className="page-header">
               <div className="row align-items-center">
                 <div className="col-sm-12">
                   <div className="page-sub-header">
-                    <h3 className="page-title">Add Students</h3>
+                    <h3 className="page-title">إضافة مشرف</h3>
                     <ul className="breadcrumb">
                       <li className="breadcrumb-item">
-                        <Link to="/students">Student</Link>
+                        <Link to="/admins">المشرفين</Link>
                       </li>
-                      <li className="breadcrumb-item active">Add Students</li>
+                      <li className="breadcrumb-item active">إضافة مشرف</li>
                     </ul>
                   </div>
                 </div>
               </div>
             </div>
-            {/* /Page Header */}
             <div className="row">
               <div className="col-sm-12">
                 <div className="card comman-shadow">
                   <div className="card-body">
-                    <form>
+                    <form onSubmit={handleSubmit}>
                       <div className="row">
                         <div className="col-12">
-                          <h5 className="form-title student-info">
-                            Student Information{" "}
+                          <h5 className="form-title admin-info">
+                            معلومات المشرف{" "}
                             <span>
                               <Link to="#">
-                                <i className="feather-more-vertical">
-                                  <FeatherIcon icon="more-vertical" />
-                                </i>
+                                <FeatherIcon icon="more-vertical" />
                               </Link>
                             </span>
                           </h5>
                         </div>
-                        <div className="col-12 col-sm-4">
+                        <div className="col-12 col-sm-6">
                           <div className="form-group local-forms">
                             <label>
-                              First Name <span className="login-danger">*</span>
+                              الاسم <span className="login-danger">*</span>
                             </label>
                             <input
                               className="form-control"
                               type="text"
-                              placeholder="Enter First Name"
+                              name="name"
+                              placeholder="أدخل الاسم"
+                              value={formData.name}
+                              onChange={handleInputChange}
                             />
+                            {errors.name && (
+                              <div className="text-danger">{errors.name}</div>
+                            )}
                           </div>
                         </div>
-                        <div className="col-12 col-sm-4">
+                        <div className="col-12 col-sm-6">
                           <div className="form-group local-forms">
                             <label>
-                              Last Name <span className="login-danger">*</span>
-                            </label>
-                            <input
-                              className="form-control"
-                              type="text"
-                              placeholder="Enter First Name"
-                            />
-                          </div>
-                        </div>
-                        <div className="col-12 col-sm-4">
-                          <div className="form-group local-forms">
-                            <label>
-                              Gender <span className="login-danger">*</span>
-                            </label>
-
-                            <Select
-                              className="w-100 local-forms  select"
-                              value={selectedOption1}
-                              onChange={handleOption1Change}
-                              options={options1}
-                              placeholder="Select Gender"
-                            />
-                          </div>
-                        </div>
-                        <div className="col-12 col-sm-4">
-                          <div className="form-group local-forms calendar-icon">
-                            <label>
-                              Date Of Birth{" "}
+                              البريد الإلكتروني{" "}
                               <span className="login-danger">*</span>
                             </label>
-                            {/* <input
-                                                            className="form-control datetimepicker"
-                                                            type="text"
-                                                            placeholder="DD-MM-YYYY"
-                                                        /> */}
-                            <DatePicker
-                              className="form-control datetimepicker"
-                              selected={startDate}
-                              onChange={(date) => setStartDate(date)}
-                            />
-                          </div>
-                        </div>
-                        <div className="col-12 col-sm-4">
-                          <div className="form-group local-forms">
-                            <label>Roll </label>
                             <input
                               className="form-control"
-                              type="text"
-                              placeholder="Enter Roll Number"
+                              type="email"
+                              name="email"
+                              placeholder="أدخل البريد الإلكتروني"
+                              value={formData.email}
+                              onChange={handleInputChange}
                             />
+                            {errors.email && (
+                              <div className="text-danger">{errors.email}</div>
+                            )}
                           </div>
                         </div>
-                        <div className="col-12 col-sm-4">
+                        <div className="col-12 col-sm-6">
                           <div className="form-group local-forms">
                             <label>
-                              Blood Group{" "}
+                              كلمة المرور <span className="login-danger">*</span>
+                            </label>
+                            <input
+                              className="form-control"
+                              type="password"
+                              name="password"
+                              placeholder="أدخل كلمة المرور"
+                              value={formData.password}
+                              onChange={handleInputChange}
+                            />
+                            {errors.password && (
+                              <div className="text-danger">{errors.password}</div>
+                            )}
+                          </div>
+                        </div>
+                        <div className="col-12 col-sm-6">
+                          <div className="form-group local-forms">
+                            <label>
+                              تأكيد كلمة المرور{" "}
                               <span className="login-danger">*</span>
                             </label>
-                            {/* <select className="form-control select">
-                                                            <option>Please Select Group </option>
-                                                            <option>B+</option>
-                                                            <option>A+</option>
-                                                            <option>O+</option>
-                                                        </select> */}
-                            <Select
-                              className="w-100 select"
-                              value={selectedOption2}
-                              onChange={handleOption2Change}
-                              options={options2}
-                              placeholder="Please Select Group"
-                            />
-                          </div>
-                        </div>
-                        <div className="col-12 col-sm-4">
-                          <div className="form-group local-forms">
-                            <label>
-                              Religion <span className="login-danger">*</span>
-                            </label>
-                            {/* <select className="form-control select">
-                                                            <option>Please Select Religion</option>
-                                                            <option>Hindu</option>
-                                                            <option>Christian</option>
-                                                            <option>Others</option>
-                                                        </select> */}
-                            <Select
-                              className="w-100 select"
-                              value={selectedOption3}
-                              onChange={handleOption3Change}
-                              options={options3}
-                              placeholder="Please Select Religion"
-                            />
-                          </div>
-                        </div>
-                        <div className="col-12 col-sm-4">
-                          <div className="form-group local-forms">
-                            <label>
-                              E-Mail <span className="login-danger">*</span>
-                            </label>
                             <input
                               className="form-control"
-                              type="text"
-                              placeholder="Enter Email Address"
+                              type="password"
+                              name="password_confirmation"
+                              placeholder="أدخل تأكيد كلمة المرور"
+                              value={formData.password_confirmation}
+                              onChange={handleInputChange}
                             />
-                          </div>
-                        </div>
-                        <div className="col-12 col-sm-4">
-                          <div className="form-group local-forms">
-                            <label>
-                              Class <span className="login-danger">*</span>
-                            </label>
-                            {/* <select className="form-control select">
-                                                            <option>Please Select Class</option>
-                                                            <option>12</option>
-                                                            <option>11</option>
-                                                            <option>10</option>
-                                                        </select> */}
-                            <Select
-                              className="w-100 select"
-                              value={selectedOption4}
-                              onChange={handleOption4Change}
-                              options={options4}
-                              placeholder="Please Select Class"
-                            />
-                          </div>
-                        </div>
-                        <div className="col-12 col-sm-4">
-                          <div className="form-group local-forms">
-                            <label>
-                              Section <span className="login-danger">*</span>
-                            </label>
-                            {/* <select className="form-control select">
-                                                            <option>Please Select Section </option>
-                                                            <option>B</option>
-                                                            <option>A</option>
-                                                            <option>C</option>
-                                                        </select> */}
-                            <Select
-                              className="w-100 select"
-                              value={selectedOption5}
-                              onChange={handleOption5Change}
-                              options={options5}
-                              placeholder="Please Select Section"
-                            />
-                          </div>
-                        </div>
-                        <div className="col-12 col-sm-4">
-                          <div className="form-group local-forms">
-                            <label>Admission ID </label>
-                            <input
-                              className="form-control"
-                              type="text"
-                              placeholder="Enter Admission ID"
-                            />
-                          </div>
-                        </div>
-                        <div className="col-12 col-sm-4">
-                          <div className="form-group local-forms">
-                            <label>Phone </label>
-                            <input
-                              className="form-control"
-                              type="text"
-                              placeholder="Enter Phone Number"
-                            />
-                          </div>
-                        </div>
-                        <div className="col-12 col-sm-4">
-                          <div className="form-group students-up-files">
-                            <label>Upload Student Photo (150px X 150px)</label>
-                            <div className="uplod">
-                              <label className="file-upload image-upbtn mb-0">
-                                Choose File <input type="file" />
-                              </label>
-                            </div>
+                            {errors.password_confirmation && (
+                              <div className="text-danger">
+                                {errors.password_confirmation}
+                              </div>
+                            )}
                           </div>
                         </div>
                         <div className="col-12">
-                          <div className="student-submit">
+                          <div className="admin-submit">
                             <button type="submit" className="btn btn-primary">
-                              Submit
+                              إضافة
                             </button>
                           </div>
                         </div>
@@ -322,9 +173,8 @@ const AddStudent = () => {
           </div>
         </div>
       </div>
-      {/* /Main Wrapper */}
     </>
   );
 };
 
-export default AddStudent;
+export default AddAdmin;

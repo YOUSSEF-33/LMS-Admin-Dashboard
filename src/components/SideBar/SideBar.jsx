@@ -159,7 +159,7 @@ const Sidebar = () => {
                   className={`${
                     "/admins" === pathName ||
                     "/studentview" === pathName ||
-                    "/addadmin" === pathName ||
+                    "/admins/create" === pathName ||
                     "/editadmin" === pathName
                       ? "active submenu"
                       : "submenu"
