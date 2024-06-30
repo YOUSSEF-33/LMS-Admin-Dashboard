@@ -27,7 +27,7 @@ const BlankPage = () => {
                                   <h3 className="page-title">Blank Page</h3>
                                   <ul className="breadcrumb">
                                       <li className="breadcrumb-item">
-                                          <Link to="/admindashboard">Dashboard</Link>
+                                          <Link to="/">Dashboard</Link>
                                       </li>
                                       <li className="breadcrumb-item active">Blank Page</li>
                                   </ul>

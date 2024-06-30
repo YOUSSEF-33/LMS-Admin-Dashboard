@@ -40,10 +40,10 @@ const Header = () => {
       <div className="header">
         {/* Logo */}
         <div className="header-left">
-          <Link to="/admindashboard" className="logo">
+          <Link to="/" className="logo">
             <img src={logo} alt="Logo" />
           </Link>
-          <Link to="/admindashboard" className="logo logo-small">
+          <Link to="/" className="logo logo-small">
             <img src={logosmall} alt="Logo" width={30} height={30} />
           </Link>
         </div>

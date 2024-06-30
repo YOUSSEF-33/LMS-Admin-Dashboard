@@ -21,7 +21,7 @@ const FormValidation = () => {
                                 <div className="col">
                                     <h3 className="page-title">Form Validation</h3>
                                     <ul className="breadcrumb">
-                                        <li className="breadcrumb-item"><Link to="/admindashboard">Dashboard</Link></li>
+                                        <li className="breadcrumb-item"><Link to="/">Dashboard</Link></li>
                                         <li className="breadcrumb-item active">Form Validation</li>
                                     </ul>
                                 </div>

@@ -24,7 +24,7 @@ const TaxSetting = () => {
                                         <h3 className="page-title">Invoice settings</h3>
                                         <ul className="breadcrumb">
                                             <li className="breadcrumb-item">
-                                                <Link to="/admindashboard">Dashboard</Link>
+                                                <Link to="/">Dashboard</Link>
                                             </li>
                                             <li className="breadcrumb-item active">Tax Settings</li>
                                         </ul>

@@ -228,7 +228,7 @@ const AdminDashboard = () => {
                     <h3 className="page-title">Welcome Admin!</h3>
                     <ul className="breadcrumb">
                       <li className="breadcrumb-item">
-                        <Link to="/admindashboard">Home</Link>
+                        <Link to="/">Home</Link>
                       </li>
                       <li className="breadcrumb-item active">Admin</li>
                     </ul>

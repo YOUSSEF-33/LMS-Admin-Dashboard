@@ -66,7 +66,7 @@ const TeacherDashboard = () => {
                       <h3 className="page-title">Welcome Jonathan!</h3>
                       <ul className="breadcrumb">
                         <li className="breadcrumb-item">
-                          <Link to="/admindashboard">Home</Link>
+                          <Link to="/">Home</Link>
                         </li>
                         <li className="breadcrumb-item active">Teacher</li>
                       </ul>

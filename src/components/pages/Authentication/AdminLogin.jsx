@@ -68,7 +68,7 @@ const AdminLogin = () => {
           dispatch(setCredentials(userData))
           dispatch(setRole('admin'))
         // Handle success (e.g., save token, redirect to dashboard)
-         navigate('/admindashboard'); // Replace with your admin dashboard route
+         navigate('/'); // Replace with your admin dashboard route
       } else {
         setError('خطأ في تسجيل الدخول. يرجى المحاولة مرة أخرى.');
       }

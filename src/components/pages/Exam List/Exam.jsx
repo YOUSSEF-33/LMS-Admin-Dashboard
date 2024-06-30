@@ -177,7 +177,7 @@ const Exam = () => {
                   <h3 className="page-title">Exam</h3>
                   <ul className="breadcrumb">
                     <li className="breadcrumb-item">
-                      <Link to="/admindashboard">Dashboard</Link>
+                      <Link to="/">Dashboard</Link>
                     </li>
                     <li className="breadcrumb-item active">Exam</li>
                   </ul>

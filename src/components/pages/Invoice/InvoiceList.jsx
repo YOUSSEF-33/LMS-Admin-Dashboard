@@ -284,7 +284,7 @@ const InvoiceList = () => {
                                     <h3 className="page-title">Invoices</h3>
                                     <ul className="breadcrumb">
                                         <li className="breadcrumb-item">
-                                            <Link to="/admindashboard">Dashboard</Link>
+                                            <Link to="/">Dashboard</Link>
                                         </li>
                                         <li className="breadcrumb-item active">Invoices</li>
                                     </ul>
