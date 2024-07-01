@@ -167,6 +167,10 @@ import ListFaculties from "./components/pages/Faculties/ListFaculties";
 import AddFaculty from "./components/pages/Faculties/AddFaculty";
 import UpdateFaculty from "./components/pages/Faculties/UpdateFaculty";
 import FacultyDashboard from "./components/pages/Faculty/FacultyDashboard";
+import ListExams from "./components/pages/Exams/ListExams";
+import StudentsList from "./components/pages/Students/StudentsList";
+import ListAssignments from "./components/pages/Assignments/AssignmentsList";
+import ListCourses from "./components/pages/Courses/CoursesList";
 
 
 const AppContainer = () => {
@@ -203,6 +207,18 @@ const AppContainer = () => {
         </Route>
         <Route element={<RequirePermission allowedPermission="edit_faculty" />}>
           <Route path="/admin/faculties/:id/dashboard" element={<FacultyDashboard />} />
+        </Route>
+        <Route element={<RequirePermission allowedPermission="edit_faculty" />}>
+          <Route path="/admin/faculties/:id/exams" element={<ListExams />} />
+        </Route>
+        <Route element={<RequirePermission allowedPermission="edit_faculty" />}>
+          <Route path="/admin/faculties/:id/students" element={<StudentsList />} />
+        </Route>
+        <Route element={<RequirePermission allowedPermission="edit_faculty" />}>
+          <Route path="/admin/faculties/:id/assignments" element={<ListAssignments />} />
+        </Route>
+        <Route element={<RequirePermission allowedPermission="edit_faculty" />}>
+          <Route path="/admin/faculties/:id/courses" element={<ListCourses />} />
         </Route>
       </Route>
 

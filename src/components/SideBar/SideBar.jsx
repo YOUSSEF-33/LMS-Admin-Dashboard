@@ -257,7 +257,7 @@ const Sidebar = () => {
                         </li>
                         <li>
                           <Link
-                            to={`/faculties/${faculty.id}/students`}
+                            to={`/admin/faculties/${faculty.id}/students`}
                             className={`${pathName === `/admin/faculties/${faculty.id}/students` ? "active" : ""}`}
                           >
                             الطلاب
@@ -265,7 +265,7 @@ const Sidebar = () => {
                         </li>
                         <li>
                           <Link
-                            to={`/faculties/${faculty.id}/assignments`}
+                            to={`/admin/faculties/${faculty.id}/assignments`}
                             className={`${pathName === `/admin/faculties/${faculty.id}/assignments` ? "active" : ""}`}
                           >
                             الواجبات
@@ -273,10 +273,18 @@ const Sidebar = () => {
                         </li>
                         <li>
                           <Link
-                            to={`/faculties/${faculty.id}/exams`}
+                            to={`/admin/faculties/${faculty.id}/exams`}
                             className={`${pathName === `/admin/faculties/${faculty.id}/exams` ? "active" : ""}`}
                           >
                             الامتحانات
+                          </Link>
+                        </li>
+                        <li>
+                          <Link
+                            to={`/admin/faculties/${faculty.id}/courses`}
+                            className={`${pathName === `/admin/faculties/${faculty.id}/courses` ? "active" : ""}`}
+                          >
+                            الكورسات
                           </Link>
                         </li>
                       </ul>
