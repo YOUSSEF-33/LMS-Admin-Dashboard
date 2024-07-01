@@ -2,22 +2,16 @@ import React, { useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import FeatherIcon from "feather-icons-react";
 import Scrollbars from "react-custom-scrollbars-2";
+import axiosInstance from "../../ApiService"; // Adjust the import according to your project structure
+import { CheckPermission } from "../../utils/isPermissionFound"; // Adjust the import according to your project structure
 
 const Sidebar = () => {
   const [isSideMenu, setSideMenu] = useState("");
-  const [isSideMenuLevel, setSideMenuLevel] = useState("");
-  const [isSideMenuLevel2, setSideMenuLevel2] = useState("");
+  const [faculties, setFaculties] = useState([]);
+  const [hasFacultyPermission, setHasFacultyPermission] = useState(false);
 
   const toggleSidebar = (value) => {
     setSideMenu(value);
-  };
-  
-  const toggleSidebar1 = (value) => {
-    setSideMenuLevel(value);
-  };
-
-  const toggleSidebar2 = (value) => {
-    setSideMenuLevel2(value);
   };
 
   useEffect(() => {
@@ -35,9 +29,9 @@ const Sidebar = () => {
         return false;
       }
     }
-  
+
     document.addEventListener('mouseover', handleMouseOver);
-  
+
     return () => {
       document.removeEventListener('mouseover', handleMouseOver);
     };
@@ -70,9 +64,25 @@ const Sidebar = () => {
 	    }
 	});
   }, []);
-  
+
   const location = useLocation();
   let pathName = location.pathname;
+
+  useEffect(() => {
+    // Fetch faculties from API
+    const fetchFaculties = async () => {
+      try {
+        const response = await axiosInstance.get("v1/admin/faculties"); // Adjust the endpoint according to your API
+        setFaculties(response.data.data.items);
+        //console.log(response.data)
+      } catch (error) {
+        console.error("Error fetching faculties:", error);
+      }
+    };
+
+    fetchFaculties();
+    setHasFacultyPermission(CheckPermission("view_any_faculty"));
+  }, []);
 
   return (
     <>
@@ -90,7 +100,6 @@ const Sidebar = () => {
         >
           <div className="sidebar-inner slimscroll">
             <div id="sidebar-menu" className="sidebar-menu">
-              {/* Main Menu */}
               <ul>
                 <li className="menu-title">
                   <span>Main Menu</span>
@@ -160,8 +169,8 @@ const Sidebar = () => {
                     "/admins" === pathName ||
                     "/studentview" === pathName ||
                     "/admins/create" === pathName ||
-                    "/editadmin" === pathName||
-                    "/admins/roles"=== pathName
+                    "/editadmin" === pathName ||
+                    "/admins/roles" === pathName
                       ? "active submenu"
                       : "submenu"
                   }`}
@@ -207,6 +216,73 @@ const Sidebar = () => {
                     ""
                   )}
                 </li>
+                <li className="menu-title">
+                  <span>الكليات</span>
+                </li>
+                {hasFacultyPermission && (
+                  <li className={`submenu ${isSideMenu === `all_faculties` ? "active" : ""}`}>
+                    <Link
+                      to="/admin/faculties"
+                      className={isSideMenu === `all_faculties` ? "subdrop" : ""}
+                      onClick={() =>
+                        toggleSidebar(isSideMenu === `all_faculties` ? "" : `all_faculties`)
+                      }
+                    >
+                      <i className="fas fa-university" /> <span>كل الكليات</span>
+                    </Link>
+                  </li>
+                )}
+                {faculties?.map((faculty) => (
+                  <li
+                    key={faculty.id}
+                    className={`submenu ${isSideMenu === `faculty_${faculty.id}` ? "active" : ""}`}
+                  >
+                    <Link
+                      className={isSideMenu === `faculty_${faculty.id}` ? "subdrop" : ""}
+                      onClick={() =>
+                        toggleSidebar(isSideMenu === `faculty_${faculty.id}` ? "" : `faculty_${faculty.id}`)
+                      }
+                    >
+                      <i className="fas fa-university" /> <span>{faculty.name}</span> <span className="menu-arrow" />
+                    </Link>
+                    {isSideMenu === `faculty_${faculty.id}` && (
+                      <ul style={{ display: "block" }}>
+                        <li>
+                          <Link
+                            to={`/admin/faculties/${faculty.id}/dashboard`}
+                            className={`${pathName === `/admin/faculties/${faculty.id}/dashboard` ? "active" : ""}`}
+                          >
+                            لوحة التحكم
+                          </Link>
+                        </li>
+                        <li>
+                          <Link
+                            to={`/faculties/${faculty.id}/students`}
+                            className={`${pathName === `/admin/faculties/${faculty.id}/students` ? "active" : ""}`}
+                          >
+                            الطلاب
+                          </Link>
+                        </li>
+                        <li>
+                          <Link
+                            to={`/faculties/${faculty.id}/assignments`}
+                            className={`${pathName === `/admin/faculties/${faculty.id}/assignments` ? "active" : ""}`}
+                          >
+                            الواجبات
+                          </Link>
+                        </li>
+                        <li>
+                          <Link
+                            to={`/faculties/${faculty.id}/exams`}
+                            className={`${pathName === `/admin/faculties/${faculty.id}/exams` ? "active" : ""}`}
+                          >
+                            الامتحانات
+                          </Link>
+                        </li>
+                      </ul>
+                    )}
+                  </li>
+                ))}
               </ul>
             </div>
           </div>
@@ -215,5 +291,5 @@ const Sidebar = () => {
     </>
   );
 };
-export default Sidebar;
 
+export default Sidebar;
