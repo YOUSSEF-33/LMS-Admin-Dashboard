@@ -93,10 +93,8 @@ const ListAssignments = () => {
 
     return (
         <>
-            <div className="main-wrapper">
-                <Header />
-                <SideBar />
-                <div className="page-wrapper">
+            <div className="">
+                <div className="">
                     <div className="content container-fluid">
                         <div className="page-header">
                             <div className="row">

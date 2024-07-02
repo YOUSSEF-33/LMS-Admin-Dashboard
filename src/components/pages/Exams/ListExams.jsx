@@ -93,13 +93,8 @@ const ListExams = () => {
 
     return (
         <>
-            <div className="main-wrapper">
-                {/* Header */}
-                <Header />
-                {/* Sidebar */}
-                <SideBar />
-                {/* Page Wrapper */}
-                <div className="page-wrapper">
+            <div className="">
+                <div className="">
                     <div className="content container-fluid">
                         {/* Page Header */}
                         <div className="page-header">
@@ -162,8 +157,6 @@ const ListExams = () => {
                         </div>
                     </div>
                 </div>
-                <Footer />
-                {/* /Page Wrapper */}
             </div>
             {/* /Main Wrapper */}
         </>

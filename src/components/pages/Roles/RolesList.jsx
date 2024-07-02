@@ -80,13 +80,9 @@ const RolesList = () => {
 
     return (
         <>
-            <div className="main-wrapper">
-                {/* Header */}
-                <Header />
-                {/* Sidebar */}
-                <SideBar />
+            <div className="">
                 {/* Page Wrapper */}
-                <div className="page-wrapper">
+                <div className="">
                     <div className="content container-fluid">
                         {/* Page Header */}
                         <div className="page-header">
@@ -149,8 +145,6 @@ const RolesList = () => {
                         </div>
                     </div>
                 </div>
-                <Footer />
-                {/* /Page Wrapper */}
             </div>
             {/* /Main Wrapper */}
         </>

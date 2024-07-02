@@ -171,6 +171,8 @@ import ListExams from "./components/pages/Exams/ListExams";
 import StudentsList from "./components/pages/Students/StudentsList";
 import ListAssignments from "./components/pages/Assignments/AssignmentsList";
 import ListCourses from "./components/pages/Courses/CoursesList";
+import Header from "./components/Header/Header";
+import Layout from "./Layout";
 
 
 const AppContainer = () => {
@@ -178,47 +180,48 @@ const AppContainer = () => {
     <Routes>
       <Route path="/login" element={<Login />} />
       <Route path="/login-admin" element={<LoginAdmin />} />
-
-      <Route element={<RequireAuth allowedRole="admin" />}>
+      <Route path="/" element={<Layout />}>
+        <Route element={<RequireAuth allowedRole="admin" />}>
           <Route path="/" element={<AdminDashboard />} />
-        <Route element={<RequirePermission allowedPermission={"view_any_admin"} />}>
-          <Route path="/admins" element={<Admins />} />
-        </Route>
-        <Route element={<RequirePermission allowedPermission="create_admin" />}>
-          <Route path="/admins/create" element={<AddAdmin />} />
-        </Route>
-        <Route element={<RequirePermission allowedPermission="edit_admin" />}>
-          <Route path="/admins/edit/:id" element={<EditAdmin />} />
-        </Route>
-        <Route element={<RequirePermission allowedPermission="view_any_role" />}>
-          <Route path="/admins/roles" element={<RolesList />} />
-        </Route>
-        <Route element={<RequirePermission allowedPermission="create_role" />}>
-          <Route path="/admins/roles/create" element={<AddRole />} />
-        </Route>
-        <Route element={<RequirePermission allowedPermission="view_any_faculty" />}>
-          <Route path="/admin/faculties" element={<ListFaculties />} />
-        </Route>
-        <Route element={<RequirePermission allowedPermission="create_faculty" />}>
-          <Route path="/admin/faculties/create" element={<AddFaculty />} />
-        </Route>
-        <Route element={<RequirePermission allowedPermission="edit_faculty" />}>
-          <Route path="/admin/faculties/edit/:id" element={<UpdateFaculty />} />
-        </Route>
-        <Route element={<RequirePermission allowedPermission="edit_faculty" />}>
-          <Route path="/admin/faculties/:id/dashboard" element={<FacultyDashboard />} />
-        </Route>
-        <Route element={<RequirePermission allowedPermission="edit_faculty" />}>
-          <Route path="/admin/faculties/:id/exams" element={<ListExams />} />
-        </Route>
-        <Route element={<RequirePermission allowedPermission="edit_faculty" />}>
-          <Route path="/admin/faculties/:id/students" element={<StudentsList />} />
-        </Route>
-        <Route element={<RequirePermission allowedPermission="edit_faculty" />}>
-          <Route path="/admin/faculties/:id/assignments" element={<ListAssignments />} />
-        </Route>
-        <Route element={<RequirePermission allowedPermission="edit_faculty" />}>
-          <Route path="/admin/faculties/:id/courses" element={<ListCourses />} />
+          <Route element={<RequirePermission allowedPermission={"view_any_admin"} />}>
+            <Route path="/admins" element={<Admins />} />
+          </Route>
+          <Route element={<RequirePermission allowedPermission="create_admin" />}>
+            <Route path="/admins/create" element={<AddAdmin />} />
+          </Route>
+          <Route element={<RequirePermission allowedPermission="edit_admin" />}>
+            <Route path="/admins/edit/:id" element={<EditAdmin />} />
+          </Route>
+          <Route element={<RequirePermission allowedPermission="view_any_role" />}>
+            <Route path="/admins/roles" element={<RolesList />} />
+          </Route>
+          <Route element={<RequirePermission allowedPermission="create_role" />}>
+            <Route path="/admins/roles/create" element={<AddRole />} />
+          </Route>
+          <Route element={<RequirePermission allowedPermission="view_any_faculty" />}>
+            <Route path="/admin/faculties" element={<ListFaculties />} />
+          </Route>
+          <Route element={<RequirePermission allowedPermission="create_faculty" />}>
+            <Route path="/admin/faculties/create" element={<AddFaculty />} />
+          </Route>
+          <Route element={<RequirePermission allowedPermission="edit_faculty" />}>
+            <Route path="/admin/faculties/edit/:id" element={<UpdateFaculty />} />
+          </Route>
+          <Route element={<RequirePermission allowedPermission="edit_faculty" />}>
+            <Route path="/admin/faculties/:id/dashboard" element={<FacultyDashboard />} />
+          </Route>
+          <Route element={<RequirePermission allowedPermission="edit_faculty" />}>
+            <Route path="/admin/faculties/:id/exams" element={<ListExams />} />
+          </Route>
+          <Route element={<RequirePermission allowedPermission="edit_faculty" />}>
+            <Route path="/admin/faculties/:id/students" element={<StudentsList />} />
+          </Route>
+          <Route element={<RequirePermission allowedPermission="edit_faculty" />}>
+            <Route path="/admin/faculties/:id/assignments" element={<ListAssignments />} />
+          </Route>
+          <Route element={<RequirePermission allowedPermission="edit_faculty" />}>
+            <Route path="/admin/faculties/:id/courses" element={<ListCourses />} />
+          </Route>
         </Route>
       </Route>
 
