@@ -160,6 +160,9 @@ import Dropdown from "./components/pages/Base UI/DropDown";
 import EditEvent from "./components/pages/Events/EditEvent";
 import RequireAuth from "./utils/RequireAuth";
 import RequirePermission from "./utils/RequierPermission";
+import EditAdmin from "./components/pages/Admins/EditAdmin";
+import RolesList from "./components/pages/Roles/RolesList";
+import AddRole from "./components/pages/Roles/AddRole";
 
 const AppContainer = () => {
   return (
@@ -172,8 +175,17 @@ const AppContainer = () => {
         <Route element={<RequirePermission allowedPermission={"view_any_admin"} />}>
           <Route path="/admins" element={<Admins />} />
         </Route>
-        <Route element={<RequirePermission allowedPermission="view_any_admin" />}>
+        <Route element={<RequirePermission allowedPermission="create_admin" />}>
           <Route path="/admins/create" element={<AddAdmin />} />
+        </Route>
+        <Route element={<RequirePermission allowedPermission="edit_admin" />}>
+          <Route path="/admins/edit/:id" element={<EditAdmin />} />
+        </Route>
+        <Route element={<RequirePermission allowedPermission="view_any_role" />}>
+          <Route path="/admins/roles" element={<RolesList />} />
+        </Route>
+        <Route element={<RequirePermission allowedPermission="create_role" />}>
+          <Route path="/admins/roles/create" element={<AddRole />} />
         </Route>
       </Route>
 
