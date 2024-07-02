@@ -163,6 +163,11 @@ import RequirePermission from "./utils/RequierPermission";
 import EditAdmin from "./components/pages/Admins/EditAdmin";
 import RolesList from "./components/pages/Roles/RolesList";
 import AddRole from "./components/pages/Roles/AddRole";
+import ListFaculties from "./components/pages/Faculties/ListFaculties";
+import AddFaculty from "./components/pages/Faculties/AddFaculty";
+import UpdateFaculty from "./components/pages/Faculties/UpdateFaculty";
+import FacultyDashboard from "./components/pages/Faculty/FacultyDashboard";
+
 
 const AppContainer = () => {
   return (
@@ -186,6 +191,18 @@ const AppContainer = () => {
         </Route>
         <Route element={<RequirePermission allowedPermission="create_role" />}>
           <Route path="/admins/roles/create" element={<AddRole />} />
+        </Route>
+        <Route element={<RequirePermission allowedPermission="view_any_faculty" />}>
+          <Route path="/admin/faculties" element={<ListFaculties />} />
+        </Route>
+        <Route element={<RequirePermission allowedPermission="create_faculty" />}>
+          <Route path="/admin/faculties/create" element={<AddFaculty />} />
+        </Route>
+        <Route element={<RequirePermission allowedPermission="edit_faculty" />}>
+          <Route path="/admin/faculties/edit/:id" element={<UpdateFaculty />} />
+        </Route>
+        <Route element={<RequirePermission allowedPermission="edit_faculty" />}>
+          <Route path="/admin/faculties/:id/dashboard" element={<FacultyDashboard />} />
         </Route>
       </Route>
 
