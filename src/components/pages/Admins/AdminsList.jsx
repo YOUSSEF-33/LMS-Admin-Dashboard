@@ -1,8 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import axiosInstance, { fetchAdmins } from '../../../ApiService';
-import SideBar from '../../SideBar/SideBar';
-import Header from '../../Header/Header';
 import Footer from '../../Footer/Footer';
 import { Table } from "antd";
 import FeatherIcon from 'feather-icons-react/build/FeatherIcon';
@@ -12,28 +10,40 @@ const Admins = () => {
     const [selectedRowKeys, setSelectedRowKeys] = useState([]);
     const [dataSource, setDataSource] = useState([]);
     const [pagination, setPagination] = useState({ current: 1, pageSize: 25, total: 0 });
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState("");
+    const fetchFlag = useRef(false);
 
     useEffect(() => {
         fetchData(pagination.current, pagination.pageSize);
-    }, [pagination.current, pagination.pageSize]);
-
+    }, []);
+    console.log(pagination)
     const fetchData = async (page, limit) => {
+        if (fetchFlag.current) return;
+        fetchFlag.current = true;
+        setLoading(true);
+
         try {
             const data = await fetchAdmins(limit, page);
             if (Array.isArray(data.data.items)) {
                 setDataSource(data.data.items);
-                setPagination({ ...pagination, total: data.data.total });
+                //setPagination(prev => ({ ...prev, total: data.data.total, current: page, pageSize: limit }));
             } else {
                 console.error('API response is not an array', data.data);
             }
         } catch (error) {
             console.error('Error fetching admin data:', error);
+            setError("حدث خطأ أثناء جلب بيانات المشرفين. الرجاء المحاولة لاحقاً.");
+        } finally {
+            fetchFlag.current = false;
+            setLoading(false);
         }
     };
-     console.log(dataSource)
+
     const handleTableChange = (pagination) => {
-        fetchData(pagination.current, pagination.pageSize);
+        console.log(pagination.current)
         setPagination(pagination);
+        fetchData(pagination.current, pagination.pageSize);
     };
 
     const columns = [
@@ -43,7 +53,7 @@ const Admins = () => {
             sorter: (a, b) => a.name.length - b.name.length,
             render: (text, record) => (
                 <>
-                        <Link to="/adminsview" className="text-dark">{record.name}</Link>
+                    <Link to="/adminsview" className="text-dark">{record.name}</Link>
                 </>
             )
         },
@@ -58,7 +68,7 @@ const Admins = () => {
             sorter: (a, b) => a.roles?.[0].name.length - b.roles?.[0].name.length,
             render: (text, record) => (
                 <>
-                        <Link to="/adminsview" className="text-dark">{record.roles?.[0]?.name}</Link>
+                    <Link to="/adminsview" className="text-dark">{record.roles?.[0]?.name}</Link>
                 </>
             )
         },
@@ -134,6 +144,7 @@ const Admins = () => {
                                                 </div>
                                             </div>
                                         </div>
+                                        {error && <div className="alert alert-danger">{error}</div>}
                                         <div className="table-responsive">
                                             <Table
                                                 pagination={{
@@ -151,6 +162,7 @@ const Admins = () => {
                                                 rowSelection={rowSelection}
                                                 rowKey={(record) => record.id}
                                                 onChange={handleTableChange}
+                                                loading={loading}
                                             />
                                         </div>
                                     </div>

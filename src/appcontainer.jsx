@@ -173,6 +173,7 @@ import ListAssignments from "./components/pages/Assignments/AssignmentsList";
 import ListCourses from "./components/pages/Courses/CoursesList";
 import Header from "./components/Header/Header";
 import Layout from "./Layout";
+import Page404 from "./errorpage/Page404";
 
 
 const AppContainer = () => {
@@ -180,6 +181,7 @@ const AppContainer = () => {
     <Routes>
       <Route path="/login" element={<Login />} />
       <Route path="/login-admin" element={<LoginAdmin />} />
+      <Route path="/404" element={<Page404 />} />
       <Route path="/" element={<Layout />}>
         <Route element={<RequireAuth allowedRole="admin" />}>
           <Route path="/" element={<AdminDashboard />} />

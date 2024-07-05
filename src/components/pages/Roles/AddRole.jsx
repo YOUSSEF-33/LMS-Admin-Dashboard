@@ -1,7 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import Header from "../../Header/Header";
-import SideBar from "../../SideBar/SideBar";
 import FeatherIcon from "feather-icons-react";
 import axiosInstance from "../../../ApiService";
 import Switch from "react-switch";
@@ -91,12 +89,20 @@ const AddRole = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!validateForm()) return;
-    console.log(formData);
     try {
       await axiosInstance.post("v1/admin/roles", formData);
       navigate("admins/roles");
     } catch (error) {
-      console.error("Error creating role:", error);
+      if (error.response && error.response.data && error.response.data.errors) {
+        const serverErrors = error.response.data.errors;
+        const newErrors = {};
+        for (const key in serverErrors) {
+          newErrors[key] = serverErrors[key][0]; // Assuming the server returns an array of error messages for each field
+        }
+        setErrors(newErrors);
+      } else {
+        console.error("Error creating role:", error);
+      }
     }
   };
 
