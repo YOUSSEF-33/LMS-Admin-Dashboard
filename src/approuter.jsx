@@ -5,11 +5,13 @@ import config from 'config';
 
 const AppRouter = () => {
     return (
-        <Router basename={`${config.publicPath}`}>
-            <Routes>
-                <Route path="*" element={<AppContainer />} />
-            </Routes>
-        </Router>
+        <>
+            <Router basename={`${config.publicPath}`}>
+                <Routes>
+                    <Route path="*" element={<AppContainer />} />
+                </Routes>
+            </Router>
+        </>
     );
 }
 
