@@ -7,15 +7,8 @@ import { Link } from "react-router-dom";
 const Modal = () => {
   return (
     <>
-      <div className="main-wrapper">
-        {/* Header */}
-        <Header />
-
-        {/* Sidebar */}
-        <SideBar />
-
-        {/* Page Wrapper */}
-        <div className="page-wrapper">
+      <div className="">
+        <div className="">
           <div className="content container-fluid">
             {/* Page Header */}
             <div className="page-header">
@@ -1592,8 +1585,6 @@ const Modal = () => {
               </div>
             </div>
           </div>
-          {/* Footer */}
-          <Footer />
         </div>
 
         {/* /Page Wrapper */}

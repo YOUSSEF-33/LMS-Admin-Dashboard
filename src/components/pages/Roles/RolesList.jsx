@@ -16,7 +16,7 @@ const RolesList = () => {
     useEffect(() => {
         fetchData(pagination.current, pagination.pageSize);
     }, [pagination.current, pagination.pageSize]);
-
+    
     const fetchData = async (page, limit) => {
         try {
             const data = await fetchRoles(limit, page); // Use the fetchRoles function from your API service

@@ -1,9 +1,8 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import Header from "../../Header/Header";
-import SideBar from "../../SideBar/SideBar";
 import FeatherIcon from "feather-icons-react";
 import axiosInstance from "../../../ApiService";
+import ErrorModal from "../../CustomComponents/ErrorModal";
 
 const AddAdmin = () => {
   const navigate = useNavigate();
@@ -14,6 +13,7 @@ const AddAdmin = () => {
     password_confirmation: "",
   });
   const [errors, setErrors] = useState({});
+  const [genericError, setGenericError] = useState("");
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -39,16 +39,24 @@ const AddAdmin = () => {
       await axiosInstance.post("v1/admins/register", formData);
       navigate("/admins");
     } catch (error) {
-      console.error("Error creating admin:", error);
+      if (error.response && error.response.status === 422) {
+        const serverErrors = error.response.data.errors;
+        const newErrors = {};
+        for (const key in serverErrors) {
+          newErrors[key] = serverErrors[key][0]; // Assuming the server returns an array of error messages for each field
+        }
+        setErrors(newErrors);
+      } else {
+        console.error("Error creating admin:", error);
+        setGenericError("حدث خطأ أثناء إنشاء المشرف. حاول مرة أخرى.");
+      }
     }
   };
 
   return (
     <>
-      <div className="main-wrapper">
-        <Header />
-        <SideBar />
-        <div className="page-wrapper">
+      <div className="">
+        <div className="">
           <div className="content container-fluid">
             <div className="page-header">
               <div className="row align-items-center">
@@ -166,6 +174,13 @@ const AddAdmin = () => {
                         </div>
                       </div>
                     </form>
+                    {genericError && (
+                      <ErrorModal
+                        id="error-modal"
+                        errorMessage={genericError}
+                        onClose={() => setGenericError("")}
+                      />
+                    )}
                   </div>
                 </div>
               </div>

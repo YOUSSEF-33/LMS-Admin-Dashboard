@@ -26,17 +26,26 @@ axiosInstance.interceptors.request.use(
   }
 );
 
+
+
 axiosInstance.interceptors.response.use(
   response => response,
   error => {
-      if (error.response && error.response.status === 401) {
-          // Token is expired or invalid
-          Cookies.remove('token');
-          window.location.href = '/login';
+      if (error.response) {
+          if (error.response.status === 401) {
+              // Token is expired or invalid
+              Cookies.remove('token');
+              window.location.href = '/login';
+          } else if (error.response.status === 404) {
+              // Redirect to the 404 page
+              window.location.href = '/404';
+          }
       }
       return Promise.reject(error);
   }
 );
+
+
 
 // Admin login API call
 export const adminLogin = async (email, password) => {

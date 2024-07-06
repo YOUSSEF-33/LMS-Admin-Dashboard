@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import Header from "../../Header/Header";
-import SideBar from "../../SideBar/SideBar";
 import FeatherIcon from "feather-icons-react";
 import axiosInstance from "../../../ApiService";
 import Switch from "react-switch";
+import ErrorModal from "../../CustomComponents/ErrorModal";
 
 const AddFaculty = () => {
     const navigate = useNavigate();
@@ -19,6 +18,8 @@ const AddFaculty = () => {
     const [errors, setErrors] = useState({});
     const [roles, setRoles] = useState([]);
     const [selectAll, setSelectAll] = useState(true);
+    const [errorMessage, setErrorMessage] = useState("");
+    const [showModal, setShowModal] = useState(false);
 
     useEffect(() => {
         fetchRoles();
@@ -90,8 +91,24 @@ const AddFaculty = () => {
             await axiosInstance.post("v1/admin/faculties", formData);
             navigate("/admin/faculties");
         } catch (error) {
-            console.error("Error creating faculty:", error);
+            if (error.response && error.response.data && error.response.data.errors && error.response.status === 422) {
+                const serverErrors = error.response.data.errors;
+                const newErrors = {};
+                for (const key in serverErrors) {
+                    newErrors[key] = serverErrors[key][0]; 
+                }
+                setErrors(newErrors);
+            } else {
+                console.error("Error creating faculty:", error);
+                setErrorMessage("An unexpected error occurred. Please try again later.");
+                setShowModal(true);
+            }
         }
+    };
+
+    const handleClose = () => {
+        setShowModal(false);
+        setErrorMessage("");
     };
 
     return (
@@ -287,6 +304,13 @@ const AddFaculty = () => {
                                 </div>
                             </div>
                         </div>
+                        {showModal && (
+                            <ErrorModal
+                                id="error-modal"
+                                errorMessage={""}
+                                onClose={handleClose}
+                            />
+                        )}
                     </div>
                 </div>
             </div>
