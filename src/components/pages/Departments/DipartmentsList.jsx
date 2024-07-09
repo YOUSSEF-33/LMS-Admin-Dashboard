@@ -1,12 +1,14 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import axiosInstance from '../../../ApiService'; // Ensure this path is correct
 import Footer from '../../Footer/Footer';
-import { Modal, Table } from "antd";
+import { Table, Modal } from "antd";
 import FeatherIcon from 'feather-icons-react/build/FeatherIcon';
 import { onShowSizeChange, itemRender } from "../../Pagination";
 
-const ListFaculties = () => {
+const DepartmentsList = () => {
+    const { id } = useParams();
+    const facultyId = id;
     const [selectedRowKeys, setSelectedRowKeys] = useState([]);
     const [dataSource, setDataSource] = useState([]);
     const [pagination, setPagination] = useState({ current: 1, pageSize: 25, total: 0 });
@@ -24,44 +26,41 @@ const ListFaculties = () => {
         setLoading(true);
 
         try {
-            const response = await axiosInstance.get(`v1/admin/faculties?limit=${limit}&page=${page}`);
+            const response = await axiosInstance.get(`v1/admin/faculties/${facultyId}/departments?limit=${limit}&page=${page}`);
             const data = response.data;
             if (Array.isArray(data.data.items)) {
                 setDataSource(data.data.items);
-                //setPagination(prev => ({ ...prev, total: data.data.total, current: page, pageSize: limit }));
+                setPagination(prev => ({ ...prev, total: data.data.total, current: page, pageSize: limit }));
             } else {
                 console.error('API response is not an array', data.data);
             }
         } catch (error) {
-            console.error('Error fetching faculties data:', error);
-            setError("حدث خطأ أثناء جلب بيانات الكليات. الرجاء المحاولة لاحقاً.");
+            console.error('Error fetching departments data:', error);
+            setError("حدث خطأ أثناء جلب بيانات الأقسام. الرجاء المحاولة لاحقاً.");
         } finally {
             fetchFlag.current = false;
             setLoading(false);
         }
     };
 
-    const handleDelete = (id) => {
-        Modal.confirm({
-            title: 'هل انت متأكد بأنك تريد حذف هذه الكلية',
-            content: 'يمكنك عدم تنفيذ هذا',
-            okText: 'حذف',
-            okType: 'danger',
-            cancelText: 'تراجع',
-            onOk: async () => {
-                try {
-                    await axiosInstance.delete(`v1/admin/faculties/${id}`);
-                    setDataSource(prevDataSource => prevDataSource.filter(item => item.id !== id));
-                } catch (error) {
-                    setError("فشل في حذف هذه الكلية");
-                }
-            }
-        });
-    };
-
     const handleTableChange = (pagination) => {
         setPagination(pagination);
         fetchData(pagination.current, pagination.pageSize);
+    };
+
+    const handleDelete = async (recordId) => {
+        Modal.confirm({
+            title: 'هل أنت متأكد من حذف هذا القسم؟',
+            onOk: async () => {
+                try {
+                    await axiosInstance.delete(`v1/admin/departments/${recordId}`);
+                    setDataSource(prevData => prevData.filter(item => item.id !== recordId));
+                } catch (error) {
+                    console.error('Error deleting department:', error);
+                    setError("حدث خطأ أثناء حذف القسم. الرجاء المحاولة لاحقاً.");
+                }
+            },
+        });
     };
 
     const columns = [
@@ -70,7 +69,7 @@ const ListFaculties = () => {
             dataIndex: "translations",
             key: "name",
             render: (text, record) => (
-                <Link to={`/faculties/${record.id}/dashboard`} className="text-dark">
+                <Link to={`/departments/${record.id}/dashboard`} className="text-dark">
                     {record.translations.name.ar}
                 </Link>
             )
@@ -96,35 +95,16 @@ const ListFaculties = () => {
             )
         },
         {
-            title: "الأدوار",
-            dataIndex: "roles",
-            key: "roles",
-            render: (text, record) => (
-                <span>
-                    {record?.roles?.map(role => role.readable_name).join(", ")}
-                </span>
-            )
-        },
-        {
             title: "الإجراءات",
             dataIndex: "actions",
             key: "actions",
             render: (text, record) => (
                 <div className="actions">
-                    <Link onClick={() => handleDelete(record.id)} className="btn btn-sm bg-danger-light" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                        <i className="feather-trash">
-                            <FeatherIcon icon="trash" size="16" />
-                        </i>
-                    </Link>
-                    <Link to={`/admin/faculties/${record.id}/departments`} className="btn btn-sm bg-success-light me-2">
-                        <i className="feather-eye">
-                            <FeatherIcon icon="eye" />
-                        </i>
-                    </Link>
-                    <Link to={`/admin/faculties/edit/${record.id}`} className="btn btn-sm bg-success-light">
-                        <i className="feather-edit">
-                            <FeatherIcon icon="edit" className="list-edit" />
-                        </i>
+                    <button onClick={() => handleDelete(record.id)} className="btn btn-sm bg-danger-light me-2">
+                        <FeatherIcon icon="trash" size={16} />
+                    </button>
+                    <Link to={`/admin/departments/edit/${record.id}`} className="btn btn-sm bg-danger-light">
+                        <FeatherIcon icon="edit" size={16} />
                     </Link>
                 </div>
             )
@@ -150,10 +130,11 @@ const ListFaculties = () => {
                         <div className="row">
                             <div className="col-sm-12">
                                 <div className="page-sub-header">
-                                    <h3 className="page-title">الكليات</h3>
+                                    <h3 className="page-title">الأقسام</h3>
                                     <ul className="breadcrumb">
                                         <li className="breadcrumb-item"><Link to="/faculties">الكليات</Link></li>
-                                        <li className="breadcrumb-item active">جميع الكليات</li>
+                                        <li className="breadcrumb-item"><Link to={`/faculties/${facultyId}/departments`}>الأقسام</Link></li>
+                                        <li className="breadcrumb-item active">جميع الأقسام</li>
                                     </ul>
                                 </div>
                             </div>
@@ -167,7 +148,7 @@ const ListFaculties = () => {
                                     <div className="page-header">
                                         <div className="row align-items-center">
                                             <div className="col">
-                                                <h3 className="page-title">الكليات</h3>
+                                                <h3 className="page-title">الأقسام</h3>
                                             </div>
                                             <div className="col-auto text-end float-end ms-auto download-grp">
                                                 <Link to="#" className="btn btn-outline-primary me-2">
@@ -175,8 +156,8 @@ const ListFaculties = () => {
                                                 </Link>
                                                 &nbsp;
                                                 &nbsp;
-                                                <Link to="/admin/faculties/create" className="btn btn-primary">
-                                                    <i className="fas fa-plus" /> اضافة كلية
+                                                <Link to={`/admin/faculties/${facultyId}/departments/create`} className="btn btn-primary">
+                                                    <i className="fas fa-plus" /> اضافة قسم
                                                 </Link>
                                             </div>
                                         </div>
@@ -212,4 +193,4 @@ const ListFaculties = () => {
     );
 };
 
-export default ListFaculties;
+export default DepartmentsList;

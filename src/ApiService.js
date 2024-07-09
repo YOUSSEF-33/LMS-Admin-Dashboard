@@ -28,7 +28,7 @@ axiosInstance.interceptors.request.use(
 
 
 
-axiosInstance.interceptors.response.use(
+/* axiosInstance.interceptors.response.use(
   response => response,
   error => {
       if (error.response) {
@@ -39,6 +39,26 @@ axiosInstance.interceptors.response.use(
           } else if (error.response.status === 404) {
               // Redirect to the 404 page
               window.location.href = '/404';
+          }
+      }
+      return Promise.reject(error);
+  }
+); */
+
+axiosInstance.interceptors.response.use(
+  response => response,
+  error => {
+      const navigate = useNavigate();
+      const isLoginPage = window.location.pathname === '/login' || window.location.pathname === '/login-admin';
+      
+      if (error.response) {
+          if (error.response.status === 401 && !isLoginPage) {
+              // Token is expired or invalid
+              Cookies.remove('token');
+              navigate('/login');
+          } else if (error.response.status === 404) {
+              // Redirect to the 404 page
+              navigate('/404');
           }
       }
       return Promise.reject(error);
