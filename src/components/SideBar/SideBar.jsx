@@ -216,6 +216,46 @@ const Sidebar = () => {
                     ""
                   )}
                 </li>
+                <li
+                  className={`${
+                    "/admins/teachers" === pathName ||
+                    "/admins/teachers/create" === pathName ||
+                    "/admins/teacher/edit/:id" === pathName
+                      ? "active submenu"
+                      : "submenu"
+                  }`}
+                >
+                  <Link
+                    to="#"
+                    className={isSideMenu === "Teachers" ? "subdrop" : ""}
+                    onClick={() =>
+                      toggleSidebar(isSideMenu === "Teachers" ? "" : "Teachers")
+                    }
+                  >
+                    <i className="fas fa-graduation-cap" />{" "}
+                    <span> المدرسون</span> <span className="menu-arrow" />
+                  </Link>
+                  {isSideMenu === "Teachers" ? (
+                    <ul
+                      style={{
+                        display: isSideMenu === "Teachers" ? "block" : "none",
+                      }}
+                    >
+                      <li>
+                        <Link
+                          to="/admins/teachers"
+                          className={`${
+                            "/admins/teachers" === pathName ? "active" : ""
+                          }`}
+                        >
+                          المدرسون
+                        </Link>
+                      </li>
+                    </ul>
+                  ) : (
+                    ""
+                  )}
+                </li>
                 <li className="menu-title">
                   <span>الكليات</span>
                 </li>

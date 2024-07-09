@@ -1,303 +1,259 @@
-import React, { useState } from "react";
-import DatePicker from "react-datepicker";
-import "react-datepicker";
-import { Link } from "react-router-dom";
-import Header from "../../Header/Header";
-import SideBar from "../../SideBar/SideBar";
-import Select from "react-select";
+import React, { useState, useEffect } from "react";
+import { Link, useNavigate, useParams } from "react-router-dom";
+import FeatherIcon from "feather-icons-react";
+import axiosInstance from "../../../ApiService";
+import Switch from "react-switch";
+import { message } from "antd";
 
-const TeachersEdit = () => {
-  const [startDate, setStartDate] = useState(new Date());
-  const [startDate1, setStartDate1] = useState(new Date());
-  const [selectedOption, setSelectedOption] = useState(null);
+const EditTeacher = () => {
+  const { id } = useParams();
+  const navigate = useNavigate();
+  const [formData, setFormData] = useState({
+    first_name: "",
+    last_name: "",
+    email: "",
+    phone: "",
+    code: "",
+    birth_date: "",
+    gender: "MALE",
+    is_active: true
+  });
+  const [errors, setErrors] = useState({});
 
-  const options = [
-    { value: 1, label: "Male" },
-    { value: 2, label: "Female" },
-    { value: 3, label: "Others" },
-  ];
+  useEffect(() => {
+    fetchTeacherData();
+  }, []);
 
-  const handleOptionChange = (selectedOption) => {
-    setSelectedOption(selectedOption);
+  const fetchTeacherData = async () => {
+    try {
+      const response = await axiosInstance.get(`v1/admin/teachers/${id}`);
+      const data = response.data.data;
+      setFormData({
+        first_name: data.first_name,
+        last_name: data.last_name,
+        email: data.email,
+        phone: data.phone,
+        code: data.code,
+        birth_date: data.birth_date,
+        gender: data.gender,
+        is_active: data.is_active
+      });
+    } catch (error) {
+      console.error("Error fetching teacher data:", error);
+    }
   };
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
+  };
+
+  const handleToggleChange = () => {
+    setFormData({ ...formData, is_active: !formData.is_active });
+  };
+
+  const validateForm = () => {
+    const newErrors = {};
+    if (!formData.first_name) newErrors.first_name = "الاسم الأول مطلوب";
+    if (!formData.last_name) newErrors.last_name = "اسم العائلة مطلوب";
+    if (!formData.email) newErrors.email = "البريد الإلكتروني مطلوب";
+    if (!formData.phone) newErrors.phone = "رقم الهاتف مطلوب";
+    if (!formData.code) newErrors.code = "الكود مطلوب";
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!validateForm()) return;
+    try {
+      await axiosInstance.put(`v1/admin/teachers/${id}`, formData);
+      message.success("تم تحديث بيانات المدرس بنجاح");
+      navigate("/admins/teachers");
+    } catch (error) {
+      if (error.response && error.response.data && error.response.data.errors) {
+        const serverErrors = error.response.data.errors;
+        const newErrors = {};
+        for (const key in serverErrors) {
+          newErrors[key] = serverErrors[key][0];
+        }
+        setErrors(newErrors);
+      } else {
+        console.error("Error updating teacher:", error);
+      }
+    }
+  };
+
   return (
     <>
-      <div className="main-wrapper">
-        {/* Header */}
-        <Header />
-
-        {/* Sidebar */}
-        <SideBar />
-
-        {/* Page Wrapper */}
-
-        <div className="page-wrapper">
+      <div className="">
+        <div className="">
           <div className="content container-fluid">
-            {/* Page Header */}
             <div className="page-header">
               <div className="row align-items-center">
-                <div className="col">
-                  <h3 className="page-title">Edit Teachers</h3>
-                  <ul className="breadcrumb">
-                    <li className="breadcrumb-item">
-                      <Link to="/teacherslist">Teachers</Link>
-                    </li>
-                    <li className="breadcrumb-item active">Edit Teachers</li>
-                  </ul>
+                <div className="col-sm-12">
+                  <div className="page-sub-header">
+                    <h3 className="page-title">تعديل معلم</h3>
+                    <ul className="breadcrumb">
+                      <li className="breadcrumb-item">
+                        <Link to="/teachers">المعلمين</Link>
+                      </li>
+                      <li className="breadcrumb-item active">تعديل معلم</li>
+                    </ul>
+                  </div>
                 </div>
               </div>
             </div>
-            {/* /Page Header */}
             <div className="row">
               <div className="col-sm-12">
-                <div className="card">
+                <div className="card comman-shadow">
                   <div className="card-body">
-                    <form>
+                    <form onSubmit={handleSubmit}>
                       <div className="row">
                         <div className="col-12">
-                          <h5 className="form-title">
-                            <span>Basic Details</span>
+                          <h5 className="form-title admin-info">
+                            معلومات المعلم{" "}
+                            <span>
+                              <Link to="#">
+                                <FeatherIcon icon="more-vertical" />
+                              </Link>
+                            </span>
                           </h5>
                         </div>
-                        <div className="col-12 col-sm-4">
-                          <div className="form-group local-forms">
+                        <div className="col-12 col-sm-6">
+                          <div className="form-group">
                             <label>
-                              Teacher ID <span className="login-danger">*</span>
-                            </label>
-                            <input
-                              type="text"
-                              className="form-control"
-                              defaultValue="PRE1234"
-                            />
-                          </div>
-                        </div>
-                        <div className="col-12 col-sm-4">
-                          <div className="form-group local-forms">
-                            <label>
-                              Name <span className="login-danger">*</span>
-                            </label>
-                            <input
-                              type="text"
-                              className="form-control"
-                              defaultValue="Vincent"
-                            />
-                          </div>
-                        </div>
-                        <div className="col-12 col-sm-4">
-                          <div className="form-group local-forms">
-                            <label>
-                              Gender <span className="login-danger">*</span>
-                            </label>
-                            {/* <select className="form-control select">
-                                                            <option>Male</option>
-                                                            <option>Female</option>
-                                                            <option>Others</option>
-                                                        </select> */}
-                            <Select
-                              className="w-100 local-forms  select"
-                              value={selectedOption}
-                              onChange={handleOptionChange}
-                              options={options}
-                              placeholder="Male"
-                            />
-                          </div>
-                        </div>
-                        <div className="col-12 col-sm-4">
-                          <div className="form-group local-forms calendar-icon">
-                            <label>
-                              Date Of Birth{" "}
-                              <span className="login-danger">*</span>
-                            </label>
-                            {/* <input
-                                                            className="form-control datetimepicker"
-                                                            type="text"
-                                                            placeholder="29-04-2022"
-                                                        /> */}
-                            <DatePicker
-                              className="form-control datetimepicker"
-                              selected={startDate}
-                              onChange={(date) => setStartDate(date)}
-                            />
-                          </div>
-                        </div>
-                        <div className="col-12 col-sm-4">
-                          <div className="form-group local-forms">
-                            <label>
-                              Mobile <span className="login-danger">*</span>
-                            </label>
-                            <input
-                              type="text"
-                              className="form-control"
-                              defaultValue="077 3499 9959"
-                            />
-                          </div>
-                        </div>
-                        <div className="col-12 col-sm-4">
-                          <div className="form-group local-forms calendar-icon">
-                            <label>
-                              Joining Date{" "}
-                              <span className="login-danger">*</span>
-                            </label>
-                            {/* <input
-                                                            className="form-control datetimepicker"
-                                                            type="text"
-                                                            placeholder="29-04-2022"
-                                                        /> */}
-                            <DatePicker
-                              className="form-control datetimepicker"
-                              selected={startDate1}
-                              onChange={(date) => setStartDate1(date)}
-                            />
-                          </div>
-                        </div>
-                        <div className="col-12 col-sm-4">
-                          <div className="form-group local-forms">
-                            <label>
-                              Qualification{" "}
-                              <span className="login-danger">*</span>
+                              الاسم الأول <span className="text-danger">*</span>
                             </label>
                             <input
                               className="form-control"
                               type="text"
-                              defaultValue="Bachelor of Engineering"
+                              name="first_name"
+                              placeholder="أدخل الاسم الأول"
+                              value={formData.first_name}
+                              onChange={handleInputChange}
                             />
+                            {errors.first_name && (
+                              <div className="text-danger">{errors.first_name}</div>
+                            )}
                           </div>
                         </div>
-                        <div className="col-12 col-sm-4">
-                          <div className="form-group local-forms">
+                        <div className="col-12 col-sm-6">
+                          <div className="form-group">
                             <label>
-                              Experience <span className="login-danger">*</span>
+                              اسم العائلة <span className="text-danger">*</span>
                             </label>
                             <input
                               className="form-control"
                               type="text"
-                              defaultValue={5}
+                              name="last_name"
+                              placeholder="أدخل اسم العائلة"
+                              value={formData.last_name}
+                              onChange={handleInputChange}
                             />
+                            {errors.last_name && (
+                              <div className="text-danger">{errors.last_name}</div>
+                            )}
                           </div>
                         </div>
-                        <div className="col-12">
-                          <h5 className="form-title">
-                            <span>Login Details</span>
-                          </h5>
-                        </div>
-                        <div className="col-12 col-sm-4">
-                          <div className="form-group local-forms">
+                        <div className="col-12 col-sm-6">
+                          <div className="form-group">
                             <label>
-                              Username <span className="login-danger">*</span>
+                              البريد الإلكتروني <span className="text-danger">*</span>
                             </label>
                             <input
-                              type="text"
                               className="form-control"
-                              defaultValue="Vincent"
-                            />
-                          </div>
-                        </div>
-                        <div className="col-12 col-sm-4">
-                          <div className="form-group local-forms">
-                            <label>
-                              Email ID <span className="login-danger">*</span>
-                            </label>
-                            <input
                               type="email"
-                              className="form-control"
-                              defaultValue="vincent20@gmail.com"
+                              name="email"
+                              placeholder="أدخل البريد الإلكتروني"
+                              value={formData.email}
+                              onChange={handleInputChange}
                             />
+                            {errors.email && (
+                              <div className="text-danger">{errors.email}</div>
+                            )}
                           </div>
                         </div>
-                        <div className="col-12 col-sm-4">
-                          <div className="form-group local-forms">
+                        <div className="col-12 col-sm-6">
+                          <div className="form-group">
                             <label>
-                              Password <span className="login-danger">*</span>
+                              رقم الهاتف <span className="text-danger">*</span>
                             </label>
                             <input
-                              type="password"
                               className="form-control"
-                              defaultValue="vincent"
+                              type="text"
+                              name="phone"
+                              placeholder="أدخل رقم الهاتف"
+                              value={formData.phone}
+                              onChange={handleInputChange}
                             />
+                            {errors.phone && (
+                              <div className="text-danger">{errors.phone}</div>
+                            )}
                           </div>
                         </div>
-                        <div className="col-12 col-sm-4">
-                          <div className="form-group local-forms">
+                        <div className="col-12 col-sm-6">
+                          <div className="form-group">
                             <label>
-                              Repeat Password{" "}
-                              <span className="login-danger">*</span>
+                              الكود <span className="text-danger">*</span>
                             </label>
                             <input
-                              type="password"
                               className="form-control"
-                              defaultValue="vincent"
+                              type="text"
+                              name="code"
+                              placeholder="أدخل الكود"
+                              value={formData.code}
+                              onChange={handleInputChange}
+                            />
+                            {errors.code && (
+                              <div className="text-danger">{errors.code}</div>
+                            )}
+                          </div>
+                        </div>
+                        <div className="col-12 col-sm-6">
+                          <div className="form-group">
+                            <label>تاريخ الميلاد</label>
+                            <input
+                              className="form-control"
+                              type="date"
+                              name="birth_date"
+                              placeholder="أدخل تاريخ الميلاد"
+                              value={formData.birth_date}
+                              onChange={handleInputChange}
                             />
                           </div>
                         </div>
                         <div className="col-12">
-                          <h5 className="form-title">
-                            <span>Address</span>
-                          </h5>
-                        </div>
-                        <div className="col-12 ">
-                          <div className="form-group local-forms">
-                            <label>
-                              Address <span className="login-danger">*</span>
-                            </label>
-                            <input
-                              type="text"
+                          <div className="form-group">
+                            <label>النوع</label>
+                            <select
                               className="form-control"
-                              defaultValue="3979 Ashwood Drive"
-                            />
+                              name="gender"
+                              value={formData.gender}
+                              onChange={handleInputChange}
+                            >
+                              <option value="MALE">ذكر</option>
+                              <option value="FEMALE">أنثى</option>
+                            </select>
                           </div>
                         </div>
-                        <div className="col-12 col-sm-4">
-                          <div className="form-group local-forms">
-                            <label>
-                              City <span className="login-danger">*</span>
-                            </label>
-                            <input
-                              type="text"
-                              className="form-control"
-                              defaultValue="Omaha"
-                            />
-                          </div>
-                        </div>
-                        <div className="col-12 col-sm-4">
-                          <div className="form-group local-forms">
-                            <label>
-                              State <span className="login-danger">*</span>
-                            </label>
-                            <input
-                              type="text"
-                              className="form-control"
-                              defaultValue="Omaha"
-                            />
-                          </div>
-                        </div>
-                        <div className="col-12 col-sm-4">
-                          <div className="form-group local-forms">
-                            <label>
-                              Zip Code <span className="login-danger">*</span>
-                            </label>
-                            <input
-                              type="text"
-                              className="form-control"
-                              defaultValue={3979}
-                            />
-                          </div>
-                        </div>
-                        <div className="col-12 col-sm-4">
-                          <div className="form-group local-forms">
-                            <label>
-                              Country <span className="login-danger">*</span>
-                            </label>
-                            <input
-                              type="text"
-                              className="form-control"
-                              defaultValue="USA"
+                        <div className="col-12 col-sm-6">
+                          <div className="form-group d-flex align-items-center">
+                            <label className="m-3">نشط</label>
+                            <Switch
+                              checked={formData.is_active}
+                              onChange={handleToggleChange}
+                              offColor="#d1d1d1"
+                              onColor="#007bff"
+                              height={20}
+                              width={40}
                             />
                           </div>
                         </div>
                         <div className="col-12">
-                          <div className="student-submit">
+                          <div className="form-group">
                             <button type="submit" className="btn btn-primary">
-                              Submit
+                              تحديث
                             </button>
                           </div>
                         </div>
@@ -310,9 +266,8 @@ const TeachersEdit = () => {
           </div>
         </div>
       </div>
-      {/* /Main Wrapper */}
     </>
   );
 };
 
-export default TeachersEdit;
+export default EditTeacher;

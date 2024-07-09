@@ -4,7 +4,7 @@ import FeatherIcon from "feather-icons-react";
 import axiosInstance from "../../../ApiService";
 import Switch from "react-switch";
 
-const AddRole = () => {
+const UpdateRole = ({ roleData }) => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     name: "",
@@ -14,7 +14,17 @@ const AddRole = () => {
   const [errors, setErrors] = useState({});
   const [permissions, setPermissions] = useState([]);
   const [permissionCategories, setPermissionCategories] = useState({});
-  const [selectAll, setSelectAll] = useState(true);
+  const [selectAll, setSelectAll] = useState(false);
+
+  useEffect(() => {
+    if (roleData) {
+      setFormData({
+        name: roleData.name,
+        readable_name: roleData.readable_name,
+        permissions: roleData.permissions.map(permission => permission.name)
+      });
+    }
+  }, [roleData]);
 
   useEffect(() => {
     fetchPermissions();
@@ -27,10 +37,6 @@ const AddRole = () => {
         const categorizedPermissions = categorizePermissions(response.data.data.items);
         setPermissions(response.data.data.items);
         setPermissionCategories(categorizedPermissions);
-        setFormData((prevData) => ({
-          ...prevData,
-          permissions: response?.data?.data?.items?.map(permission => permission.name)
-        }));
       }
     } catch (error) {
       console.error("Error fetching permissions:", error);
@@ -39,7 +45,7 @@ const AddRole = () => {
 
   const categorizePermissions = (permissions) => {
     const categories = {};
-    permissions?.forEach(permission => {
+    permissions.forEach(permission => {
       const parts = permission.name.split('_');
       const category = parts[parts.length - 1];
       if (!categories[category]) {
@@ -90,8 +96,8 @@ const AddRole = () => {
     e.preventDefault();
     if (!validateForm()) return;
     try {
-      await axiosInstance.post("v1/admin/roles", formData);
-      navigate("admins/roles");
+      await axiosInstance.put(`v1/admin/roles/${roleData.id}`, formData);
+      navigate("/admin/roles");
     } catch (error) {
       if (error.response && error.response.data && error.response.data.errors) {
         const serverErrors = error.response.data.errors;
@@ -101,7 +107,7 @@ const AddRole = () => {
         }
         setErrors(newErrors);
       } else {
-        console.error("Error creating role:", error);
+        console.error("Error updating role:", error);
       }
     }
   };
@@ -115,12 +121,12 @@ const AddRole = () => {
               <div className="row align-items-center">
                 <div className="col-sm-12">
                   <div className="page-sub-header">
-                    <h3 className="page-title">إضافة دور</h3>
+                    <h3 className="page-title">تحديث دور</h3>
                     <ul className="breadcrumb">
                       <li className="breadcrumb-item">
                         <Link to="/roles">الأدوار</Link>
                       </li>
-                      <li className="breadcrumb-item active">إضافة دور</li>
+                      <li className="breadcrumb-item active">تحديث دور</li>
                     </ul>
                   </div>
                 </div>
@@ -142,7 +148,7 @@ const AddRole = () => {
                             </span>
                           </h5>
                         </div>
-                        <div className="col-12">
+                        <div className="col-12 col-sm-6">
                           <div className="form-group">
                             <label>
                               الاسم <span className="text-danger">*</span>
@@ -246,7 +252,7 @@ const AddRole = () => {
                         <div className="col-12">
                           <div className="form-group">
                             <button type="submit" className="btn btn-primary">
-                              إضافة
+                              تحديث
                             </button>
                           </div>
                         </div>
@@ -263,4 +269,4 @@ const AddRole = () => {
   );
 };
 
-export default AddRole;
+export default UpdateRole;

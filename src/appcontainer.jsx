@@ -174,6 +174,11 @@ import ListCourses from "./components/pages/Courses/CoursesList";
 import Header from "./components/Header/Header";
 import Layout from "./Layout";
 import Page404 from "./errorpage/Page404";
+import DepartmentsList from "./components/pages/Departments/DipartmentsList";
+import AddTeacher from "./components/pages/Teachers/TeachersAdd";
+import EditTeacher from "./components/pages/Teachers/TeachersEdit";
+import AddCourse from "./components/pages/Courses/AddCourse";
+import UpdateCourse from "./components/pages/Courses/UpdateCourse";
 
 
 const AppContainer = () => {
@@ -223,6 +228,30 @@ const AppContainer = () => {
           </Route>
           <Route element={<RequirePermission allowedPermission="edit_faculty" />}>
             <Route path="/admin/faculties/:id/courses" element={<ListCourses />} />
+          </Route>
+          <Route element={<RequirePermission allowedPermission="view_any_department" />}>
+            <Route path="/admin/faculties/:id/departments" element={<DepartmentsList />} />
+          </Route>
+          <Route element={<RequirePermission allowedPermission="view_any_department" />}>
+            <Route path="/admins/teachers" element={<TeachersList />} />
+          </Route>
+          <Route element={<RequirePermission allowedPermission="view_any_department" />}>
+            <Route path="/admins/teachers/create" element={<AddTeacher />} />
+          </Route>
+          <Route element={<RequirePermission allowedPermission="view_any_department" />}>
+            <Route path="/admins/teachers/edit/:id" element={<EditTeacher />} />
+          </Route>
+          <Route element={<RequirePermission allowedPermission="view_any_department" />}>
+            <Route path="/admin/faculties/:id/courses/create" element={<AddCourse />} />
+          </Route>
+          <Route element={<RequirePermission allowedPermission="view_any_department" />}>
+            <Route path="/admin/faculties/:id/courses/:courseId/edit" element={<UpdateCourse />} />
+          </Route>
+          <Route element={<RequirePermission allowedPermission="create_department" />}>
+            <Route path="/admin/faculties/:id/departments/create" element={<AddDepartment />} />
+          </Route>
+          <Route element={<RequirePermission allowedPermission="edit_department" />}>
+            <Route path="/admin/faculties/:id/departments/:departmentId/edit" element={<AddDepartment />} />
           </Route>
         </Route>
       </Route>

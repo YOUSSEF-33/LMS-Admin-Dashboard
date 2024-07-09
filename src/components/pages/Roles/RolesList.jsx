@@ -4,7 +4,7 @@ import axiosInstance, { fetchRoles } from '../../../ApiService'; // Ensure fetch
 import SideBar from '../../SideBar/SideBar';
 import Header from '../../Header/Header';
 import Footer from '../../Footer/Footer';
-import { Table } from "antd";
+import { Table, Modal, message } from "antd";
 import FeatherIcon from 'feather-icons-react/build/FeatherIcon';
 import { onShowSizeChange, itemRender } from "../../Pagination";
 
@@ -22,7 +22,7 @@ const RolesList = () => {
             const data = await fetchRoles(limit, page); // Use the fetchRoles function from your API service
             if (Array.isArray(data.data.items)) {
                 setDataSource(data.data.items);
-                setPagination({ ...pagination, total: data.data.total });
+                //setPagination({ ...pagination, total: data.data.total });
             } else {
                 console.error('API response is not an array', data.data);
             }
@@ -34,6 +34,22 @@ const RolesList = () => {
     const handleTableChange = (pagination) => {
         fetchData(pagination.current, pagination.pageSize);
         setPagination(pagination);
+    };
+
+    const handleDelete = (roleId) => {
+        Modal.confirm({
+            title: 'Are you sure you want to delete this role?',
+            onOk: async () => {
+                try {
+                    await axiosInstance.delete(`v1/admin/roles/${roleId}`);
+                    message.success('Role deleted successfully');
+                    fetchData(pagination.current, pagination.pageSize);
+                } catch (error) {
+                    console.error('Error deleting role:', error);
+                    message.error('Failed to delete role');
+                }
+            },
+        });
     };
 
     const columns = [
@@ -53,9 +69,9 @@ const RolesList = () => {
             render: (text, record) => (
                 <>
                     <div className="actions">
-                        <Link to="#" className="btn btn-sm bg-success-light me-2">
-                            <i className="feather-delete">
-                                <FeatherIcon icon="eye" />
+                        <Link onClick={() => handleDelete(record.id)} className="btn btn-sm bg-danger-light me-2">
+                            <i className="feather-trash">
+                                <FeatherIcon size={14} icon="trash" />
                             </i>
                         </Link>
                         <Link to={`/roles/edit/${record.id}`} className="btn btn-sm bg-danger-light">

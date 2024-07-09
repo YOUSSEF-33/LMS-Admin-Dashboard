@@ -16,8 +16,8 @@ const authSlice = createSlice({
     setCredentials: (state, action) => {
       const { data, adminData } = action.payload;
       const token = data.token
-      console.log(token);
-      console.log(adminData)
+      //console.log(token);
+      //console.log(adminData)
       const decodedToken = jwtDecode(token);
       const currentTime = Date.now() / 1000;
       console.log(decodedToken.exp);
@@ -52,6 +52,8 @@ const authSlice = createSlice({
       state.user = null;
       Cookies.remove('token');
       Cookies.remove('role');
+      localStorage.removeItem('permissions');
+      localStorage.removeItem('me');
     },
     setUserInfo: (state, action) => {
       state.userInfo = action.payload;
