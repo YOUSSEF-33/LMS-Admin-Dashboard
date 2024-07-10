@@ -12,6 +12,7 @@ const UpdateCourse = () => {
         name: { ar: "" },
         code: "",
         faculty_id: id,
+        start_year: 0,
         hours: 0,
         departments: [],
         teachers: []
@@ -35,6 +36,7 @@ const UpdateCourse = () => {
                     name: { ar: course.translations.name.ar },
                     code: course.code,
                     faculty_id: id,
+                    start_year: course.start_year,
                     hours: course.hours,
                     departments: course.departments.map(dep => dep.id),
                     teachers: course.teachers.map(teacher => teacher.id)
@@ -47,9 +49,9 @@ const UpdateCourse = () => {
 
     const fetchDepartments = async () => {
         try {
-            const response = await axiosInstance.get(`/v1/admin/faculties/${formData.faculty_id}/departments`);
+            const response = await axiosInstance.get(`/v1/admin/faculties/${id}/departments`);
             if (response.data && response.data.data.items) {
-                setDepartments(response.data.data.items.map(dep => ({ value: dep.id, label: dep.name })));
+                setDepartments(response.data.data.items.map(dep => ({ value: dep.id, label: dep.translations.name.ar })));
             }
         } catch (error) {
             console.error("Error fetching departments:", error);
@@ -85,14 +87,13 @@ const UpdateCourse = () => {
         const newErrors = {};
         if (!formData.name.ar) newErrors.name_ar = "اسم المادة بالعربية مطلوب";
         if (!formData.code) newErrors.code = "كود المادة مطلوب";
+        if (formData.start_year <= 0) newErrors.start_year = "سنة البدء مطلوبة";
         if (formData.hours <= 0) newErrors.hours = "عدد الساعات مطلوب";
         if (!formData.departments.length) newErrors.departments = "يجب اختيار الأقسام";
         if (!formData.teachers.length) newErrors.teachers = "يجب اختيار المدرسين";
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
     };
-
-    console.log(formData.departments, departments)
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -110,7 +111,7 @@ const UpdateCourse = () => {
                 }
                 setErrors(newErrors);
             } else {
-                console.error("Error updating course:", error);
+                console.error("Error updating course:", error.errors);
                 message.error("حدث خطأ غير متوقع. حاول مرة أخرى لاحقًا.");
             }
         }
@@ -185,6 +186,24 @@ const UpdateCourse = () => {
                                                         />
                                                         {errors.code && (
                                                             <div className="text-danger">{errors.code}</div>
+                                                        )}
+                                                    </div>
+                                                </div>
+                                                <div className="col-12 col-sm-6">
+                                                    <div className="form-group local-forms">
+                                                        <label>
+                                                            سنة البدء <span className="login-danger">*</span>
+                                                        </label>
+                                                        <input
+                                                            className="form-control"
+                                                            type="number"
+                                                            name="start_year"
+                                                            placeholder="أدخل سنة البدء"
+                                                            value={formData.start_year}
+                                                            onChange={handleInputChange}
+                                                        />
+                                                        {errors.start_year && (
+                                                            <div className="text-danger">{errors.start_year}</div>
                                                         )}
                                                     </div>
                                                 </div>

@@ -32,8 +32,7 @@ import Compose from "./components/Header/Compose";
 import StudentsDashboard from "./components/pages/Dashboard/StudentsDashboard";
 import TeacherDashboard from "./components/pages/Dashboard/TeacherDashboard";
 import StudentsView from "./components/pages/Students/StudentsView";
-import AddStudent from "./components/pages/Students/AddStudent";
-import EditStudent from "./components/pages/Students/EditStudent";
+import EditStudent from "./components/pages/Students/UpdateStudent";
 import StudentGrid from "./components/pages/Students/StudentGrid";
 import InvoicePaid from "./components/pages/Invoice/InvoicePaid";
 import InvoiceOverdue from "./components/pages/Invoice/InvoiceOverdue";
@@ -179,6 +178,12 @@ import AddTeacher from "./components/pages/Teachers/TeachersAdd";
 import EditTeacher from "./components/pages/Teachers/TeachersEdit";
 import AddCourse from "./components/pages/Courses/AddCourse";
 import UpdateCourse from "./components/pages/Courses/UpdateCourse";
+import GroupsList from "./components/pages/Groups/GroupsList";
+import AddGroup from "./components/pages/Groups/addGroup";
+import UpdateGroup from "./components/pages/Groups/UpdateGroup";
+import AddStudent from "./components/pages/Students/AddStudent";
+import UpdateStudent from "./components/pages/Students/UpdateStudent";
+
 
 
 const AppContainer = () => {
@@ -220,8 +225,14 @@ const AppContainer = () => {
           <Route element={<RequirePermission allowedPermission="edit_faculty" />}>
             <Route path="/admin/faculties/:id/exams" element={<ListExams />} />
           </Route>
-          <Route element={<RequirePermission allowedPermission="edit_faculty" />}>
+          <Route element={<RequirePermission allowedPermission="view_any_student" />}>
             <Route path="/admin/faculties/:id/students" element={<StudentsList />} />
+          </Route>
+          <Route element={<RequirePermission allowedPermission="create_student" />}>
+            <Route path="/admin/faculties/:id/students/create" element={<AddStudent />} />
+          </Route>
+          <Route element={<RequirePermission allowedPermission="edit_student" />}>
+            <Route path="/admin/faculties/:id/students/:studentId/edit" element={<UpdateStudent />} />
           </Route>
           <Route element={<RequirePermission allowedPermission="edit_faculty" />}>
             <Route path="/admin/faculties/:id/assignments" element={<ListAssignments />} />
@@ -241,7 +252,7 @@ const AppContainer = () => {
           <Route element={<RequirePermission allowedPermission="view_any_department" />}>
             <Route path="/admins/teachers/edit/:id" element={<EditTeacher />} />
           </Route>
-          <Route element={<RequirePermission allowedPermission="view_any_department" />}>
+          <Route element={<RequirePermission allowedPermission="create_course" />}>
             <Route path="/admin/faculties/:id/courses/create" element={<AddCourse />} />
           </Route>
           <Route element={<RequirePermission allowedPermission="view_any_department" />}>
@@ -252,6 +263,15 @@ const AppContainer = () => {
           </Route>
           <Route element={<RequirePermission allowedPermission="edit_department" />}>
             <Route path="/admin/faculties/:id/departments/:departmentId/edit" element={<AddDepartment />} />
+          </Route>
+          <Route element={<RequirePermission allowedPermission="view_any_group" />}>
+            <Route path="/admin/faculties/:id/groups" element={<GroupsList />} />
+          </Route>
+          <Route element={<RequirePermission allowedPermission="create_group" />}>
+            <Route path="/admin/faculties/:id/groups/create" element={<AddGroup />} />
+          </Route>
+          <Route element={<RequirePermission allowedPermission="edit_group" />}>
+            <Route path="/admin/faculties/:id/groups/:groupId/edit" element={<UpdateGroup />} />
           </Route>
         </Route>
       </Route>
