@@ -305,6 +305,14 @@ const Sidebar = () => {
                         </li>
                         <li>
                           <Link
+                            to={`/admin/faculties/${faculty.id}/groups`}
+                            className={`${pathName === `/admin/faculties/${faculty.id}/groups` ? "active" : ""}`}
+                          >
+                            المجموعات
+                          </Link>
+                        </li>
+                        <li>
+                          <Link
                             to={`/admin/faculties/${faculty.id}/assignments`}
                             className={`${pathName === `/admin/faculties/${faculty.id}/assignments` ? "active" : ""}`}
                           >
