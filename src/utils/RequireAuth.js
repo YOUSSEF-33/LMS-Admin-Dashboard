@@ -15,6 +15,7 @@ const RequireAuth = ({allowedRole}) => {
             if (decodedToken.exp < currentTime) {
                 // Token is expired, clear the token and navigate to login
                 Cookies.remove('token');
+                Cookies.remove('role');
                 window.location.href = '/login';
             }
         }

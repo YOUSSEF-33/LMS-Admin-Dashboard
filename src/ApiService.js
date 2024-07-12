@@ -1,5 +1,6 @@
 import axios from 'axios';
 import Cookies from 'js-cookie';
+//import { useNavigate } from 'react-router-dom';
 
 const API_BASE_URL = 'https://bnu-api-staging.knownlege.com/api/';
 
@@ -48,17 +49,19 @@ axiosInstance.interceptors.request.use(
 axiosInstance.interceptors.response.use(
   response => response,
   error => {
-      const navigate = useNavigate();
       const isLoginPage = window.location.pathname === '/login' || window.location.pathname === '/login-admin';
       
       if (error.response) {
           if (error.response.status === 401 && !isLoginPage) {
               // Token is expired or invalid
               Cookies.remove('token');
-              navigate('/login');
+              Cookies.remove('role');
+              //navigate('/login');
+              window.location.href = "/login"
           } else if (error.response.status === 404) {
               // Redirect to the 404 page
-              navigate('/404');
+              //navigate('/404');
+              window.location.href = "/404"
           }
       }
       return Promise.reject(error);
@@ -82,6 +85,7 @@ export const adminLogin = async (email, password) => {
 };
 
 export const fetchAdminData = async (token) => {
+  console.log(token)
   try {
     const response = await axiosInstance.get('v1/admins/me', {
       headers: {
