@@ -124,7 +124,7 @@ const UpdateStudent = () => {
     const handleMultiSelectChange = (selectedOptions, { name }) => {
         setFormData({ ...formData, [name]: selectedOptions.map(option => option.value) });
     };
-
+   //console.log(formData)
     const validateForm = () => {
         const newErrors = {};
         if (!formData.first_name) newErrors.first_name = "الاسم الأول مطلوب";
