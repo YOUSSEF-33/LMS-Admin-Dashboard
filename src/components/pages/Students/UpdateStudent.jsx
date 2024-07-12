@@ -25,7 +25,9 @@ const UpdateStudent = () => {
         address: "",
         national_id: "",
         gpa: "",
-        courses: []
+        courses: [],
+        profile_image: null,
+        additional_image: null
     });
     const [errors, setErrors] = useState({});
     const [departments, setDepartments] = useState([]);
@@ -46,23 +48,25 @@ const UpdateStudent = () => {
             const response = await axiosInstance.get(`/v1/admin/students/${studentId}`);
             if (response.data && response.data.data) {
                 const student = response.data.data;
-                console.log(student)
+                console.log(student);
                 setFormData({
-                    first_name: student.first_name,
-                    last_name: student.last_name,
-                    email: student.email,
-                    phone: student.phone,
-                    code: student.code,
-                    year: student.year,
+                    first_name: student.first_name || "",
+                    last_name: student.last_name || "",
+                    email: student.email || "",
+                    phone: student.phone || "",
+                    code: student.code || "",
+                    year: student.year || 1,
                     faculty_id: facultyId,
-                    department_id: student.department.id,
-                    birth_date: student.birth_date,
-                    group_id: student.group.id,
-                    gender: student.gender,
-                    address: student.address,
-                    national_id: student.national_id,
-                    gpa: student.gpa,
-                    courses: student.courses.map(course => course.id)
+                    department_id: student.department ? student.department.id : null,
+                    birth_date: student.birth_date || "",
+                    group_id: student.group ? student.group.id : null,
+                    gender: student.gender || "MALE",
+                    address: student.address || "",
+                    national_id: student.national_id || "",
+                    gpa: student.gpa || "",
+                    courses: student.courses ? student.courses.map(course => course.id) : [],
+                    profile_image: null,
+                    additional_image: null
                 });
             }
         } catch (error) {
@@ -108,6 +112,11 @@ const UpdateStudent = () => {
         setFormData({ ...formData, [name]: value });
     };
 
+    const handleFileChange = (e) => {
+        const { name, files } = e.target;
+        setFormData({ ...formData, [name]: files[0] });
+    };
+
     const handleSelectChange = (selectedOption, { name }) => {
         setFormData({ ...formData, [name]: selectedOption.value });
     };
@@ -138,7 +147,25 @@ const UpdateStudent = () => {
         e.preventDefault();
         if (!validateForm()) return;
         try {
-            await axiosInstance.put(`/v1/admin/students/${studentId}`, formData);
+            const formDataToSend = new FormData();
+            Object.keys(formData).forEach(key => {
+                if (key === 'courses') {
+                    formDataToSend.append(key, JSON.stringify(formData[key]));
+                } else {
+                    formDataToSend.append(key, formData[key]);
+                }
+            });
+            if (formData.profile_image) {
+                formDataToSend.append('profile_image[0]', formData.profile_image);
+            }
+            if (formData.additional_image) {
+                formDataToSend.append('profile_image[1]', formData.additional_image);
+            }
+            await axiosInstance.put(`/v1/admin/students/${studentId}`, formDataToSend, {
+                headers: {
+                    'Content-Type': 'multipart/form-data'
+                }
+            });
             message.success("تم تحديث بيانات الطالب بنجاح");
             navigate(`/admin/faculties/${facultyId}/students`);
         } catch (error) {
@@ -156,7 +183,6 @@ const UpdateStudent = () => {
             }
         }
     };
-
 
     const handleClose = () => {
         setShowModal(false);
@@ -439,6 +465,34 @@ const UpdateStudent = () => {
                                                         {errors.courses && (
                                                             <div className="text-danger">{errors.courses}</div>
                                                         )}
+                                                    </div>
+                                                </div>
+                                                <div className="col-12 col-sm-6">
+                                                    <div className="form-group local-forms">
+                                                        <label>
+                                                            صورة الملف الشخصي <span className="login-danger">*</span>
+                                                        </label>
+                                                        <input
+                                                            className="form-control"
+                                                            type="file"
+                                                            name="profile_image"
+                                                            accept="image/*"
+                                                            onChange={handleFileChange}
+                                                        />
+                                                    </div>
+                                                </div>
+                                                <div className="col-12 col-sm-6">
+                                                    <div className="form-group local-forms">
+                                                        <label>
+                                                            صورة إضافية <span className="login-danger">*</span>
+                                                        </label>
+                                                        <input
+                                                            className="form-control"
+                                                            type="file"
+                                                            name="additional_image"
+                                                            accept="image/*"
+                                                            onChange={handleFileChange}
+                                                        />
                                                     </div>
                                                 </div>
                                                 <div className="col-12">

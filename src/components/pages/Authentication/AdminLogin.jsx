@@ -39,19 +39,17 @@ const AdminLogin = () => {
     setLoading(true);
     setError(null);
     try {
-      //const response = await adminLogin(email, password);
-      const response = await axiosInstance.post('v1/admins/login', { email, password })
+        const response = await adminLogin(email, password);
         const data = response.data.data;
         const token = data.token;
         if(token){
           const adminData = await fetchAdminData(token);
-          const userData = { adminData, data: response.data.data };
+          const userData = { adminData, data };
           dispatch(setCredentials(userData));
           dispatch(setRole('admin'));
           message.success("تم تسجيل دخولك بنجاح")
           navigate('/'); 
         }
-      
     } catch (error) {
       console.log(error)
       message.error("فشل في تسجيل الدخول , يرجى المحاولة مره اخرى.")

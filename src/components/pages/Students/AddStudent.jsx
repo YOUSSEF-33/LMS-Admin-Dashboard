@@ -25,7 +25,9 @@ const AddStudent = () => {
         address: "",
         national_id: "",
         gpa: "",
-        courses: []
+        courses: [],
+        student_image: null,  // Required image
+        optional_image: null  // Optional image
     });
     const [errors, setErrors] = useState({});
     const [departments, setDepartments] = useState([]);
@@ -33,6 +35,8 @@ const AddStudent = () => {
     const [courses, setCourses] = useState([]);
     const [errorMessage, setErrorMessage] = useState("");
     const [showModal, setShowModal] = useState(false);
+    const [studentImagePreview, setStudentImagePreview] = useState(null);  // Preview for required image
+    const [optionalImagePreview, setOptionalImagePreview] = useState(null);  // Preview for optional image
 
     useEffect(() => {
         fetchDepartments();
@@ -86,6 +90,23 @@ const AddStudent = () => {
         setFormData({ ...formData, [name]: selectedOptions.map(option => option.value) });
     };
 
+    const handleImageChange = (e) => {
+        const { name, files } = e.target;
+        const file = files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                if (name === "student_image") {
+                    setStudentImagePreview(reader.result);
+                } else {
+                    setOptionalImagePreview(reader.result);
+                }
+            };
+            reader.readAsDataURL(file);
+        }
+        setFormData({ ...formData, [name]: file });
+    };
+
     const validateForm = () => {
         const newErrors = {};
         if (!formData.first_name) newErrors.first_name = "الاسم الأول مطلوب";
@@ -100,6 +121,7 @@ const AddStudent = () => {
         if (!formData.national_id) newErrors.national_id = "الرقم القومي مطلوب";
         if (!formData.gpa) newErrors.gpa = "المعدل التراكمي مطلوب";
         if (!formData.courses.length) newErrors.courses = "الدورات مطلوبة";
+        if (!formData.student_image) newErrors.student_image = "صورة الطالب مطلوبة";  // Validate required image
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
     };
@@ -107,8 +129,33 @@ const AddStudent = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         if (!validateForm()) return;
+
+        // Create FormData object
+        const data = new FormData();
+        Object.keys(formData).forEach(key => {
+            if (key === "courses") {
+                formData[key].forEach((course, index) => {
+                    data.append(`${key}[${index}]`, course);
+                });
+            } else {
+                data.append(key, formData[key]);
+            }
+        });
+
+        // Append the images separately
+        if (formData.student_image) {
+            data.append("profile_image[0]", formData.student_image);
+        }
+        if (formData.optional_image) {
+            data.append("profile_image[1]", formData.optional_image);
+        }
+
         try {
-            await axiosInstance.post("/v1/admin/students", formData);
+            await axiosInstance.post("/v1/admin/students", data, {
+                headers: {
+                    "Content-Type": "multipart/form-data"
+                }
+            });
             message.success("تم إنشاء الطالب بنجاح");
             navigate(`/admin/faculties/${facultyId}/students`);
         } catch (error) {
@@ -407,6 +454,41 @@ const AddStudent = () => {
                                                         />
                                                         {errors.courses && (
                                                             <div className="text-danger">{errors.courses}</div>
+                                                        )}
+                                                    </div>
+                                                </div>
+                                                <div className="col-12 col-sm-6">
+                                                    <div className="form-group local-forms">
+                                                        <label>
+                                                            صورة الطالب <span className="login-danger">*</span>
+                                                        </label>
+                                                        <input
+                                                            className="form-control"
+                                                            type="file"
+                                                            name="student_image"
+                                                            accept="image/*"
+                                                            onChange={handleImageChange}
+                                                        />
+                                                        {studentImagePreview && (
+                                                            <img src={studentImagePreview} alt="Student Preview" style={{ marginTop: '10px', width: '100%', height: 'auto' }} />
+                                                        )}
+                                                        {errors.student_image && (
+                                                            <div className="text-danger">{errors.student_image}</div>
+                                                        )}
+                                                    </div>
+                                                </div>
+                                                <div className="col-12 col-sm-6">
+                                                    <div className="form-group local-forms">
+                                                        <label>صورة إضافية</label>
+                                                        <input
+                                                            className="form-control"
+                                                            type="file"
+                                                            name="optional_image"
+                                                            accept="image/*"
+                                                            onChange={handleImageChange}
+                                                        />
+                                                        {optionalImagePreview && (
+                                                            <img src={optionalImagePreview} alt="Optional Preview" style={{ marginTop: '10px', width: '100%', height: 'auto' }} />
                                                         )}
                                                     </div>
                                                 </div>

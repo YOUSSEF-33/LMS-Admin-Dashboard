@@ -3,6 +3,7 @@ import { Link, useParams } from 'react-router-dom';
 import axiosInstance from '../../../ApiService'; // Ensure axiosInstance is properly imported
 import { Table, Modal, message } from "antd";
 import FeatherIcon from 'feather-icons-react/build/FeatherIcon';
+import { FaUserCircle } from 'react-icons/fa'; // Import the profile icon
 import { onShowSizeChange, itemRender } from "../../Pagination";
 
 const StudentsList = () => {
@@ -65,7 +66,18 @@ const StudentsList = () => {
             dataIndex: "first_name",
             sorter: (a, b) => a.first_name.length - b.first_name.length,
             render: (text, record) => (
-                <Link to={`/students/view/${record.id}`} className="text-dark">{`${record.first_name} ${record.last_name}`}</Link>
+                <div style={{ display: 'flex', alignItems: 'center' }}>
+                    {record.profile_image ? (
+                        <img 
+                            src={record.profile_image.url} 
+                            alt={`${record.first_name} ${record.last_name}`} 
+                            style={{ width: '30px', height: '30px', borderRadius: '50%', marginLeft: '10px' }}
+                        />
+                    ) : (
+                        <FaUserCircle style={{ width: '30px', height: '30px', marginLeft: '10px' }} />
+                    )}
+                    <Link to={`/students/view/${record.id}`} className="text-dark">{`${record.first_name} ${record.last_name}`}</Link>
+                </div>
             )
         },
         {

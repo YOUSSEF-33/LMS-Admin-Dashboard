@@ -20,7 +20,6 @@ const authSlice = createSlice({
       //console.log(adminData)
       const decodedToken = jwtDecode(token);
       const currentTime = Date.now() / 1000;
-      console.log(decodedToken.exp);
       if(decodedToken.exp < currentTime){
         Cookies.remove('token');
       }else{
