@@ -27,7 +27,6 @@ const AddStudent = () => {
         gpa: "",
         courses: [],
         student_image: null,  // Required image
-        optional_image: null  // Optional image
     });
     const [errors, setErrors] = useState({});
     const [departments, setDepartments] = useState([]);
@@ -35,8 +34,7 @@ const AddStudent = () => {
     const [courses, setCourses] = useState([]);
     const [errorMessage, setErrorMessage] = useState("");
     const [showModal, setShowModal] = useState(false);
-    const [studentImagePreview, setStudentImagePreview] = useState(null);  // Preview for required image
-    const [optionalImagePreview, setOptionalImagePreview] = useState(null);  // Preview for optional image
+    const [studentImagePreview, setStudentImagePreview] = useState(null);
 
     useEffect(() => {
         fetchDepartments();
@@ -96,15 +94,16 @@ const AddStudent = () => {
         if (file) {
             const reader = new FileReader();
             reader.onloadend = () => {
-                if (name === "student_image") {
-                    setStudentImagePreview(reader.result);
-                } else {
-                    setOptionalImagePreview(reader.result);
-                }
+                setStudentImagePreview(reader.result);
             };
             reader.readAsDataURL(file);
         }
         setFormData({ ...formData, [name]: file });
+    };
+
+    const deleteImage = () => {
+        setFormData({ ...formData, student_image: null });
+        setStudentImagePreview(null);
     };
 
     const validateForm = () => {
@@ -119,9 +118,8 @@ const AddStudent = () => {
         if (!formData.group_id) newErrors.group_id = "المجموعة مطلوبة";
         if (!formData.address) newErrors.address = "العنوان مطلوب";
         if (!formData.national_id) newErrors.national_id = "الرقم القومي مطلوب";
-        if (!formData.gpa) newErrors.gpa = "المعدل التراكمي مطلوب";
-        if (!formData.courses.length) newErrors.courses = "الدورات مطلوبة";
-        if (!formData.student_image) newErrors.student_image = "صورة الطالب مطلوبة";  // Validate required image
+        if (formData.gpa > 4) newErrors.gpa = "المعدل التراكمي لا يجب ان يكون اكثر من 4";
+        if (!formData.courses.length) newErrors.courses = "المقررات مطلوبة"; 
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
     };
@@ -142,14 +140,11 @@ const AddStudent = () => {
             }
         });
 
-        // Append the images separately
+        // Append the image separately
         if (formData.student_image) {
             data.append("profile_image[0]", formData.student_image);
         }
-        if (formData.optional_image) {
-            data.append("profile_image[1]", formData.optional_image);
-        }
-
+        console.log(data)
         try {
             await axiosInstance.post("/v1/admin/students", data, {
                 headers: {
@@ -422,7 +417,7 @@ const AddStudent = () => {
                                                 <div className="col-12 col-sm-6">
                                                     <div className="form-group local-forms">
                                                         <label>
-                                                            المعدل التراكمي <span className="login-danger">*</span>
+                                                            المعدل التراكمي <span className="login-danger"></span>
                                                         </label>
                                                         <input
                                                             className="form-control"
@@ -438,10 +433,10 @@ const AddStudent = () => {
                                                         )}
                                                     </div>
                                                 </div>
-                                                <div className="col-12">
+                                                <div className="col-12 col-sm-6">
                                                     <div className="form-group local-forms">
                                                         <label>
-                                                            الدورات <span className="login-danger">*</span>
+                                                            المقررات <span className="login-danger">*</span>
                                                         </label>
                                                         <Select
                                                             isMulti
@@ -457,10 +452,10 @@ const AddStudent = () => {
                                                         )}
                                                     </div>
                                                 </div>
-                                                <div className="col-12 col-sm-6">
+                                                <div className="col-12">
                                                     <div className="form-group local-forms">
                                                         <label>
-                                                            صورة الطالب <span className="login-danger">*</span>
+                                                            صورة الطالب <span className="login-danger"></span>
                                                         </label>
                                                         <input
                                                             className="form-control"
@@ -470,25 +465,13 @@ const AddStudent = () => {
                                                             onChange={handleImageChange}
                                                         />
                                                         {studentImagePreview && (
-                                                            <img src={studentImagePreview} alt="Student Preview" style={{ marginTop: '10px', width: '100%', height: 'auto' }} />
+                                                            <div>
+                                                                <img src={studentImagePreview} alt="Student Preview" style={{ marginTop: '10px', width: '100%', height: 'auto' }} />
+                                                                <button type="button" className="btn btn-danger mt-2" onClick={deleteImage}>حذف الصورة</button>
+                                                            </div>
                                                         )}
                                                         {errors.student_image && (
                                                             <div className="text-danger">{errors.student_image}</div>
-                                                        )}
-                                                    </div>
-                                                </div>
-                                                <div className="col-12 col-sm-6">
-                                                    <div className="form-group local-forms">
-                                                        <label>صورة إضافية</label>
-                                                        <input
-                                                            className="form-control"
-                                                            type="file"
-                                                            name="optional_image"
-                                                            accept="image/*"
-                                                            onChange={handleImageChange}
-                                                        />
-                                                        {optionalImagePreview && (
-                                                            <img src={optionalImagePreview} alt="Optional Preview" style={{ marginTop: '10px', width: '100%', height: 'auto' }} />
                                                         )}
                                                     </div>
                                                 </div>

@@ -151,7 +151,7 @@ const ListCourses = () => {
                         <div className="row">
                             <div className="col-sm-12">
                                 <div className="page-sub-header">
-                                    <h3 className="page-title">المقررات الخاصة بكليه {facultyName}</h3>
+                                    <h3 className="page-title">  مقررات {facultyName}</h3>
                                     <ul className="breadcrumb">
                                         <li className="breadcrumb-item"><Link to="/courses">المقررات</Link></li>
                                         <li className="breadcrumb-item active">جميع المقررات</li>
