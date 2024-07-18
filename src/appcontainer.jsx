@@ -187,6 +187,9 @@ import UpdateDepartment from "./components/pages/Departments/UpdateDepartment";
 import TeachersRolesList from "./components/pages/Teachers/Roles/RolesList";
 import AddTeacherRole from "./components/pages/Teachers/Roles/AddRole";
 import UpdateTeacherRole from "./components/pages/Teachers/Roles/UpdateRole";
+import ListCategory from "./components/pages/Courses/Categories/ListCategories";
+import AddCategory from "./components/pages/Courses/Categories/AddCategory";
+import UpdateCategory from "./components/pages/Courses/Categories/UpdateCategory";
 
 
 
@@ -285,6 +288,15 @@ const AppContainer = () => {
           </Route>
           <Route element={<RequirePermission allowedPermission="edit_role" />}>
             <Route path="/admins/teachers/roles/:id/edit" element={<UpdateTeacherRole />} />
+          </Route>
+          <Route element={<RequirePermission allowedPermission="edit_role" />}>
+            <Route path="/admin/faculties/:id/courses/:courseId/categories" element={<ListCategory />} />
+          </Route>
+          <Route element={<RequirePermission allowedPermission="edit_role" />}>
+            <Route path="/admin/faculties/:id/courses/:courseId/categories/create" element={<AddCategory />} />
+          </Route>
+          <Route element={<RequirePermission allowedPermission="edit_role" />}>
+            <Route path="/admin/faculties/:id/courses/:courseId/categories/:categoryId/edit" element={<UpdateCategory />} />
           </Route>
         </Route>
       </Route>

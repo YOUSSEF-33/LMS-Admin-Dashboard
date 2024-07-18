@@ -3,6 +3,7 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import FeatherIcon from "feather-icons-react";
 import axiosInstance from "../../../../ApiService";
 import Switch from "react-switch";
+import { message } from "antd";
 
 const UpdateTeacherRole = () => {
   const navigate = useNavigate();
@@ -117,8 +118,9 @@ const UpdateTeacherRole = () => {
         permissions: formData.permissions
       };
 
-      await axiosInstance.put(`/v1/admin/roles/${id}`, payload);
-      navigate("/admin/roles");
+      await axiosInstance.put(`/v1/admin/roles/teachers-roles/${id}`, payload);
+      message.success("تم تعديل الصلاحية بنجاح")
+      navigate("/admins/teachers/roles");
     } catch (error) {
       if (error.response && error.response.data && error.response.data.errors) {
         const serverErrors = error.response.data.errors;

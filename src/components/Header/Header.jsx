@@ -6,8 +6,14 @@ import {
 } from "../imagepath";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min.js'; // Ensure Bootstrap JS is included
+import useSelection from 'antd/es/table/hooks/useSelection';
+import { useSelector } from 'react-redux';
+import { selectAdminInfo } from '../pages/Authentication/authSlice';
 
 const Header = () => {
+
+    const userData = JSON.parse(localStorage.getItem("me"))
+    console.log(userData)
 
     const handlesidebar = () => {
         document.body.classList.toggle("mini-sidebar");
@@ -254,7 +260,7 @@ const Header = () => {
                                     alt="Ryan Taylor"
                                 />
                                 <div className="user-text">
-                                    <h6>Ryan Taylor</h6>
+                                    <h6>{userData.name}</h6>
                                     <p className="text-muted mb-0">Administrator</p>
                                 </div>
                             </span>
@@ -269,7 +275,7 @@ const Header = () => {
                                     />
                                 </div>
                                 <div className="user-text">
-                                    <h6>Ryan Taylor</h6>
+                                    <h6>{userData.name}</h6>
                                     <p className="text-muted mb-0">Administrator</p>
                                 </div>
                             </div>

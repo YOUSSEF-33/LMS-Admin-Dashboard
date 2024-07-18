@@ -52,12 +52,16 @@ axiosInstance.interceptors.response.use(
       const isLoginPage = window.location.pathname === '/login' || window.location.pathname === '/login-admin';
       
       if (error.response) {
-          if (error.response.status === 401 && !isLoginPage) {
-              // Token is expired or invalid
+          if (error.response.status === 401) {
+            if(!isLoginPage){
               Cookies.remove('token');
               Cookies.remove('role');
               //navigate('/login');
               window.location.href = "/login"
+            }else{
+              Cookies.remove('token');
+              Cookies.remove('role');
+            }
           } else if (error.response.status === 404) {
               // Redirect to the 404 page
               //navigate('/404');
@@ -85,7 +89,6 @@ export const adminLogin = async (email, password) => {
 };
 
 export const fetchAdminData = async (token) => {
-  console.log(token)
   try {
     const response = await axiosInstance.get('v1/admins/me', {
       headers: {
