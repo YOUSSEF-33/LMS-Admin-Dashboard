@@ -1,36 +1,19 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import FeatherIcon from "feather-icons-react";
-import axiosInstance from "../../../../ApiService";
+import axiosInstance from "../../../../../ApiService";
 import Switch from "react-switch";
-import Select from "react-select";
 import { message } from "antd";
 
-const AddCategory = () => {
+const AddLesson = () => {
   const navigate = useNavigate();
-  const { courseId } = useParams();
+  const { courseId, categoryId } = useParams();
   const [formData, setFormData] = useState({
     title: { ar: "" },
     description: { ar: "" },
-    is_active: true,
-    teachers_roles: []
+    is_active: true
   });
   const [errors, setErrors] = useState({});
-  const [roles, setRoles] = useState([]);
-
-  useEffect(() => {
-    fetchRoles();
-  }, []);
-
-  const fetchRoles = async () => {
-    try {
-      const response = await axiosInstance.get("/v1/admin/roles/teachers-roles");
-      const rolesData = response.data.data.items.map(role => ({ value: role.id, label: role.translations.readable_name.ar }));
-      setRoles(rolesData);
-    } catch (error) {
-      console.error("Error fetching roles:", error);
-    }
-  };
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -43,11 +26,6 @@ const AddCategory = () => {
     }
   };
 
-  const handleRoleChange = (selectedOptions) => {
-    const selectedRoles = selectedOptions ? selectedOptions.map(option => option.value) : [];
-    setFormData({ ...formData, teachers_roles: selectedRoles });
-  };
-
   const handleToggleChange = () => {
     setFormData({ ...formData, is_active: !formData.is_active });
   };
@@ -56,7 +34,6 @@ const AddCategory = () => {
     const newErrors = {};
     if (!formData.title.ar) newErrors.title_ar = "العنوان بالعربية مطلوب";
     if (!formData.description.ar) newErrors.description_ar = "الوصف بالعربية مطلوب";
-    if (!formData.teachers_roles.length) newErrors.teachers_roles = "الأدوار مطلوبة";
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -65,8 +42,8 @@ const AddCategory = () => {
     e.preventDefault();
     if (!validateForm()) return;
     try {
-      await axiosInstance.post(`v1/admin/courses/${courseId}/content-categories`, formData);
-      message.success("تم إضافة الفئة بنجاح");
+      await axiosInstance.post(`v1/admin/courses/${courseId}/content-categories/${categoryId}/lessons`, formData);
+      message.success("تم إضافة الدرس بنجاح");
       navigate(-1);
     } catch (error) {
       if (error.response && error.response.data && error.response.data.errors) {
@@ -77,7 +54,7 @@ const AddCategory = () => {
         }
         setErrors(newErrors);
       } else {
-        console.error("Error creating category:", error);
+        console.error("Error creating lesson:", error);
       }
     }
   };
@@ -91,12 +68,12 @@ const AddCategory = () => {
               <div className="row align-items-center">
                 <div className="col-sm-12">
                   <div className="page-sub-header">
-                    <h3 className="page-title">إضافة فئة</h3>
+                    <h3 className="page-title">إضافة درس</h3>
                     <ul className="breadcrumb">
                       <li className="breadcrumb-item">
-                        <Link to={`/courses/${courseId}/categories`}>الفئات</Link>
+                        <Link to={`/courses/${courseId}/categories/${categoryId}/lessons`}>الدروس</Link>
                       </li>
-                      <li className="breadcrumb-item active">إضافة فئة</li>
+                      <li className="breadcrumb-item active">إضافة درس</li>
                     </ul>
                   </div>
                 </div>
@@ -110,7 +87,7 @@ const AddCategory = () => {
                       <div className="row">
                         <div className="col-12">
                           <h5 className="form-title admin-info">
-                            معلومات الفئة{" "}
+                            معلومات الدرس{" "}
                             <span>
                               <Link to="#">
                                 <FeatherIcon icon="more-vertical" />
@@ -154,23 +131,6 @@ const AddCategory = () => {
                             )}
                           </div>
                         </div>
-                        <div className="col-12">
-                          <div className="form-group">
-                            <label>
-                              الأدوار <span className="text-danger">*</span>
-                            </label>
-                            <Select
-                              isMulti
-                              options={roles}
-                              onChange={handleRoleChange}
-                              placeholder="اختر الأدوار"
-                              classNamePrefix="select"
-                            />
-                            {errors.teachers_roles && (
-                              <div className="text-danger">{errors.teachers_roles}</div>
-                            )}
-                          </div>
-                        </div>
                         <div className="col-12 col-sm-6">
                           <div className="form-group d-flex align-items-center">
                             <label className="m-3">نشط</label>
@@ -204,4 +164,4 @@ const AddCategory = () => {
   );
 };
 
-export default AddCategory;
+export default AddLesson;
