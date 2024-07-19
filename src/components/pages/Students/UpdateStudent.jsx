@@ -8,7 +8,7 @@ import { message } from "antd";
 
 const UpdateStudent = () => {
     const navigate = useNavigate();
-    const { id, studentId } = useParams(); 
+    const { id, studentId } = useParams(); // Get faculty id and student id from params
     const facultyId = parseInt(id, 10);
     const [formData, setFormData] = useState({
         first_name: "",
@@ -26,8 +26,7 @@ const UpdateStudent = () => {
         national_id: "",
         gpa: "",
         courses: [],
-        profile_image: null,
-        additional_image: null
+        student_image: null,  // Required image
     });
     const [errors, setErrors] = useState({});
     const [departments, setDepartments] = useState([]);
@@ -35,6 +34,8 @@ const UpdateStudent = () => {
     const [courses, setCourses] = useState([]);
     const [errorMessage, setErrorMessage] = useState("");
     const [showModal, setShowModal] = useState(false);
+    const [studentImagePreview, setStudentImagePreview] = useState(null);
+    const [isImageDeleted, setIsImageDeleted] = useState(false);
 
     useEffect(() => {
         fetchStudentData();
@@ -48,26 +49,26 @@ const UpdateStudent = () => {
             const response = await axiosInstance.get(`/v1/admin/students/${studentId}`);
             if (response.data && response.data.data) {
                 const student = response.data.data;
-                console.log(student);
+                //console.log(student)
                 setFormData({
-                    first_name: student.first_name || "",
-                    last_name: student.last_name || "",
-                    email: student.email || "",
-                    phone: student.phone || "",
-                    code: student.code || "",
-                    year: student.year || 1,
+                    first_name: student.first_name,
+                    last_name: student.last_name,
+                    email: student.email,
+                    phone: student.phone,
+                    code: student.code,
+                    year: student.year,
                     faculty_id: facultyId,
-                    department_id: student.department ? student.department.id : null,
-                    birth_date: student.birth_date || "",
-                    group_id: student.group ? student.group.id : null,
-                    gender: student.gender || "MALE",
-                    address: student.address || "",
-                    national_id: student.national_id || "",
-                    gpa: student.gpa || "",
-                    courses: student.courses ? student.courses.map(course => course.id) : [],
-                    profile_image: null,
-                    additional_image: null
+                    department_id: student.department.id,
+                    birth_date: student.birth_date,
+                    group_id: student.group.id,
+                    gender: student.gender,
+                    address: student.address,
+                    national_id: student.national_id,
+                    gpa: student.gpa,
+                    courses: student.courses.map(course => course.id),
+                    student_image: null,
                 });
+                setStudentImagePreview(student.profile_image.url); // Assuming profile_image_url is the URL of the student's image
             }
         } catch (error) {
             console.error("Error fetching student data:", error);
@@ -112,11 +113,6 @@ const UpdateStudent = () => {
         setFormData({ ...formData, [name]: value });
     };
 
-    const handleFileChange = (e) => {
-        const { name, files } = e.target;
-        setFormData({ ...formData, [name]: files[0] });
-    };
-
     const handleSelectChange = (selectedOption, { name }) => {
         setFormData({ ...formData, [name]: selectedOption.value });
     };
@@ -125,6 +121,26 @@ const UpdateStudent = () => {
         setFormData({ ...formData, [name]: selectedOptions.map(option => option.value) });
     };
 
+    const handleImageChange = (e) => {
+        const { name, files } = e.target;
+        const file = files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                setStudentImagePreview(reader.result);
+                setIsImageDeleted(false); // Reset the delete flag when a new image is selected
+            };
+            reader.readAsDataURL(file);
+        }
+        setFormData({ ...formData, [name]: file });
+    };
+
+    const deleteImage = () => {
+        setFormData({ ...formData, student_image: null });
+        setStudentImagePreview(null);
+        setIsImageDeleted(true); // Set the delete flag when the image is deleted
+    };
+    
     const validateForm = () => {
         const newErrors = {};
         if (!formData.first_name) newErrors.first_name = "الاسم الأول مطلوب";
@@ -137,8 +153,8 @@ const UpdateStudent = () => {
         if (!formData.group_id) newErrors.group_id = "المجموعة مطلوبة";
         if (!formData.address) newErrors.address = "العنوان مطلوب";
         if (!formData.national_id) newErrors.national_id = "الرقم القومي مطلوب";
-        if (!formData.gpa) newErrors.gpa = "المعدل التراكمي مطلوب";
-        if (!formData.courses.length) newErrors.courses = "الدورات مطلوبة";
+        if (formData.gpa > 4) newErrors.gpa = "المعدل التراكمي لا يجب ان يكون اكثر من 4";
+        if (!formData.courses.length) newErrors.courses = "المقررات مطلوبة";
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
     };
@@ -146,24 +162,36 @@ const UpdateStudent = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         if (!validateForm()) return;
+
+        // Create FormData object
+        const data = new FormData();
+        console.log(Object.keys(formData))
+        Object.keys(formData).forEach(key => {
+            if (key === "courses") {
+                
+                formData[key].forEach((course, index) => {
+                    data.append(`${key}[${index}]`, course);
+                });
+            } else {
+                console.log(formData[key])
+                data.append(key, formData[key]);
+            }
+        });
+
+        // Append the image separately if it exists
+        if (formData.student_image) {
+            data.append("profile_image[0]", formData.student_image);
+        }
+        data.append("_method", "PUT" )
+        // Append a flag to delete the image if it was deleted
+        if (isImageDeleted) {
+            data.append("delete_image", true);
+        }
+        console.log(data)
         try {
-            const formDataToSend = new FormData();
-            Object.keys(formData).forEach(key => {
-                if (key === 'courses') {
-                    formDataToSend.append(key, JSON.stringify(formData[key]));
-                } else {
-                    formDataToSend.append(key, formData[key]);
-                }
-            });
-            if (formData.profile_image) {
-                formDataToSend.append('profile_image[0]', formData.profile_image);
-            }
-            if (formData.additional_image) {
-                formDataToSend.append('profile_image[1]', formData.additional_image);
-            }
-            await axiosInstance.put(`/v1/admin/students/${studentId}`, formDataToSend, {
+            await axiosInstance.post(`/v1/admin/students/${studentId}`, data, {
                 headers: {
-                    'Content-Type': 'multipart/form-data'
+                    "Content-Type": "multipart/form-data"
                 }
             });
             message.success("تم تحديث بيانات الطالب بنجاح");
@@ -369,7 +397,7 @@ const UpdateStudent = () => {
                                                             options={groups}
                                                             className="basic-select"
                                                             classNamePrefix="select"
-                                                            value={groups?.find(group => group.value === formData.group_id)}
+                                                            value={groups.find(group => group.value === formData.group_id)}
                                                             onChange={(selectedOption) => handleSelectChange(selectedOption, { name: "group_id" })}
                                                         />
                                                         {errors.group_id && (
@@ -432,7 +460,7 @@ const UpdateStudent = () => {
                                                 <div className="col-12 col-sm-6">
                                                     <div className="form-group local-forms">
                                                         <label>
-                                                            المعدل التراكمي <span className="login-danger">*</span>
+                                                            المعدل التراكمي <span className="login-danger"></span>
                                                         </label>
                                                         <input
                                                             className="form-control"
@@ -448,10 +476,10 @@ const UpdateStudent = () => {
                                                         )}
                                                     </div>
                                                 </div>
-                                                <div className="col-12">
+                                                <div className="col-12 col-sm-6">
                                                     <div className="form-group local-forms">
                                                         <label>
-                                                            الدورات <span className="login-danger">*</span>
+                                                            المقررات <span className="login-danger">*</span>
                                                         </label>
                                                         <Select
                                                             isMulti
@@ -467,32 +495,27 @@ const UpdateStudent = () => {
                                                         )}
                                                     </div>
                                                 </div>
-                                                <div className="col-12 col-sm-6">
+                                                <div className="col-12">
                                                     <div className="form-group local-forms">
                                                         <label>
-                                                            صورة الملف الشخصي <span className="login-danger">*</span>
+                                                            صورة الطالب <span className="login-danger"></span>
                                                         </label>
                                                         <input
                                                             className="form-control"
                                                             type="file"
-                                                            name="profile_image"
+                                                            name="student_image"
                                                             accept="image/*"
-                                                            onChange={handleFileChange}
+                                                            onChange={handleImageChange}
                                                         />
-                                                    </div>
-                                                </div>
-                                                <div className="col-12 col-sm-6">
-                                                    <div className="form-group local-forms">
-                                                        <label>
-                                                            صورة إضافية <span className="login-danger">*</span>
-                                                        </label>
-                                                        <input
-                                                            className="form-control"
-                                                            type="file"
-                                                            name="additional_image"
-                                                            accept="image/*"
-                                                            onChange={handleFileChange}
-                                                        />
+                                                        {studentImagePreview && (
+                                                            <div>
+                                                                <img src={studentImagePreview} alt="Student Preview" style={{ marginTop: '10px', width: '100%', height: 'auto' }} />
+                                                                <button type="button" className="btn btn-danger mt-2" onClick={deleteImage}>حذف الصورة</button>
+                                                            </div>
+                                                        )}
+                                                        {errors.student_image && (
+                                                            <div className="text-danger">{errors.student_image}</div>
+                                                        )}
                                                     </div>
                                                 </div>
                                                 <div className="col-12">

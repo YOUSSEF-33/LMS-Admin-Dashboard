@@ -24,7 +24,7 @@ const StudentsList = () => {
             const data = response.data.data;
             if (Array.isArray(data.items)) {
                 setDataSource(data.items);
-                setPagination({ ...pagination, total: data.total });
+                //setPagination({ ...pagination, total: data.total });
             } else {
                 console.error('API response is not an array', data);
             }

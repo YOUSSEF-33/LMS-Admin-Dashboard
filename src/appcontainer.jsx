@@ -183,6 +183,16 @@ import AddGroup from "./components/pages/Groups/AddGroup";
 import UpdateGroup from "./components/pages/Groups/UpdateGroup";
 import AddStudent from "./components/pages/Students/AddStudent";
 import UpdateStudent from "./components/pages/Students/UpdateStudent";
+import UpdateDepartment from "./components/pages/Departments/UpdateDepartment";
+import TeachersRolesList from "./components/pages/Teachers/Roles/RolesList";
+import AddTeacherRole from "./components/pages/Teachers/Roles/AddRole";
+import UpdateTeacherRole from "./components/pages/Teachers/Roles/UpdateRole";
+import ListCategory from "./components/pages/Courses/Categories/ListCategories";
+import AddCategory from "./components/pages/Courses/Categories/AddCategory";
+import UpdateCategory from "./components/pages/Courses/Categories/UpdateCategory";
+import ListLessons from "./components/pages/Courses/Categories/Lessons/ListLessons";
+import AddLesson from "./components/pages/Courses/Categories/Lessons/AddLesson";
+import UpdateLesson from "./components/pages/Courses/Categories/Lessons/UpdateLessons";
 
 
 
@@ -262,7 +272,7 @@ const AppContainer = () => {
             <Route path="/admin/faculties/:id/departments/create" element={<AddDepartment />} />
           </Route>
           <Route element={<RequirePermission allowedPermission="edit_department" />}>
-            <Route path="/admin/faculties/:id/departments/:departmentId/edit" element={<AddDepartment />} />
+            <Route path="/admin/faculties/:id/departments/:departmentId/edit" element={<UpdateDepartment />} />
           </Route>
           <Route element={<RequirePermission allowedPermission="view_any_group" />}>
             <Route path="/admin/faculties/:id/groups" element={<GroupsList />} />
@@ -273,6 +283,33 @@ const AppContainer = () => {
           <Route element={<RequirePermission allowedPermission="edit_group" />}>
             <Route path="/admin/faculties/:id/groups/:groupId/edit" element={<UpdateGroup />} />
           </Route>
+          <Route element={<RequirePermission allowedPermission="view_any_role" />}>
+            <Route path="/admins/teachers/roles" element={<TeachersRolesList />} />
+          </Route>
+          <Route element={<RequirePermission allowedPermission="create_role" />}>
+            <Route path="/admins/teachers/roles/create" element={<AddTeacherRole />} />
+          </Route>
+          <Route element={<RequirePermission allowedPermission="edit_role" />}>
+            <Route path="/admins/teachers/roles/:id/edit" element={<UpdateTeacherRole />} />
+          </Route>
+          <Route element={<RequirePermission allowedPermission="view_any_course_content_category" />}>
+            <Route path="/admin/faculties/:id/courses/:courseId/categories" element={<ListCategory />} />
+          </Route>
+          <Route element={<RequirePermission allowedPermission="create_course_content_category" />}>
+            <Route path="/admin/faculties/:id/courses/:courseId/categories/create" element={<AddCategory />} />
+          </Route>
+          <Route element={<RequirePermission allowedPermission="edit_course_content_category" />}>
+            <Route path="/admin/faculties/:id/courses/:courseId/categories/:categoryId/edit" element={<UpdateCategory />} />
+          </Route>
+          <Route element={<RequirePermission allowedPermission="view_any_lesson" />}>
+            <Route path="/admin/faculties/:id/courses/:courseId/categories/:categoryId/lessons" element={<ListLessons />} />
+          </Route>
+          <Route element={<RequirePermission allowedPermission="create_lesson" />}>
+            <Route path="/admin/faculties/:id/courses/:courseId/categories/:categoryId/lessons/create" element={<AddLesson />} />
+          </Route>
+          <Route element={<RequirePermission allowedPermission="edit_lesson" />}>
+            <Route path="/admin/faculties/:id/courses/:courseId/categories/:categoryId/lessons/:lessonId/edit" element={<UpdateLesson />} />
+          </Route>
         </Route>
       </Route>
     </Routes>
@@ -280,3 +317,4 @@ const AppContainer = () => {
 };
 
 export default AppContainer;
+
