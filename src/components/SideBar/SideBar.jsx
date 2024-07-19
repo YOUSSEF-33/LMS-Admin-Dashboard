@@ -218,6 +218,7 @@ const Sidebar = () => {
                 </li>
                 <li
                   className={`${
+                    "/admins/teachers/roles" === pathName ||
                     "/admins/teachers" === pathName ||
                     "/admins/teachers/create" === pathName ||
                     "/admins/teacher/edit/:id" === pathName
@@ -249,6 +250,16 @@ const Sidebar = () => {
                           }`}
                         >
                           المدرسون
+                        </Link>
+                      </li>
+                      <li>
+                        <Link
+                          to="/admins/teachers/roles"
+                          className={`${
+                            "/admins/teachers/roles" === pathName ? "active" : ""
+                          }`}
+                        >
+                          الصلاحيات
                         </Link>
                       </li>
                     </ul>
@@ -332,7 +343,7 @@ const Sidebar = () => {
                             to={`/admin/faculties/${faculty.id}/courses`}
                             className={`${pathName === `/admin/faculties/${faculty.id}/courses` ? "active" : ""}`}
                           >
-                            الكورسات
+                            المقررات
                           </Link>
                         </li>
                       </ul>

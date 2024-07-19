@@ -3,6 +3,7 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import FeatherIcon from "feather-icons-react";
 import axiosInstance from "../../../ApiService";
 import Switch from "react-switch";
+import Select from "react-select";
 import { message } from "antd";
 
 const EditTeacher = () => {
@@ -16,12 +17,15 @@ const EditTeacher = () => {
     code: "",
     birth_date: "",
     gender: "MALE",
-    is_active: true
+    is_active: true,
+    role_id: null, // Added for role selection
   });
   const [errors, setErrors] = useState({});
+  const [roles, setRoles] = useState([]);
 
   useEffect(() => {
     fetchTeacherData();
+    fetchRoles();
   }, []);
 
   const fetchTeacherData = async () => {
@@ -36,16 +40,34 @@ const EditTeacher = () => {
         code: data.code,
         birth_date: data.birth_date,
         gender: data.gender,
-        is_active: data.is_active
+        is_active: data.is_active,
+        role_id: data.role_id, // Assuming the API returns role_id
       });
     } catch (error) {
       console.error("Error fetching teacher data:", error);
     }
   };
 
+  const fetchRoles = async () => {
+    try {
+      const response = await axiosInstance.get("/v1/admin/roles/teachers-roles");
+      const rolesData = response.data.data.items.map((role) => ({
+        value: role.id,
+        label: role.translations.readable_name.ar,
+      }));
+      setRoles(rolesData);
+    } catch (error) {
+      console.error("Error fetching roles:", error);
+    }
+  };
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
+  };
+
+  const handleRoleChange = (selectedOption) => {
+    setFormData({ ...formData, role_id: selectedOption ? selectedOption.value : null });
   };
 
   const handleToggleChange = () => {
@@ -59,6 +81,7 @@ const EditTeacher = () => {
     if (!formData.email) newErrors.email = "البريد الإلكتروني مطلوب";
     if (!formData.phone) newErrors.phone = "رقم الهاتف مطلوب";
     if (!formData.code) newErrors.code = "الكود مطلوب";
+    if (!formData.role_id) newErrors.role_id = "الدور مطلوب"; // Added validation for role
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -68,6 +91,13 @@ const EditTeacher = () => {
     if (!validateForm()) return;
     try {
       await axiosInstance.put(`v1/admin/teachers/${id}`, formData);
+
+      // Sync role with the teacher
+      await axiosInstance.post("/v1/admin/roles/teachers-roles/sync", {
+        teacher_id: id,
+        role_id: formData.role_id,
+      });
+
       message.success("تم تحديث بيانات المدرس بنجاح");
       navigate("/admins/teachers");
     } catch (error) {
@@ -248,6 +278,20 @@ const EditTeacher = () => {
                               height={20}
                               width={40}
                             />
+                          </div>
+                        </div>
+                        <div className="col-12 col-sm-6">
+                          <div className="form-group">
+                            <label>الدور <span className="text-danger">*</span></label>
+                            <Select
+                              options={roles}
+                              value={roles.find((role) => role.value === formData.role_id)}
+                              onChange={handleRoleChange}
+                              placeholder="اختر الدور"
+                            />
+                            {errors.role_id && (
+                              <div className="text-danger">{errors.role_id}</div>
+                            )}
                           </div>
                         </div>
                         <div className="col-12">

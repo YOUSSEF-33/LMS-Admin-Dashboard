@@ -14,9 +14,11 @@ const DepartmentsList = () => {
     const [pagination, setPagination] = useState({ current: 1, pageSize: 25, total: 0 });
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
+    const [facultyName, setFacultyName] = useState([])
     const fetchFlag = useRef(false);
 
     useEffect(() => {
+        fetchFacultyName();
         fetchData(pagination.current, pagination.pageSize);
     }, []);
 
@@ -42,6 +44,20 @@ const DepartmentsList = () => {
             setLoading(false);
         }
     };
+    const fetchFacultyName = async () => {
+        try {
+            const response = await axiosInstance.get(`v1/admin/faculties/${id}`);
+            const data = response.data;
+            if (data && data.data && data.data.translations && data.data.translations.name) {
+                setFacultyName(data.data.translations.name.ar);
+            } else {
+                console.error('API response does not contain faculty name', data);
+            }
+        } catch (error) {
+            console.error('Error fetching faculty name:', error);
+            setError("حدث خطأ أثناء جلب بيانات الكلية. الرجاء المحاولة لاحقاً.");
+        }
+    };
 
     const handleTableChange = (pagination) => {
         setPagination(pagination);
@@ -62,7 +78,7 @@ const DepartmentsList = () => {
             },
         });
     };
-
+   console.log(dataSource)
     const columns = [
         {
             title: "الاسم",
@@ -75,14 +91,9 @@ const DepartmentsList = () => {
             )
         },
         {
-            title: "الكود",
-            dataIndex: "code",
-            key: "code",
-        },
-        {
-            title: "عدد السنوات",
-            dataIndex: "years",
-            key: "years",
+            title: "سنة البداية",
+            dataIndex: "year",
+            key: "year",
         },
         {
             title: "الحالة",
@@ -103,7 +114,7 @@ const DepartmentsList = () => {
                     <button onClick={() => handleDelete(record.id)} className="btn btn-sm bg-danger-light me-2">
                         <FeatherIcon icon="trash" size={16} />
                     </button>
-                    <Link to={`/admin/departments/edit/${record.id}`} className="btn btn-sm bg-danger-light">
+                    <Link to={`/admin/faculties/${id}/departments/${record.id}/edit`} className="btn btn-sm bg-danger-light">
                         <FeatherIcon icon="edit" size={16} />
                     </Link>
                 </div>
@@ -148,7 +159,7 @@ const DepartmentsList = () => {
                                     <div className="page-header">
                                         <div className="row align-items-center">
                                             <div className="col">
-                                                <h3 className="page-title">الأقسام</h3>
+                                                <h3 className="page-title">أقسام {facultyName}</h3>
                                             </div>
                                             <div className="col-auto text-end float-end ms-auto download-grp">
                                                 <Link to="#" className="btn btn-outline-primary me-2">
