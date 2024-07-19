@@ -190,6 +190,9 @@ import UpdateTeacherRole from "./components/pages/Teachers/Roles/UpdateRole";
 import ListCategory from "./components/pages/Courses/Categories/ListCategories";
 import AddCategory from "./components/pages/Courses/Categories/AddCategory";
 import UpdateCategory from "./components/pages/Courses/Categories/UpdateCategory";
+import ListLessons from "./components/pages/Courses/Categories/Lessons/ListLessons";
+import AddLesson from "./components/pages/Courses/Categories/Lessons/AddLesson";
+import UpdateLesson from "./components/pages/Courses/Categories/Lessons/UpdateLessons";
 
 
 
@@ -289,14 +292,23 @@ const AppContainer = () => {
           <Route element={<RequirePermission allowedPermission="edit_role" />}>
             <Route path="/admins/teachers/roles/:id/edit" element={<UpdateTeacherRole />} />
           </Route>
-          <Route element={<RequirePermission allowedPermission="edit_role" />}>
+          <Route element={<RequirePermission allowedPermission="view_any_course_content_category" />}>
             <Route path="/admin/faculties/:id/courses/:courseId/categories" element={<ListCategory />} />
           </Route>
-          <Route element={<RequirePermission allowedPermission="edit_role" />}>
+          <Route element={<RequirePermission allowedPermission="create_course_content_category" />}>
             <Route path="/admin/faculties/:id/courses/:courseId/categories/create" element={<AddCategory />} />
           </Route>
-          <Route element={<RequirePermission allowedPermission="edit_role" />}>
+          <Route element={<RequirePermission allowedPermission="edit_course_content_category" />}>
             <Route path="/admin/faculties/:id/courses/:courseId/categories/:categoryId/edit" element={<UpdateCategory />} />
+          </Route>
+          <Route element={<RequirePermission allowedPermission="view_any_lesson" />}>
+            <Route path="/admin/faculties/:id/courses/:courseId/categories/:categoryId/lessons" element={<ListLessons />} />
+          </Route>
+          <Route element={<RequirePermission allowedPermission="create_lesson" />}>
+            <Route path="/admin/faculties/:id/courses/:courseId/categories/:categoryId/lessons/create" element={<AddLesson />} />
+          </Route>
+          <Route element={<RequirePermission allowedPermission="edit_lesson" />}>
+            <Route path="/admin/faculties/:id/courses/:courseId/categories/:categoryId/lessons/:lessonId/edit" element={<UpdateLesson />} />
           </Route>
         </Route>
       </Route>

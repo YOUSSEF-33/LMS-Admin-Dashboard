@@ -32,9 +32,9 @@ const authSlice = createSlice({
       }
         
       //const classAssigned = decodeToken.access.classAssigned;
-    //   const user = decodeToken.username;
-    //   state.token = token.data.token;
-    //   state.user = user;
+      //const user = decodeToken.username;
+      //state.token = token.data.token;
+      //state.user = user;
       //Cookies.set('token', token.data.token, { expires: 7 })
       //state.role = userRole;
       //state.classAssigned = classAssigned;

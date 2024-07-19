@@ -10,7 +10,6 @@ const UpdateCategory = () => {
   const { courseId, categoryId } = useParams();
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
-    course_id: parseInt(courseId, 10),
     title: { ar: "" },
     description: { ar: "" },
     is_active: true,
@@ -38,10 +37,9 @@ const UpdateCategory = () => {
 
   const fetchCategoryData = async () => {
     try {
-      const response = await axiosInstance.get(`v1/admin/courses/content-categories/${categoryId}`);
+      const response = await axiosInstance.get(`v1/admin/courses/${courseId}/content-categories/${categoryId}`);
       const data = response.data.data;
       setFormData({
-        course_id: data.course_id,
         title: data.translations.title,
         description: data.translations.description,
         is_active: data.is_active,
@@ -88,7 +86,7 @@ const UpdateCategory = () => {
     if (!validateForm()) return;
     setSubmitting(true); // Set submitting to true when form submission starts
     try {
-      await axiosInstance.put(`v1/admin/courses/content-categories/${categoryId}`, formData);
+      await axiosInstance.put(`v1/admin/courses/${courseId}/content-categories/${categoryId}`, formData);
       message.success("تم تحديث الفئة بنجاح");
       navigate(-1);
     } catch (error) {
