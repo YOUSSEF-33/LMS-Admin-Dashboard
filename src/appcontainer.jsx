@@ -179,7 +179,7 @@ import EditTeacher from "./components/pages/Teachers/TeachersEdit";
 import AddCourse from "./components/pages/Courses/AddCourse";
 import UpdateCourse from "./components/pages/Courses/UpdateCourse";
 import GroupsList from "./components/pages/Groups/GroupsList";
-import AddGroup from "./components/pages/Groups/addGroup";
+import AddGroup from "./components/pages/Groups/AddGroup";
 import UpdateGroup from "./components/pages/Groups/UpdateGroup";
 import AddStudent from "./components/pages/Students/AddStudent";
 import UpdateStudent from "./components/pages/Students/UpdateStudent";
