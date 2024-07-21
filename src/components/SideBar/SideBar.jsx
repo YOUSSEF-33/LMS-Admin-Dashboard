@@ -79,24 +79,30 @@ const Sidebar = () => {
     fetchFaculties();
   }, []);
 
-  const renderMenuItem = (permission, path, icon, label, subMenu = null) => {
+  const isPathActive = (path) => {
+    return pathName.startsWith(path);
+  };
+
+  const renderMenuItem = (permission, path, icon, label, subMenu = null, activePath) => {
     if (!CheckPermission(permission)) return null;
 
+    const isActive = isPathActive(activePath);
+
     return (
-      <li className={`${path === pathName ? "active" : ""} ${subMenu ? "submenu" : ""}`}>
+      <li className={`${isActive ? "active" : ""} ${subMenu ? "submenu" : ""}`}>
         <Link 
-          to={path} 
-          className={isSideMenu === label ? "subdrop" : ""}
+          to={path}
+          className={isSideMenu === label || isActive ? "subdrop" : ""}
           onClick={() => subMenu && toggleSidebar(isSideMenu === label ? "" : label)}
         >
           {icon} <span>{label}</span>
           {subMenu && <span className="menu-arrow" />}
         </Link>
-        {subMenu && isSideMenu === label && (
+        {subMenu && (isSideMenu === label || isActive) && (
           <ul style={{ display: "block" }}>
             {subMenu.map((item, index) => (
               <li key={index}>
-                <Link to={item.path} className={`${item.path === pathName ? "active" : ""}`}>
+                <Link to={item.path} className={`${isPathActive(item.path) ? "active" : ""}`}>
                   {item.label}
                 </Link>
               </li>
@@ -136,42 +142,47 @@ const Sidebar = () => {
                     { path: "/", label: "Admin Dashboard" },
                     { path: "/teacherdashboard", label: "Teachers Dashboard" },
                     { path: "/studentdashboard", label: "Students Dashboard" },
-                  ]
+                  ],
+                  `/`
                 )}
                 {renderMenuItem(
                   "view_any_admin",
-                  "/admins",
+                  "#",
                   <i className="fas fa-graduation-cap" />,
                   "المشرفون",
                   [
-                    { path: "/admins", label: "المشرفون" },
+                    { path: "/admins/view", label: "المشرفون" },
                     { path: "/admins/roles", label: "الصلاحيات" },
-                  ]
+                  ],
+                  "/admins"
                 )}
                 {renderMenuItem(
                   "view_any_teacher",
-                  "/admins/teachers",
+                  "#",
                   <i className="fas fa-graduation-cap" />,
                   "المدرسون",
                   [
                     { path: "/admins/teachers", label: "المدرسون" },
                     { path: "/admins/teachers/roles", label: "الصلاحيات" },
-                  ]
+                  ],
+                  "/admins/teachers"
                 )}
                 <li className="menu-title">
                   <span>الكليات</span>
                 </li>
                 {renderMenuItem(
                   "view_any_faculty",
-                  "/admin/faculties",
+                  "/admin/all-faculties",
                   <i className="fas fa-university" />,
-                  "كل الكليات"
+                  "كل الكليات",
+                  null,
+                  "/admin/all-faculties"
                 )}
                 {faculties?.map((faculty) => (
                   renderMenuItem(
                     `view_faculty`,
-                    `/admin/faculties/${faculty.id}/dashboard`,
-                    <i className="fas fa-university" />,
+                    `#`,
+                    <i key={faculty.id} className="fas fa-university" />,
                     faculty.name,
                     [
                       { path: `/admin/faculties/${faculty.id}/dashboard`, label: "لوحة التحكم" },
@@ -180,7 +191,8 @@ const Sidebar = () => {
                       { path: `/admin/faculties/${faculty.id}/assignments`, label: "الواجبات" },
                       { path: `/admin/faculties/${faculty.id}/exams`, label: "الامتحانات" },
                       { path: `/admin/faculties/${faculty.id}/courses`, label: "المقررات" },
-                    ]
+                    ],
+                    `/admin/faculties/${faculty.id}`
                   )
                 ))}
               </ul>

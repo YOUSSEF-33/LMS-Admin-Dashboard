@@ -6,15 +6,15 @@ import Footer from './components/Footer/Footer';
 
 const Layout = () => {
     return (
-        <div className="main-wrapper">
+        <div className="main-wrapper d-flex flex-column min-vh-100">
             <Header />
             <Sidebar />
-            <div className="page-wrapper">
+            <div className="page-wrapper flex-grow-1 d-flex flex-column">
                 <div className="content container-fluid">
                     <Outlet />
                 </div>
             </div>
-            <Footer />
+            <Footer className="mt-auto" />
         </div>
     );
 };

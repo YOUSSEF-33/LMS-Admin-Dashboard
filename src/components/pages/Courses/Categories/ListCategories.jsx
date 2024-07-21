@@ -9,7 +9,6 @@ import moment from 'moment';
 const ListCategory = () => {
     const { id, courseId, categoryId } = useParams();
     const facultyId = id;
-    console.log(facultyId, courseId)
     const [selectedRowKeys, setSelectedRowKeys] = useState([]);
     const [dataSource, setDataSource] = useState([]);
     const [pagination, setPagination] = useState({ current: 1, pageSize: 25, total: 0 });

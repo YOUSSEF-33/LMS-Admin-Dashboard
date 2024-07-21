@@ -50,7 +50,7 @@ const Admins = () => {
         {
             title: "الاسم",
             dataIndex: "name",
-            sorter: (a, b) => a.name.length - b.name.length,
+            sorter: (a, b) => a.name?.length - b.name?.length,
             render: (text, record) => (
                 <>
                     <Link to="/adminsview" className="text-dark">{record.name}</Link>
@@ -65,7 +65,7 @@ const Admins = () => {
         {
             title: "الدور",
             dataIndex: "role",
-            sorter: (a, b) => a.roles?.[0].name.length - b.roles?.[0].name.length,
+            sorter: (a, b) => a.roles?.[0]?.name?.length - b.roles?.[0]?.name?.length,
             render: (text, record) => (
                 <>
                     <Link to="/adminsview" className="text-dark">{record.roles?.[0]?.name}</Link>
