@@ -48,7 +48,7 @@ const ListCourses = () => {
             const data = response.data;
             if (Array.isArray(data.data.items)) {
                 setDataSource(data.data.items);
-                setPagination(prev => ({ ...prev, total: data.data.total, current: page, pageSize: limit }));
+                //setPagination(prev => ({ ...prev, total: data.data.total, current: page, pageSize: limit }));
             } else {
                 console.error('API response is not an array', data.data);
             }

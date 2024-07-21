@@ -98,7 +98,7 @@ const ListLessons = () => {
             render: (text, record) => (
                 <div className="actions">
                     {CheckPermission("view_lesson") &&
-                        <Link to={`/courses/${courseId}/categories/${categoryId}/lessons/${record.id}/view`} className="btn btn-sm btn-rounded bg-primary-light me-2 rounded-full" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                        <Link to={`${record.id}/lesson-content`} className="btn btn-sm btn-rounded bg-primary-light me-2 rounded-full" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                             <FeatherIcon icon="eye" size="16" />
                         </Link>
                     }

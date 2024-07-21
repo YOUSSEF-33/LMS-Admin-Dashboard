@@ -193,6 +193,9 @@ import UpdateCategory from "./components/pages/Courses/Categories/UpdateCategory
 import ListLessons from "./components/pages/Courses/Categories/Lessons/ListLessons";
 import AddLesson from "./components/pages/Courses/Categories/Lessons/AddLesson";
 import UpdateLesson from "./components/pages/Courses/Categories/Lessons/UpdateLessons";
+import ListLessonContents from "./components/pages/Courses/Categories/Lessons/LessonContent/ViewAllContent";
+import AddLessonContent from "./components/pages/Courses/Categories/Lessons/LessonContent/AddLessonContent";
+import UpdateLessonContent from "./components/pages/Courses/Categories/Lessons/LessonContent/UpdateLessonContent";
 
 
 
@@ -206,7 +209,7 @@ const AppContainer = () => {
         <Route element={<RequireAuth allowedRole="admin" />}>
           <Route path="/" element={<AdminDashboard />} />
           <Route element={<RequirePermission allowedPermission={"view_any_admin"} />}>
-            <Route path="/admins" element={<Admins />} />
+            <Route path="/admins/view" element={<Admins />} />
           </Route>
           <Route element={<RequirePermission allowedPermission="create_admin" />}>
             <Route path="/admins/create" element={<AddAdmin />} />
@@ -221,7 +224,7 @@ const AppContainer = () => {
             <Route path="/admins/roles/create" element={<AddRole />} />
           </Route>
           <Route element={<RequirePermission allowedPermission="view_any_faculty" />}>
-            <Route path="/admin/faculties" element={<ListFaculties />} />
+            <Route path="/admin/all-faculties" element={<ListFaculties />} />
           </Route>
           <Route element={<RequirePermission allowedPermission="create_faculty" />}>
             <Route path="/admin/faculties/create" element={<AddFaculty />} />
@@ -309,6 +312,15 @@ const AppContainer = () => {
           </Route>
           <Route element={<RequirePermission allowedPermission="edit_lesson" />}>
             <Route path="/admin/faculties/:id/courses/:courseId/categories/:categoryId/lessons/:lessonId/edit" element={<UpdateLesson />} />
+          </Route>
+          <Route element={<RequirePermission allowedPermission="edit_lesson" />}>
+            <Route path="/admin/faculties/:id/courses/:courseId/categories/:categoryId/lessons/:lessonId/lesson-content" element={<ListLessonContents />} />
+          </Route>
+          <Route element={<RequirePermission allowedPermission="edit_lesson" />}>
+            <Route path="/admin/faculties/:id/courses/:courseId/categories/:categoryId/lessons/:lessonId/lesson-content/create" element={<AddLessonContent />} />
+          </Route>
+          <Route element={<RequirePermission allowedPermission="edit_lesson" />}>
+            <Route path="/admin/faculties/:id/courses/:courseId/categories/:categoryId/lessons/:lessonId/lesson-content/:contentId/edit" element={<UpdateLessonContent />} />
           </Route>
         </Route>
       </Route>

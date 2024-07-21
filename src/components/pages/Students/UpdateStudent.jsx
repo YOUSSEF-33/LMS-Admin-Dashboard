@@ -4,7 +4,8 @@ import FeatherIcon from "feather-icons-react";
 import axiosInstance from "../../../ApiService";
 import Select from "react-select";
 import ErrorModal from "../../CustomComponents/ErrorModal";
-import { message } from "antd";
+import { message, Upload, Button } from "antd";
+import { UploadOutlined } from "@ant-design/icons";
 
 const UpdateStudent = () => {
     const navigate = useNavigate();
@@ -26,7 +27,7 @@ const UpdateStudent = () => {
         national_id: "",
         gpa: "",
         courses: [],
-        student_image: null,  // Required image
+        student_image: null, // Required image
     });
     const [errors, setErrors] = useState({});
     const [departments, setDepartments] = useState([]);
@@ -36,6 +37,8 @@ const UpdateStudent = () => {
     const [showModal, setShowModal] = useState(false);
     const [studentImagePreview, setStudentImagePreview] = useState(null);
     const [isImageDeleted, setIsImageDeleted] = useState(false);
+    const [initialImageURL, setInitialImageURL] = useState(null); // Store initial image URL
+    const [initialImageFile, setInitialImageFile] = useState(null); // Store initial image file
 
     useEffect(() => {
         fetchStudentData();
@@ -49,7 +52,10 @@ const UpdateStudent = () => {
             const response = await axiosInstance.get(`/v1/admin/students/${studentId}`);
             if (response.data && response.data.data) {
                 const student = response.data.data;
-                //console.log(student)
+                const data = await fetch(student.profile_image.url);
+                const blob = await data.blob();
+                const file = await convertBlobToPng(blob, student.profile_image.name);
+
                 setFormData({
                     first_name: student.first_name,
                     last_name: student.last_name,
@@ -58,7 +64,7 @@ const UpdateStudent = () => {
                     code: student.code,
                     year: student.year,
                     faculty_id: facultyId,
-                    department_id: student.department.id,
+                    department_id: student.department?.id,
                     birth_date: student.birth_date,
                     group_id: student.group.id,
                     gender: student.gender,
@@ -66,9 +72,14 @@ const UpdateStudent = () => {
                     national_id: student.national_id,
                     gpa: student.gpa,
                     courses: student.courses.map(course => course.id),
-                    student_image: null,
+                    student_image: file,
                 });
-                setStudentImagePreview(student.profile_image.url); // Assuming profile_image_url is the URL of the student's image
+
+                setStudentImagePreview(student.profile_image.url); // Assuming profile_image.url is the URL of the student's image
+                setInitialImageURL(student.profile_image.url); // Store initial image URL
+
+                // Fetch file content for the initial image
+                setInitialImageFile(file); // Store initial image file
             }
         } catch (error) {
             console.error("Error fetching student data:", error);
@@ -121,18 +132,41 @@ const UpdateStudent = () => {
         setFormData({ ...formData, [name]: selectedOptions.map(option => option.value) });
     };
 
-    const handleImageChange = (e) => {
-        const { name, files } = e.target;
-        const file = files[0];
-        if (file) {
+    const handleImageChange = ({ fileList }) => {
+        setFormData({ ...formData, student_image: fileList.length > 0 ? fileList[0].originFileObj : null });
+        if (fileList.length > 0) {
             const reader = new FileReader();
             reader.onloadend = () => {
                 setStudentImagePreview(reader.result);
                 setIsImageDeleted(false); // Reset the delete flag when a new image is selected
             };
-            reader.readAsDataURL(file);
+            reader.readAsDataURL(fileList[0].originFileObj);
+        } else {
+            setStudentImagePreview(null);
         }
-        setFormData({ ...formData, [name]: file });
+    };
+
+    const convertBlobToPng = async (blob, name) => {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                const img = new Image();
+                img.src = event.target.result;
+                img.onload = () => {
+                    const canvas = document.createElement('canvas');
+                    const ctx = canvas.getContext('2d');
+                    canvas.width = img.width;
+                    canvas.height = img.height;
+                    ctx.drawImage(img, 0, 0);
+                    canvas.toBlob((blob) => {
+                        const file = new File([blob], name.replace(/\.[^/.]+$/, ".png"), { type: "image/png" });
+                        resolve(file);
+                    }, "image/png");
+                };
+            };
+            reader.onerror = (error) => reject(error);
+            reader.readAsDataURL(blob);
+        });
     };
 
     const deleteImage = () => {
@@ -140,7 +174,7 @@ const UpdateStudent = () => {
         setStudentImagePreview(null);
         setIsImageDeleted(true); // Set the delete flag when the image is deleted
     };
-    
+
     const validateForm = () => {
         const newErrors = {};
         if (!formData.first_name) newErrors.first_name = "الاسم الأول مطلوب";
@@ -165,29 +199,31 @@ const UpdateStudent = () => {
 
         // Create FormData object
         const data = new FormData();
-        console.log(Object.keys(formData))
         Object.keys(formData).forEach(key => {
             if (key === "courses") {
-                
                 formData[key].forEach((course, index) => {
                     data.append(`${key}[${index}]`, course);
                 });
             } else {
-                console.log(formData[key])
                 data.append(key, formData[key]);
             }
         });
 
-        // Append the image separately if it exists
+        // Append the image if it exists or was not changed
         if (formData.student_image) {
             data.append("profile_image[0]", formData.student_image);
+            console.log(formData.student_image)
+        } else if (initialImageFile && !isImageDeleted) {
+            data.append("profile_image[0]", initialImageFile); // Append the existing image file if the image was not changed
         }
-        data.append("_method", "PUT" )
+
+        data.append("_method", "PUT");
+
         // Append a flag to delete the image if it was deleted
         if (isImageDeleted) {
             data.append("delete_image", true);
         }
-        console.log(data)
+
         try {
             await axiosInstance.post(`/v1/admin/students/${studentId}`, data, {
                 headers: {
@@ -500,13 +536,13 @@ const UpdateStudent = () => {
                                                         <label>
                                                             صورة الطالب <span className="login-danger"></span>
                                                         </label>
-                                                        <input
-                                                            className="form-control"
-                                                            type="file"
-                                                            name="student_image"
-                                                            accept="image/*"
+                                                        <Upload
+                                                            fileList={formData.student_image ? [formData.student_image] : []}
                                                             onChange={handleImageChange}
-                                                        />
+                                                            beforeUpload={() => false}
+                                                        >
+                                                            <Button icon={<UploadOutlined />}>اختر الملفات</Button>
+                                                        </Upload>
                                                         {studentImagePreview && (
                                                             <div>
                                                                 <img src={studentImagePreview} alt="Student Preview" style={{ marginTop: '10px', width: '100%', height: 'auto' }} />
