@@ -4,23 +4,50 @@ import FeatherIcon from "feather-icons-react";
 import axiosInstance from "../../../ApiService";
 import Select from "react-select";
 import { message } from "antd";
+import ReactQuill from "react-quill";
+import 'react-quill/dist/quill.snow.css';
+
+const modules = {
+    toolbar: [
+        [{ 'header': '1'}, {'header': '2'}, { 'font': [] }],
+        [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+        ['bold', 'italic', 'underline', 'strike', 'blockquote'],
+        [{'align': []}],
+        [{ 'color': [] }, { 'background': [] }],
+        ['clean'],
+        [{ 'direction': 'rtl' }]
+    ],
+    clipboard: {
+        matchVisual: false,
+    }
+};
+
+const formats = [
+    'header', 'font', 'size',
+    'bold', 'italic', 'underline', 'strike', 'blockquote',
+    'list', 'bullet', 'indent',
+    'link', 'image', 'color', 'background',
+    'align', 'direction'
+];
 
 const AddCourse = () => {
     const navigate = useNavigate();
     const { id } = useParams();
     const facultyId = id;
     const [formData, setFormData] = useState({
-        name: { ar: "" },
+        name: { ar: "", en: "" },
         code: "",
         faculty_id: parseInt(facultyId, 10),
         start_year: 0,
         hours: 0,
         departments: [],
-        teachers: []
+        teachers: [],
+        objectives: [""]
     });
     const [errors, setErrors] = useState({});
     const [departments, setDepartments] = useState([]);
     const [teachers, setTeachers] = useState([]);
+    const [courseImage, setCourseImage] = useState(null);
 
     useEffect(() => {
         fetchDepartments();
@@ -63,9 +90,24 @@ const AddCourse = () => {
         setFormData({ ...formData, [name]: selectedOptions.map(option => option.value) });
     };
 
+    const handleObjectiveChange = (index, value) => {
+        const updatedObjectives = formData.objectives.map((obj, i) =>
+            i === index ? value : obj
+        );
+        setFormData({ ...formData, objectives: updatedObjectives });
+    };
+
+
+    const handleImageChange = (e) => {
+        if (e.target.files && e.target.files[0]) {
+            setCourseImage(e.target.files[0]);
+        }
+    };
+
     const validateForm = () => {
         const newErrors = {};
         if (!formData.name.ar) newErrors.name_ar = "اسم المادة بالعربية مطلوب";
+        if (!formData.name.en) newErrors.name_en = "اسم المادة بالإنجليزية مطلوب";
         if (!formData.code) newErrors.code = "كود المادة مطلوب";
         if (formData.start_year <= 0) newErrors.start_year = "سنة البدء مطلوبة";
         if (formData.hours <= 0) newErrors.hours = "عدد الساعات مطلوب";
@@ -79,7 +121,31 @@ const AddCourse = () => {
         e.preventDefault();
         if (!validateForm()) return;
         try {
-            await axiosInstance.post("/v1/admin/courses", formData);
+            const formDataToSend = new FormData();
+            for (const key in formData) {
+                if (key === 'name') {
+                    formDataToSend.append('name[ar]', formData.name.ar);
+                    formDataToSend.append('name[en]', formData.name.en);
+                } else if (key === 'objectives') {
+                    formData.objectives.filter(obj => obj.trim()).forEach((obj, index) => {
+                        formDataToSend.append(`objectives[${index}]`, obj);
+                    });
+                } else if (Array.isArray(formData[key])) {
+                    formData[key].forEach((value, index) => {
+                        formDataToSend.append(`${key}[${index}]`, value);
+                    });
+                } else {
+                    formDataToSend.append(key, formData[key]);
+                }
+            }
+            if (courseImage) {
+                formDataToSend.append('image', courseImage);
+            }
+            await axiosInstance.post("/v1/admin/courses", formDataToSend, {
+                headers: {
+                    'Content-Type': 'multipart/form-data'
+                }
+            });
             message.success("تم اضافة المادة بنجاح");
             navigate(`/faculties/${facultyId}/courses`);
         } catch (error) {
@@ -148,6 +214,24 @@ const AddCourse = () => {
                                                         />
                                                         {errors.name_ar && (
                                                             <div className="text-danger">{errors.name_ar}</div>
+                                                        )}
+                                                    </div>
+                                                </div>
+                                                <div className="col-12">
+                                                    <div className="form-group local-forms">
+                                                        <label>
+                                                            الاسم بالإنجليزية <span className="login-danger">*</span>
+                                                        </label>
+                                                        <input
+                                                            className="form-control"
+                                                            type="text"
+                                                            name="name.en"
+                                                            placeholder="أدخل الاسم بالإنجليزية"
+                                                            value={formData.name.en}
+                                                            onChange={handleInputChange}
+                                                        />
+                                                        {errors.name_en && (
+                                                            <div className="text-danger">{errors.name_en}</div>
                                                         )}
                                                     </div>
                                                 </div>
@@ -242,6 +326,42 @@ const AddCourse = () => {
                                                         {errors.teachers && (
                                                             <div className="text-danger">{errors.teachers}</div>
                                                         )}
+                                                    </div>
+                                                </div>
+                                                <div className="col-12">
+                                                    <div className="form-group local-forms">
+                                                        <label>
+                                                            الأهداف  <span className="login-danger"></span>
+                                                        </label>
+                                                        {formData.objectives.map((objective, index) => (
+                                                            <div key={index} className="objective-item mb-3">
+                                                                <ReactQuill
+                                                                    value={objective}
+                                                                    onChange={(value) => handleObjectiveChange(index, value)}
+                                                                    placeholder="أدخل هنا..."
+                                                                    modules={modules}
+                                                                    formats={formats}
+                                                                    style={{ direction: 'ltr' }}
+                                                                />
+                                                            </div>
+                                                        ))}
+                                                    
+                                                        {errors.objectives && (
+                                                            <div className="text-danger">{errors.objectives}</div>
+                                                        )}
+                                                    </div>
+                                                </div>
+                                                <div className="col-12">
+                                                    <div className="form-group local-forms">
+                                                        <label>
+                                                            صورة المادة
+                                                        </label>
+                                                        <input
+                                                            type="file"
+                                                            className="form-control"
+                                                            onChange={handleImageChange}
+                                                            accept="image/*"
+                                                        />
                                                     </div>
                                                 </div>
                                                 <div className="col-12">
