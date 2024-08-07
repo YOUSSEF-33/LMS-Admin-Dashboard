@@ -39,8 +39,8 @@ const Sidebar = () => {
   }, []);
 
   useEffect(() => {
-    $(document).on('change', '.sidebar-type-four input', function() {
-      if($(this).is(':checked')) {
+    $(document).on('change', '.sidebar-type-four input', function () {
+      if ($(this).is(':checked')) {
         $('.sidebar').addClass('sidebar-eight');
         $('.sidebar-menu').addClass('sidebar-menu-eight');
         $('.menu-title').addClass('menu-title-eight');
@@ -90,7 +90,7 @@ const Sidebar = () => {
 
     return (
       <li className={`${isActive ? "active" : ""} ${subMenu ? "submenu" : ""}`}>
-        <Link 
+        <Link
           to={path}
           className={isSideMenu === label || isActive ? "subdrop" : ""}
           onClick={() => subMenu && toggleSidebar(isSideMenu === label ? "" : label)}
@@ -166,6 +166,17 @@ const Sidebar = () => {
                     { path: "/admins/teachers/roles", label: "الصلاحيات" },
                   ],
                   "/admins/teachers"
+                )}
+                <li className="menu-title">
+                  <span>اعلانات</span>
+                </li>
+                {renderMenuItem(
+                  "view_any_faculty",
+                  "/admin/announcements",
+                  <FeatherIcon icon="bell" size={18} className="me-2" />,
+                  "اعلانات",
+                  null,
+                  "/admin/announcements"
                 )}
                 <li className="menu-title">
                   <span>الكليات</span>

@@ -196,6 +196,10 @@ import UpdateLesson from "./components/pages/Courses/Categories/Lessons/UpdateLe
 import ListLessonContents from "./components/pages/Courses/Categories/Lessons/LessonContent/ViewAllContent";
 import AddLessonContent from "./components/pages/Courses/Categories/Lessons/LessonContent/AddLessonContent";
 import UpdateLessonContent from "./components/pages/Courses/Categories/Lessons/LessonContent/UpdateLessonContent";
+import AddAnnouncement from "./components/pages/Announcments/AddAnnouncment";
+import ListAnnouncements from "./components/pages/Announcments/ListAnnouncements";
+import AddAssignment from "./components/pages/Assignments/AddAssignment";
+import UpdateAssignment from "./components/pages/Assignments/UpdateAssignment";
 
 
 
@@ -321,6 +325,18 @@ const AppContainer = () => {
           </Route>
           <Route element={<RequirePermission allowedPermission="edit_lesson" />}>
             <Route path="/admin/faculties/:id/courses/:courseId/categories/:categoryId/lessons/:lessonId/lesson-content/:contentId/edit" element={<UpdateLessonContent />} />
+          </Route>
+          <Route element={<RequirePermission allowedPermission="create_announement" />}>
+            <Route path="/admin/announcements/create" element={<AddAnnouncement />} />
+          </Route>
+          <Route element={<RequirePermission allowedPermission="edit_lesson" />}>
+            <Route path="/admin/announcements" element={<ListAnnouncements />} />
+          </Route>
+          <Route element={<RequirePermission allowedPermission="edit_lesson" />}>
+            <Route path="/admin/faculties/:id/courses/:courseId/categories/:categoryId/lessons/:lessonId/lesson-content/create-assignment" element={<AddAssignment />} />
+          </Route>
+          <Route element={<RequirePermission allowedPermission="edit_lesson" />}>
+            <Route path="/admin/faculties/:id/courses/:courseId/categories/:categoryId/lessons/:lessonId/lesson-content/:assignmentId/edit-assignment" element={<UpdateAssignment />} />
           </Route>
         </Route>
       </Route>
