@@ -1,35 +1,41 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import axiosInstance from '../../../../../ApiService';
-import { Table, Modal, message } from "antd";
+import { Table, Modal, message, Button } from "antd";
 import FeatherIcon from 'feather-icons-react/build/FeatherIcon';
 import { onShowSizeChange, itemRender } from "../../../../Pagination";
 import moment from 'moment';
 import { CheckPermission } from '../../../../../utils/isPermissionFound';
 
 const ListLessons = () => {
-    const { courseId, categoryId } = useParams();
+    const {id, courseId, categoryId } = useParams();
+    const facultyId = id;
     const [selectedRowKeys, setSelectedRowKeys] = useState([]);
     const [dataSource, setDataSource] = useState([]);
-    const [pagination, setPagination] = useState({ current: 1, pageSize: 25, total: 0 });
-    const [loading, setLoading] = useState(false);
+    const [assignments, setAssignments] = useState([]);
+    const [lessonPagination, setLessonPagination] = useState({ current: 1, pageSize: 10, total: 0 });
+    const [assignmentPagination, setAssignmentPagination] = useState({ current: 1, pageSize: 10, total: 0 });
+    const [loadingLessons, setLoadingLessons] = useState(false);
+    const [loadingAssignments, setLoadingAssignments] = useState(false);
     const [error, setError] = useState("");
     const fetchFlag = useRef(false);
 
     useEffect(() => {
-        fetchData(pagination.current, pagination.pageSize);
+        fetchLessons(lessonPagination.current, lessonPagination.pageSize);
+        fetchAssignments(assignmentPagination.current, assignmentPagination.pageSize);
     }, []);
 
-    const fetchData = async (page, limit) => {
+    const fetchLessons = async (page, limit) => {
         if (fetchFlag.current) return;
         fetchFlag.current = true;
-        setLoading(true);
+        setLoadingLessons(true);
 
         try {
             const response = await axiosInstance.get(`v1/admin/courses/${courseId}/content-categories/${categoryId}/lessons?limit=${limit}&page=${page}`);
             const data = response.data;
             if (Array.isArray(data.data.items)) {
                 setDataSource(data.data.items);
+                setLessonPagination(prev => ({ ...prev, total: data.data.total }));
             } else {
                 console.error('API response is not an array', data.data);
             }
@@ -38,11 +44,30 @@ const ListLessons = () => {
             setError("حدث خطأ أثناء جلب بيانات الدروس. الرجاء المحاولة لاحقاً.");
         } finally {
             fetchFlag.current = false;
-            setLoading(false);
+            setLoadingLessons(false);
         }
     };
 
-    const handleDelete = (id) => {
+    const fetchAssignments = async (page, limit) => {
+        setLoadingAssignments(true);
+        try {
+            const response = await axiosInstance.get(`v1/admin/courses/${courseId}/course-content-categories/${categoryId}/assignments?limit=${limit}&page=${page}`);
+            const data = response.data;
+            if (Array.isArray(data.data.items)) {
+                setAssignments(data.data.items);
+                setAssignmentPagination(prev => ({ ...prev, total: data.data.total }));
+            } else {
+                console.error('API response is not an array', data.data);
+            }
+        } catch (error) {
+            console.error('Error fetching assignments:', error);
+            setError("حدث خطأ أثناء جلب بيانات الواجبات. الرجاء المحاولة لاحقاً.");
+        } finally {
+            setLoadingAssignments(false);
+        }
+    };
+
+    const handleDeleteLesson = (id) => {
         Modal.confirm({
             title: 'هل انت متأكد بأنك تريد حذف هذا الدرس',
             content: 'يمكنك عدم تنفيذ هذا',
@@ -61,12 +86,36 @@ const ListLessons = () => {
         });
     };
 
-    const handleTableChange = (pagination) => {
-        setPagination(pagination);
-        fetchData(pagination.current, pagination.pageSize);
+    const handleDeleteAssignment = async (assignmentId) => {
+        Modal.confirm({
+            title: 'هل انت متأكد بأنك تريد حذف هذا الواجب',
+            content: 'يمكنك عدم تنفيذ هذا',
+            okText: 'حذف',
+            okType: 'danger',
+            cancelText: 'تراجع',
+            onOk: async () => {
+                try {
+                    await axiosInstance.delete(`v1/admin/courses/${courseId}/course-content-categories/${categoryId}/assignments/${assignmentId}`);
+                    setAssignments(prevAssignments => prevAssignments.filter(assignment => assignment.id !== assignmentId));
+                    message.success('تم حذف الواجب بنجاح');
+                } catch (error) {
+                    setError("فشل في حذف هذا الواجب");
+                }
+            }
+        });
     };
 
-    const columns = [
+    const handleLessonTableChange = (pagination) => {
+        setLessonPagination(pagination);
+        fetchLessons(pagination.current, pagination.pageSize);
+    };
+
+    const handleAssignmentTableChange = (pagination) => {
+        setAssignmentPagination(pagination);
+        fetchAssignments(pagination.current, pagination.pageSize);
+    };
+
+    const lessonColumns = [
         {
             title: "الاسم",
             dataIndex: "translations",
@@ -102,25 +151,73 @@ const ListLessons = () => {
                             <FeatherIcon icon="eye" size="16" />
                         </Link>
                     }
-                    {CheckPermission("edit_lesson") ?
+                    {CheckPermission("edit_lesson") &&
                         <Link to={`${record.id}/edit`} className="btn btn-sm bg-success-light me-2" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                             <i className="feather-edit">
                                 <FeatherIcon icon="edit" size="16" />
                             </i>
-                        </Link> :
-                        <div></div>
+                        </Link>
                     }
-                    {CheckPermission("delete_lesson") ?
-                        <Link onClick={() => handleDelete(record.id)} className="btn btn-sm bg-danger-light me-2" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    {CheckPermission("delete_lesson") &&
+                        <Button onClick={() => handleDeleteLesson(record.id)} className="btn btn-sm bg-danger-light me-2" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                             <i className="feather-trash">
                                 <FeatherIcon icon="trash" size="16" />
                             </i>
-                        </Link> :
-                        <div></div>
+                        </Button>
                     }
                 </div>
             )
         },
+    ];
+
+    const assignmentColumns = [
+        {
+            title: "العنوان",
+            dataIndex: "title",
+            key: "title",
+            render: (text, record) => <span>{record.title}</span>
+        },
+        {
+            title: "الوصف",
+            dataIndex: "description",
+            key: "description",
+            render: (text, record) => <span>{record.description}</span>
+        },
+        {
+            title: "الدرجات الكلية",
+            dataIndex: "total_marks",
+            key: "total_marks"
+        },
+        {
+            title: "تاريخ التسليم",
+            dataIndex: "dead_line",
+            key: "dead_line",
+            render: (text) => moment(text).format('YYYY-MM-DD HH:mm:ss')
+        },
+        {
+            title: "الإجراءات",
+            dataIndex: "actions",
+            key: "actions",
+            render: (text, record) => (
+                <div className="actions">
+                    {CheckPermission("view_assignment") &&
+                        <Link to={`/admin/faculties/${facultyId}/courses/${courseId}/categories/${categoryId}/lessons/${record.id}/show-assignment`} className="btn btn-sm btn-rounded bg-primary-light me-2 rounded-full" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                            <FeatherIcon icon="eye" size="16" />
+                        </Link>
+                    }
+                    {CheckPermission("edit_assignment") &&
+                        <Link to={`${record.id}/edit-assignment`} className="btn btn-sm bg-success-light me-2 rounded-full" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                            <FeatherIcon icon="edit" size="16" />
+                        </Link>
+                    }
+                    {CheckPermission("delete_assignment") &&
+                        <Button onClick={() => handleDeleteAssignment(record.id)} className="btn btn-sm bg-danger-light me-2 rounded-full" style={{ padding: '2px 5px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                            <FeatherIcon icon="trash" size="16" />
+                        </Button>
+                    }
+                </div>
+            )
+        }
     ];
 
     const onSelectChange = (newSelectedRowKeys) => {
@@ -151,7 +248,7 @@ const ListLessons = () => {
                     </div>
                     <div className="row">
                         <div className="col-sm-12">
-                            <div className="card card-table comman-shadow">
+                            <div className="card card-table comman-shadow mb-4">
                                 <div className="card-body">
                                     <div className="page-header">
                                         <div className="row align-items-center">
@@ -174,21 +271,58 @@ const ListLessons = () => {
                                     <div className="table-responsive">
                                         <Table
                                             pagination={{
-                                                total: pagination.total,
+                                                total: lessonPagination.total,
                                                 showTotal: (total, range) =>
                                                     `عرض ${range[0]} إلى ${range[1]} من ${total} مدخلات`,
                                                 showSizeChanger: true,
-                                                onShowSizeChange: (current, size) => handleTableChange({ current, pageSize: size }),
+                                                onShowSizeChange: (current, size) => handleLessonTableChange({ current, pageSize: size }),
                                                 itemRender: itemRender,
-                                                current: pagination.current,
-                                                pageSize: pagination.pageSize,
+                                                current: lessonPagination.current,
+                                                pageSize: lessonPagination.pageSize,
                                             }}
-                                            columns={columns}
+                                            columns={lessonColumns}
                                             dataSource={dataSource}
                                             rowSelection={rowSelection}
                                             rowKey={(record) => record.id}
-                                            onChange={handleTableChange}
-                                            loading={loading}
+                                            onChange={handleLessonTableChange}
+                                            loading={loadingLessons}
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="card card-table comman-shadow">
+                                <div className="card-body">
+                                    <div className="page-header">
+                                        <div className="row align-items-center">
+                                            <div className="col">
+                                                <h3 className="page-title">التسليمات</h3>
+                                            </div>
+                                            <div className="col-auto text-end float-end ms-auto download-grp">
+                                                {CheckPermission("create_assignment") && (
+                                                    <Link to={`create-assignment`} className="btn btn-primary">
+                                                        <FeatherIcon icon="plus" /> إضافة تسليم
+                                                    </Link>
+                                                )}
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className="table-responsive">
+                                        <Table
+                                            pagination={{
+                                                total: assignmentPagination.total,
+                                                showTotal: (total, range) =>
+                                                    `عرض ${range[0]} إلى ${range[1]} من ${total} مدخلات`,
+                                                showSizeChanger: true,
+                                                onShowSizeChange: (current, size) => handleAssignmentTableChange({ current, pageSize: size }),
+                                                itemRender: itemRender,
+                                                current: assignmentPagination.current,
+                                                pageSize: assignmentPagination.pageSize,
+                                            }}
+                                            columns={assignmentColumns}
+                                            dataSource={assignments}
+                                            rowKey={(record) => record.id}
+                                            onChange={handleAssignmentTableChange}
+                                            loading={loadingAssignments}
                                         />
                                     </div>
                                 </div>

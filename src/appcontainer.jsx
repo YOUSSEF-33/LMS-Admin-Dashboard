@@ -200,6 +200,7 @@ import AddAnnouncement from "./components/pages/Announcments/AddAnnouncment";
 import ListAnnouncements from "./components/pages/Announcments/ListAnnouncements";
 import AddAssignment from "./components/pages/Assignments/AddAssignment";
 import UpdateAssignment from "./components/pages/Assignments/UpdateAssignment";
+import SubmissionDetails from "./components/pages/Assignments/SubmissionDetails/SubmissionDetails";
 
 
 
@@ -326,17 +327,24 @@ const AppContainer = () => {
           <Route element={<RequirePermission allowedPermission="edit_lesson" />}>
             <Route path="/admin/faculties/:id/courses/:courseId/categories/:categoryId/lessons/:lessonId/lesson-content/:contentId/edit" element={<UpdateLessonContent />} />
           </Route>
-          <Route element={<RequirePermission allowedPermission="create_announement" />}>
+          {/* TODO: change the permisson */}
+          <Route element={<RequirePermission allowedPermission="edit_lesson" />}>
             <Route path="/admin/announcements/create" element={<AddAnnouncement />} />
           </Route>
           <Route element={<RequirePermission allowedPermission="edit_lesson" />}>
             <Route path="/admin/announcements" element={<ListAnnouncements />} />
           </Route>
           <Route element={<RequirePermission allowedPermission="edit_lesson" />}>
-            <Route path="/admin/faculties/:id/courses/:courseId/categories/:categoryId/lessons/:lessonId/lesson-content/create-assignment" element={<AddAssignment />} />
+            <Route path="/admin/faculties/:id/courses/:courseId/categories/:categoryId/lessons/create-assignment" element={<AddAssignment />} />
           </Route>
           <Route element={<RequirePermission allowedPermission="edit_lesson" />}>
-            <Route path="/admin/faculties/:id/courses/:courseId/categories/:categoryId/lessons/:lessonId/lesson-content/:assignmentId/edit-assignment" element={<UpdateAssignment />} />
+            <Route path="/admin/faculties/:id/courses/:courseId/categories/:categoryId/lessons/:assignmentId/edit-assignment" element={<UpdateAssignment />} />
+          </Route>
+          <Route element={<RequirePermission allowedPermission="edit_lesson" />}>
+            <Route path="/admin/faculties/:id/courses/:courseId/categories/:categoryId/lessons/:assignmentId/show-assignment" element={<ListAssignments />} />
+          </Route>
+          <Route element={<RequirePermission allowedPermission="edit_lesson" />}>
+            <Route path="/admin/faculties/:id/courses/:courseId/categories/:categoryId/assignments/:assignmentId/submissions/:submissionId" element={<SubmissionDetails />} />
           </Route>
         </Route>
       </Route>

@@ -246,13 +246,13 @@ const AddAssignment = () => {
                 }
             });
             message.success("تمت إضافة المهمة بنجاح");
-            navigate("/admin/assignments");
+            navigate(-1);
         } catch (error) {
             console.error("Error creating assignment:", error);
             message.error("حدث خطأ أثناء إنشاء المهمة");
         }
     };
-    
+
     return (
         <>
             <div className="content container-fluid">
