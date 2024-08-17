@@ -6,6 +6,8 @@ import Select from "react-select";
 import { message, Upload, Button } from "antd";
 import { UploadOutlined } from "@ant-design/icons";
 import DatePicker from "react-datepicker";
+import ReactQuill from "react-quill";
+import "react-quill/dist/quill.snow.css";
 import "react-datepicker/dist/react-datepicker.css";
 
 const questionTypes = [
@@ -15,12 +17,35 @@ const questionTypes = [
     { value: 'TEXT', label: 'نص' }
 ];
 
+const modules = {
+    toolbar: [
+        [{ 'header': '1' }, { 'header': '2' }, { 'font': [] }],
+        [{ 'list': 'ordered' }, { 'list': 'bullet' }],
+        ['bold', 'italic', 'underline', 'strike', 'blockquote'],
+        [{ 'align': [] }],
+        [{ 'color': [] }, { 'background': [] }],
+        ['clean'],
+        [{ 'direction': 'rtl' }]
+    ],
+    clipboard: {
+        matchVisual: false,
+    }
+};
+
+const formats = [
+    'header', 'font', 'size',
+    'bold', 'italic', 'underline', 'strike', 'blockquote',
+    'list', 'bullet', 'indent',
+    'link', 'image', 'color', 'background',
+    'align', 'direction'
+];
+
 const AddAssignment = () => {
     const { courseId, categoryId } = useParams();
     const navigate = useNavigate();
     const [formData, setFormData] = useState({
-        title: { en: "", ar: "" },
-        description: { en: "", ar: "" },
+        title: "",
+        description: "",
         groups: [],
         total_marks: 0,
         dead_line: null,
@@ -42,12 +67,6 @@ const AddAssignment = () => {
         fetchGroups();
     }, []);
 
-    useEffect(() => {
-        if (formData.total_marks > 0) {
-            redistributeMarks();
-        }
-    }, [formData.total_marks]);
-
     const fetchGroups = async () => {
         try {
             const response = await axiosInstance.get("v1/admin/groups");
@@ -59,43 +78,18 @@ const AddAssignment = () => {
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
-        if (name.includes(".")) {
-            const [field, lang] = name.split(".");
-            setFormData(prev => ({ ...prev, [field]: { ...prev[field], [lang]: value } }));
-        } else if (name === "total_marks") {
-            setFormData(prev => ({ ...prev, [name]: parseFloat(value) || 0 }));
-        } else {
-            setFormData(prev => ({ ...prev, [name]: value }));
-        }
+        setFormData(prev => ({ ...prev, [name]: value }));
     };
 
-    const redistributeMarks = () => {
-        setFormData(prev => {
-            const totalMarks = prev.total_marks;
-            const updatedQuestions = prev.questions.map((q, index) => {
-                if (index === 0) {
-                    return { ...q, total_marks: totalMarks };
-                } else {
-                    return { ...q, total_marks: 0 };
-                }
-            });
-            return { ...prev, questions: updatedQuestions };
-        });
+    const handleDescriptionChange = (value) => {
+        setFormData(prev => ({ ...prev, description: value }));
     };
 
     const handleQuestionChange = (index, field, value) => {
-        setFormData(prev => {
-            const updatedQuestions = prev.questions.map((q, i) =>
-                i === index ? { ...q, [field]: field === 'total_marks' ? parseFloat(value) || 0 : value } : q
-            );
-
-            const totalAssignedMarks = updatedQuestions.reduce((sum, q) => sum + q.total_marks, 0);
-            if (totalAssignedMarks > prev.total_marks) {
-                message.warning("مجموع الدرجات المخصصة للأسئلة يتجاوز إجمالي الدرجات");
-            }
-
-            return { ...prev, questions: updatedQuestions };
-        });
+        setFormData(prev => ({
+            ...prev,
+            questions: prev.questions.map((q, i) => i === index ? { ...q, [field]: value } : q)
+        }));
     };
 
     const handleAddQuestion = () => {
@@ -158,7 +152,7 @@ const AddAssignment = () => {
         setFormData(prev => ({
             ...prev,
             questions: prev.questions.map((q, i) =>
-                i === questionIndex ? { ...q, answers: Array.isArray(selectedOptions) ? selectedOptions.map(option => option.value) : [] } : q
+                i === questionIndex ? { ...q, answers: selectedOptions.map(option => option.value) } : q
             )
         }));
     };
@@ -174,10 +168,8 @@ const AddAssignment = () => {
 
     const validateForm = () => {
         const newErrors = {};
-        if (!formData.title.en) newErrors.title_en = "عنوان المهمة مطلوب";
-        if (!formData.title.ar) newErrors.title_ar = "عنوان المهمة مطلوب";
-        if (!formData.description.en) newErrors.description_en = "الوصف مطلوب";
-        if (!formData.description.ar) newErrors.description_ar = "الوصف مطلوب";
+        if (!formData.title) newErrors.title = "عنوان المهمة مطلوب";
+        if (!formData.description) newErrors.description = "الوصف مطلوب";
         if (formData.groups.length === 0) newErrors.groups = "يجب اختيار مجموعة واحدة على الأقل";
         if (!formData.dead_line) newErrors.dead_line = "تاريخ الاستحقاق مطلوب";
         if (formData.questions.length === 0) newErrors.questions = "يجب إضافة سؤال واحد على الأقل";
@@ -200,17 +192,9 @@ const AddAssignment = () => {
         e.preventDefault();
         if (!validateForm()) return;
 
-        const totalQuestionMarks = formData.questions.reduce((sum, q) => sum + q.total_marks, 0);
-        if (totalQuestionMarks !== parseFloat(formData.total_marks)) {
-            message.error("مجموع درجات الأسئلة لا يساوي إجمالي الدرجات");
-            return;
-        }
-
         const formDataToSend = new FormData();
-        formDataToSend.append('title[en]', formData.title.en);
-        formDataToSend.append('title[ar]', formData.title.ar);
-        formDataToSend.append('description[en]', formData.description.en);
-        formDataToSend.append('description[ar]', formData.description.ar);
+        formDataToSend.append('title[ar]', formData.title);
+        formDataToSend.append('description[ar]', formData.description);
         formData.groups.forEach(group => formDataToSend.append('groups[]', group));
         formDataToSend.append('total_marks', formData.total_marks);
         formDataToSend.append('dead_line', formData.dead_line?.getTime());
@@ -222,17 +206,15 @@ const AddAssignment = () => {
 
             if (question.type === "ONE_CHOICE" || question.type === "TWO_CHOICES") {
                 question.options.forEach((option, optionIndex) => {
-                    formDataToSend.append(`questions[${index}][options][${optionIndex}]`, String(option));
+                    formDataToSend.append(`questions[${index}][options][${optionIndex}]`, option);
                 });
 
                 question.answers.forEach((answer, answerIndex) => {
-                    formDataToSend.append(`questions[${index}][answers][${answerIndex}]`, String(answer));
+                    formDataToSend.append(`questions[${index}][answers][${answerIndex}]`, answer);
                 });
             }
 
-            if ((question.type === "ONE_CHOICE" || question.type === "TWO_CHOICES" || question.type === "FILES") &&
-                question.question_attachments &&
-                question.question_attachments.length > 0) {
+            if (question.question_attachments.length > 0) {
                 question.question_attachments.forEach((file, fileIndex) => {
                     formDataToSend.append(`questions[${index}][question_attachments]`, file.originFileObj);
                 });
@@ -280,32 +262,25 @@ const AddAssignment = () => {
                                         <div className="col-12">
                                             <h5 className="form-title student-info">معلومات المهمة <span><FeatherIcon icon="more-vertical" /></span></h5>
                                         </div>
-                                        <div className="col-12 col-sm-6">
+                                        <div className="col-12">
                                             <div className="form-group local-forms">
-                                                <label>العنوان بالانجليزيه <span className="login-danger">*</span></label>
-                                                <input type="text" name="title.en" className="form-control" placeholder="أدخل عنوان المهمة" value={formData.title.en} onChange={handleInputChange} />
-                                                {errors.title_en && <div className="text-danger">{errors.title_en}</div>}
+                                                <label>العنوان <span className="login-danger">*</span></label>
+                                                <input type="text" name="title" className="form-control" placeholder="أدخل عنوان المهمة" value={formData.title} onChange={handleInputChange} />
+                                                {errors.title && <div className="text-danger">{errors.title}</div>}
                                             </div>
                                         </div>
-                                        <div className="col-12 col-sm-6">
+                                        <div className="col-12 mb-5">
                                             <div className="form-group local-forms">
-                                                <label>العنوان بالعربية <span className="login-danger">*</span></label>
-                                                <input type="text" name="title.ar" className="form-control" placeholder="أدخل عنوان المهمة" value={formData.title.ar} onChange={handleInputChange} />
-                                                {errors.title_ar && <div className="text-danger">{errors.title_ar}</div>}
-                                            </div>
-                                        </div>
-                                        <div className="col-12 col-sm-6">
-                                            <div className="form-group local-forms">
-                                                <label>الوصف بالانجليزيه</label>
-                                                <textarea name="description.en" className="form-control" placeholder="أدخل وصف المهمة" value={formData.description.en} onChange={handleInputChange}></textarea>
-                                                {errors.description_en && <div className="text-danger">{errors.description_en}</div>}
-                                            </div>
-                                        </div>
-                                        <div className="col-12 col-sm-6">
-                                            <div className="form-group local-forms">
-                                                <label>الوصف بالعربية</label>
-                                                <textarea name="description.ar" className="form-control" placeholder="أدخل وصف المهمة" value={formData.description.ar} onChange={handleInputChange}></textarea>
-                                                {errors.description_ar && <div className="text-danger">{errors.description_ar}</div>}
+                                                <label>الوصف <span className="login-danger">*</span></label>
+                                                <ReactQuill
+                                                    value={formData.description}
+                                                    onChange={handleDescriptionChange}
+                                                    placeholder="أدخل وصف المهمة"
+                                                    modules={modules}
+                                                    formats={formats}
+                                                    style={{ direction: 'ltr' ,height:'100px', marginBottom:'10px' }}
+                                                />
+                                                {errors.description && <div className="text-danger">{errors.description}</div>}
                                             </div>
                                         </div>
                                         <div className="col-12 col-sm-6">
@@ -330,11 +305,11 @@ const AddAssignment = () => {
                                             <div className="form-group local-forms">
                                                 <label>تاريخ الانتهاء <span className="login-danger">*</span></label>
                                                 <DatePicker
-                                                   className="form-control"
-                                                   showTimeSelect
-                                                   dateFormat="yyyy-MM-dd HH:mm"
-                                                   selected={formData.dead_line}
-                                                   onChange={handleDateChange}
+                                                    className="form-control"
+                                                    showTimeSelect
+                                                    dateFormat="yyyy-MM-dd HH:mm"
+                                                    selected={formData.dead_line}
+                                                    onChange={handleDateChange}
                                                 />
                                                 {errors.dead_line && <div className="text-danger">{errors.dead_line}</div>}
                                             </div>
@@ -415,14 +390,14 @@ const AddAssignment = () => {
                                                                 <label>الإجابة الصحيحة <span className="login-danger">*</span></label>
                                                                 {question.type === 'ONE_CHOICE' ? (
                                                                     <Select
-                                                                        options={question.options.map((option, i) => ({ value: option, label: option }))}
+                                                                        options={question.options.map((option) => ({ value: option, label: option }))}
                                                                         value={question.answers.length > 0 ? { value: question.answers[0], label: question.answers[0] } : null}
                                                                         onChange={(selectedOption) => handleSingleAnswerChange(index, selectedOption)}
                                                                     />
                                                                 ) : (
                                                                     <Select
                                                                         isMulti
-                                                                        options={question.options.map((option, i) => ({ value: option, label: option }))}
+                                                                        options={question.options.map((option) => ({ value: option, label: option }))}
                                                                         value={question.answers.map(answer => ({ value: answer, label: answer }))}
                                                                         onChange={(selectedOptions) => handleMultipleAnswerChange(index, selectedOptions)}
                                                                     />

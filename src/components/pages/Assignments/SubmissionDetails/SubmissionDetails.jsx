@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, useLocation, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import axiosInstance from '../../../../ApiService';
 import { Button, Spin, message, Card, Input, Radio, Tag } from 'antd';
 import { LeftOutlined, RightOutlined, CheckCircleOutlined, CloseCircleOutlined } from '@ant-design/icons';
@@ -8,30 +8,55 @@ import moment from 'moment';
 const SubmissionDetails = () => {
     const { id, courseId, categoryId, assignmentId, submissionId } = useParams();
     const facultyId = id;
-    const location = useLocation();
     const navigate = useNavigate();
-    const { nextId, prevId } = location.state || {};
 
     const [submission, setSubmission] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
     const [marks, setMarks] = useState({});
     const [markingTypes, setMarkingTypes] = useState({});
+    const [submissions, setSubmissions] = useState([]);
+    const [currentPage, setCurrentPage] = useState(1);
+    const [totalSubmissions, setTotalSubmissions] = useState(0);
 
     useEffect(() => {
         fetchSubmissionDetails();
     }, [submissionId]);
+
+    useEffect(() => {
+        fetchAllSubmissions();
+    }, [currentPage]);
+
+    const fetchAllSubmissions = async () => {
+        setLoading(true);
+        try {
+            const response = await axiosInstance.get(`v1/admin/courses/${courseId}/course-content-categories/${categoryId}/assignments/${assignmentId}/submissions`, {
+                params: {
+                    page: currentPage,
+                    limit: 25,
+                },
+            });
+            const data = response.data.data;
+            setTotalSubmissions(data.total); // assuming the total number of submissions is returned by the API
+            const submissionIds = data.items.students?.map(item => item.id);
+            setSubmissions(submissionIds);
+        } catch (err) {
+            console.log(err);
+        } finally {
+            setLoading(false);
+        }
+    };
 
     const fetchSubmissionDetails = async () => {
         setLoading(true);
         try {
             const response = await axiosInstance.get(`v1/admin/courses/${courseId}/course-content-categories/${categoryId}/assignments/${assignmentId}/submissions/${submissionId}`);
             setSubmission(response.data.data);
+
             const initialMarks = {};
             const initialMarkingTypes = {};
             response.data.data.questions.forEach(question => {
                 if (question.submitted_answers.length === 0) {
-                    // No answers provided, set default mark to 0
                     initialMarks[`${question.id}-no-answer`] = 0;
                     initialMarkingTypes[`${question.id}-no-answer`] = 'zero';
                 } else {
@@ -58,13 +83,8 @@ const SubmissionDetails = () => {
         }
     };
 
-    const navigateToSubmission = (id) => {
-        if (id) {
-            navigate(`/admin/faculties/${facultyId}/courses/${courseId}/categories/${categoryId}/assignments/${assignmentId}/submissions/${id}`, 
-                { state: { nextId: null, prevId: null } });
-        } else {
-            message.info('لا توجد تسليمات أخرى في هذا الاتجاه');
-        }
+    const navigateToSubmission = (submissionId) => {
+        navigate(`/admin/faculties/${facultyId}/courses/${courseId}/categories/${categoryId}/assignments/${assignmentId}/submissions/${submissionId}`);
     };
 
     const handleMarkChange = (questionId, answerId, value, type) => {
@@ -102,6 +122,41 @@ const SubmissionDetails = () => {
         } catch (error) {
             console.error('Error submitting marks:', error);
             message.error('حدث خطأ أثناء حفظ وتقديم العلامات');
+        }
+    };
+
+    const goToNextSubmission = () => {
+        console.log(submissions);
+        let currentIndex = 0;
+        for(let i = 0; i < submissions.length; i++ ){
+           if(submissions[i] == submissionId){
+             currentIndex = i;
+             break;
+           }
+        }
+        console.log(currentIndex);
+        if (currentIndex === submissions.length - 1 && submissions.length === 25) {
+            // If at the last submission of the current page and there might be more submissions, load the next page
+            setCurrentPage(prevPage => prevPage + 1);
+        } else if (currentIndex < submissions.length - 1) {
+            navigateToSubmission(submissions[currentIndex + 1]);
+        }
+    };
+
+    const goToPreviousSubmission = () => {
+        let currentIndex = 0;
+        for(let i = 0; i < submissions.length; i++ ){
+           if(submissions[i] == submissionId){
+             currentIndex = i;
+             break;
+           }
+        }
+        console.log(currentIndex);
+        if (currentIndex === 0 && currentPage > 1) {
+            // If at the first submission of the current page and there might be more submissions on the previous page
+            setCurrentPage(prevPage => prevPage - 1);
+        } else if (currentIndex > 0) {
+            navigateToSubmission(submissions[currentIndex - 1]);
         }
     };
 
@@ -246,15 +301,15 @@ const SubmissionDetails = () => {
             <div className="d-flex justify-content-between align-items-center" style={{ marginTop: '30px' }}>
                 <Button 
                     icon={<LeftOutlined />} 
-                    onClick={() => navigateToSubmission(prevId)}
-                    disabled={!prevId}
+                    onClick={goToPreviousSubmission}
+                    disabled={submissions.indexOf(Number(submissionId)) === 0 && currentPage === 1}
                 >
                     السابق
                 </Button>
                 <Button 
                     icon={<RightOutlined />} 
-                    onClick={() => navigateToSubmission(nextId)}
-                    disabled={!nextId}
+                    onClick={goToNextSubmission}
+                    disabled={submissions.indexOf(Number(submissionId)) === submissions.length - 1 && currentPage * 25 >= totalSubmissions}
                 >
                     التالي
                 </Button>
