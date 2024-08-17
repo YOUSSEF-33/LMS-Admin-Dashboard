@@ -6,6 +6,8 @@ import Select from "react-select";
 import { message, Upload, Button } from "antd";
 import { UploadOutlined } from "@ant-design/icons";
 import DatePicker from "react-datepicker";
+import ReactQuill from "react-quill";
+import "react-quill/dist/quill.snow.css";
 import "react-datepicker/dist/react-datepicker.css";
 import moment from 'moment';
 
@@ -16,12 +18,35 @@ const questionTypes = [
     { value: 'TEXT', label: 'نص' }
 ];
 
+const modules = {
+    toolbar: [
+        [{ 'header': '1' }, { 'header': '2' }, { 'font': [] }],
+        [{ 'list': 'ordered' }, { 'list': 'bullet' }],
+        ['bold', 'italic', 'underline', 'strike', 'blockquote'],
+        [{ 'align': [] }],
+        [{ 'color': [] }, { 'background': [] }],
+        ['clean'],
+        [{ 'direction': 'rtl' }]
+    ],
+    clipboard: {
+        matchVisual: false,
+    }
+};
+
+const formats = [
+    'header', 'font', 'size',
+    'bold', 'italic', 'underline', 'strike', 'blockquote',
+    'list', 'bullet', 'indent',
+    'link', 'image', 'color', 'background',
+    'align', 'direction'
+];
+
 const UpdateAssignment = () => {
     const { courseId, categoryId, assignmentId } = useParams();
     const navigate = useNavigate();
     const [formData, setFormData] = useState({
-        title: { en: "", ar: "" },
-        description: { en: "", ar: "" },
+        title: "",
+        description: "",
         groups: [],
         total_marks: 0,
         dead_line: null,
@@ -87,8 +112,8 @@ const UpdateAssignment = () => {
             const resolvedQuestions = await Promise.all(questionPromises);
 
             setFormData({
-                title: { en: assignmentData.title, ar: assignmentData.title },
-                description: { en: assignmentData.description, ar: assignmentData.description },
+                title: assignmentData.title,
+                description: assignmentData.description,
                 groups: assignmentData.groups.map(group => group.id),
                 total_marks: assignmentData.total_marks,
                 dead_line: validatedDeadLine,
@@ -102,12 +127,11 @@ const UpdateAssignment = () => {
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
-        if (name.includes(".")) {
-            const [field, lang] = name.split(".");
-            setFormData(prev => ({ ...prev, [field]: { ...prev[field], [lang]: value } }));
-        } else {
-            setFormData(prev => ({ ...prev, [name]: value }));
-        }
+        setFormData(prev => ({ ...prev, [name]: value }));
+    };
+
+    const handleDescriptionChange = (value) => {
+        setFormData(prev => ({ ...prev, description: value }));
     };
 
     const handleGroupChange = (selectedOptions) => {
@@ -187,7 +211,7 @@ const UpdateAssignment = () => {
 
     const validateForm = () => {
         const newErrors = {};
-        if (!formData.title.en) newErrors.title_en = "عنوان المهمة مطلوب";
+        if (!formData.title) newErrors.title = "عنوان المهمة مطلوب";
         if (formData.groups.length === 0) newErrors.groups = "يجب اختيار مجموعة واحدة على الأقل";
         if (!formData.dead_line) newErrors.dead_line = "تاريخ الاستحقاق مطلوب";
         if (formData.questions.length === 0) newErrors.questions = "يجب إضافة سؤال واحد على الأقل";
@@ -217,10 +241,8 @@ const UpdateAssignment = () => {
         }
 
         const formDataToSend = new FormData();
-        formDataToSend.append('title[en]', formData.title.en);
-        formDataToSend.append('title[ar]', formData.title.ar);
-        formDataToSend.append('description[en]', formData.description.en);
-        formDataToSend.append('description[ar]', formData.description.ar);
+        formDataToSend.append('title[ar]', formData.title);
+        formDataToSend.append('description[ar]', formData.description);
         formData.groups.forEach(group => formDataToSend.append('groups[]', group));
         formDataToSend.append('total_marks', formData.total_marks);
         formDataToSend.append('dead_line', formData.dead_line?.getTime());
@@ -265,19 +287,6 @@ const UpdateAssignment = () => {
         }
     };
 
-
-
-    const datePickerStyles = {
-        input: {
-            width: '100%',
-            padding: '10px 15px',
-            fontSize: '14px',
-            border: '1px solid #e5e5e5',
-            borderRadius: '4px',
-        },
-    };
-
-
     return (
         <>
             <div className="content container-fluid">
@@ -307,25 +316,23 @@ const UpdateAssignment = () => {
                                         </div>
                                         <div className="col-12">
                                             <div className="form-group local-forms">
-                                                <label>العنوان (بالإنجليزية) <span className="login-danger">*</span></label>
-                                                <input type="text" name="title.en" className="form-control" placeholder="أدخل عنوان المهمة بالإنجليزية" value={formData.title.en} onChange={handleInputChange} />
-                                                {errors.title_en && <div className="text-danger">{errors.title_en}</div>}
-                                            </div>
-                                            <div className="form-group local-forms">
-                                                <label>العنوان (بالعربية)</label>
-                                                <input type="text" name="title.ar" className="form-control" placeholder="أدخل عنوان المهمة بالعربية" value={formData.title.ar} onChange={handleInputChange} />
+                                                <label>العنوان <span className="login-danger">*</span></label>
+                                                <input type="text" name="title" className="form-control" placeholder="أدخل عنوان المهمة" value={formData.title} onChange={handleInputChange} />
+                                                {errors.title && <div className="text-danger">{errors.title}</div>}
                                             </div>
                                         </div>
-                                        <div className="col-12 col-sm-6">
+                                        <div className="col-12 mb-5">
                                             <div className="form-group local-forms">
-                                                <label>الوصف (بالإنجليزية)</label>
-                                                <textarea name="description.en" className="form-control" placeholder="أدخل وصف المهمة بالإنجليزية" value={formData.description.en} onChange={handleInputChange}></textarea>
-                                            </div>
-                                        </div>
-                                        <div className="col-12 col-sm-6">
-                                            <div className="form-group local-forms">
-                                                <label>الوصف (بالعربية)</label>
-                                                <textarea name="description.ar" className="form-control" placeholder="أدخل وصف المهمة بالعربية" value={formData.description.ar} onChange={handleInputChange}></textarea>
+                                                <label>الوصف <span className="login-danger">*</span></label>
+                                                <ReactQuill
+                                                    value={formData.description}
+                                                    onChange={handleDescriptionChange}
+                                                    placeholder="أدخل وصف المهمة"
+                                                    modules={modules}
+                                                    formats={formats}
+                                                    style={{ direction: 'ltr', height:'100px' }}
+                                                />
+                                                {errors.description && <div className="text-danger">{errors.description}</div>}
                                             </div>
                                         </div>
                                         <div className="col-12 col-sm-6">
