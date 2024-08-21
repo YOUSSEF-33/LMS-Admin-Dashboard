@@ -83,7 +83,7 @@ const Admins = () => {
                                 <FeatherIcon icon="eye" />
                             </i>
                         </Link>
-                        <Link to={`/admins/edit/${record.id}`} className="btn btn-sm bg-danger-light">
+                        <Link to={`/admins/list/edit/${record.id}`} className="btn btn-sm bg-danger-light">
                             <i className="feather-edit">
                                 <FeatherIcon icon="edit" className="list-edit" />
                             </i>
@@ -138,7 +138,7 @@ const Admins = () => {
                                                     </Link>
                                                     &nbsp;
                                                     &nbsp;
-                                                    <Link to="/admins/create" className="btn btn-primary">
+                                                    <Link to="/admins/list/create" className="btn btn-primary">
                                                         <i className="fas fa-plus" /> اضافة مشرف
                                                     </Link>
                                                 </div>

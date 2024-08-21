@@ -201,6 +201,9 @@ import ListAnnouncements from "./components/pages/Announcments/ListAnnouncements
 import AddAssignment from "./components/pages/Assignments/AddAssignment";
 import UpdateAssignment from "./components/pages/Assignments/UpdateAssignment";
 import SubmissionDetails from "./components/pages/Assignments/SubmissionDetails/SubmissionDetails";
+import AddQuiz from "./components/pages/Quizes/AddQuiz";
+import UpdateQuiz from "./components/pages/Quizes/UpdateQuiz";
+import QuizDetails from "./components/pages/Quizes/QuizDetails";
 
 
 
@@ -214,19 +217,19 @@ const AppContainer = () => {
         <Route element={<RequireAuth allowedRole="admin" />}>
           <Route path="/" element={<AdminDashboard />} />
           <Route element={<RequirePermission allowedPermission={"view_any_admin"} />}>
-            <Route path="/admins/view" element={<Admins />} />
+            <Route path="/admins/list/view" element={<Admins />} />
           </Route>
           <Route element={<RequirePermission allowedPermission="create_admin" />}>
-            <Route path="/admins/create" element={<AddAdmin />} />
+            <Route path="/admins/list/create" element={<AddAdmin />} />
           </Route>
           <Route element={<RequirePermission allowedPermission="edit_admin" />}>
-            <Route path="/admins/edit/:id" element={<EditAdmin />} />
+            <Route path="/admins/list/edit/:id" element={<EditAdmin />} />
           </Route>
           <Route element={<RequirePermission allowedPermission="view_any_role" />}>
-            <Route path="/admins/roles" element={<RolesList />} />
+            <Route path="/admins/list/roles" element={<RolesList />} />
           </Route>
           <Route element={<RequirePermission allowedPermission="create_role" />}>
-            <Route path="/admins/roles/create" element={<AddRole />} />
+            <Route path="/admins/list/roles/create" element={<AddRole />} />
           </Route>
           <Route element={<RequirePermission allowedPermission="view_any_faculty" />}>
             <Route path="/admin/all-faculties" element={<ListFaculties />} />
@@ -262,7 +265,7 @@ const AppContainer = () => {
             <Route path="/admin/faculties/:id/departments" element={<DepartmentsList />} />
           </Route>
           <Route element={<RequirePermission allowedPermission="view_any_department" />}>
-            <Route path="/admins/teachers" element={<TeachersList />} />
+            <Route path="/admins/teachers/view" element={<TeachersList />} />
           </Route>
           <Route element={<RequirePermission allowedPermission="view_any_department" />}>
             <Route path="/admins/teachers/create" element={<AddTeacher />} />
@@ -345,6 +348,18 @@ const AppContainer = () => {
           </Route>
           <Route element={<RequirePermission allowedPermission="edit_lesson" />}>
             <Route path="/admin/faculties/:id/courses/:courseId/categories/:categoryId/assignments/:assignmentId/submissions/:submissionId" element={<SubmissionDetails />} />
+          </Route>
+          <Route element={<RequirePermission allowedPermission="edit_lesson" />}>
+            <Route path="/admin/faculties/:id/courses/:courseId/categories/:categoryId/lessons/create-quiz" element={<AddQuiz />} />
+          </Route>
+          <Route element={<RequirePermission allowedPermission="edit_lesson" />}>
+            <Route path="/admin/faculties/:id/courses/:courseId/categories/:categoryId/lessons/:quizId/edit-quiz" element={<UpdateQuiz />} />
+          </Route>
+          <Route element={<RequirePermission allowedPermission="edit_lesson" />}>
+            <Route path="/admin/faculties/:id/courses/:courseId/categories/:categoryId/lessons/:quizId/show-quiz" element={<QuizDetails />} />
+          </Route>
+          <Route element={<RequirePermission allowedPermission="edit_lesson" />}>
+            <Route path="/admin/faculties/:id/courses/:courseId/categories/:categoryId/quizes/:quizId/submissions/:submissionId" element={<SubmissionDetails />} />
           </Route>
         </Route>
       </Route>

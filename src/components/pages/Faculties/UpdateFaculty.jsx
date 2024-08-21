@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import Header from "../../Header/Header";
-import SideBar from "../../SideBar/SideBar";
 import FeatherIcon from "feather-icons-react";
 import axiosInstance from "../../../ApiService";
 import Switch from "react-switch";
+import ReactQuill from 'react-quill';
+import 'react-quill/dist/quill.snow.css'; // import styles for Quill editor
 
 const UpdateFaculty = () => {
     const { id } = useParams(); // Assuming you're passing the faculty ID via URL params
@@ -15,7 +15,8 @@ const UpdateFaculty = () => {
         years: 0,
         is_active: 1,
         type: "HOURS",
-        roles: []
+        roles: [],
+        description: "" // Add description field
     });
     const [errors, setErrors] = useState({});
     const [roles, setRoles] = useState([]);
@@ -48,7 +49,8 @@ const UpdateFaculty = () => {
                     years: faculty.years,
                     is_active: faculty.is_active,
                     type: faculty.type,
-                    roles: faculty.roles.map(role => role.id)
+                    roles: faculty.roles.map(role => role.id),
+                    description: faculty.description // Populate description field
                 });
                 setSelectAll(faculty.roles.length === roles.length);
             }
@@ -65,6 +67,10 @@ const UpdateFaculty = () => {
         } else {
             setFormData({ ...formData, [name]: value });
         }
+    };
+
+    const handleDescriptionChange = (value) => {
+        setFormData({ ...formData, description: value });
     };
 
     const handleToggleChange = (roleId) => {
@@ -250,6 +256,16 @@ const UpdateFaculty = () => {
                                                             <option value="HOURS">نظام الساعات المعتمدة</option>
                                                             <option value="YEARS">السنين الدراسية</option>
                                                         </select>
+                                                    </div>
+                                                </div>
+                                                <div className="col-12">
+                                                    <div className="form-group local-forms">
+                                                        <label>الوصف</label>
+                                                        <ReactQuill
+                                                            theme="snow"
+                                                            value={formData.description}
+                                                            onChange={handleDescriptionChange}
+                                                        />
                                                     </div>
                                                 </div>
                                                 <div className="col-12">

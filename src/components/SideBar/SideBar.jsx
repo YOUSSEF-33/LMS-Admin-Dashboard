@@ -151,10 +151,10 @@ const Sidebar = () => {
                   <i className="fas fa-graduation-cap" />,
                   "المشرفون",
                   [
-                    { path: "/admins/view", label: "المشرفون" },
-                    { path: "/admins/roles", label: "الصلاحيات" },
+                    { path: "/admins/list/view", label: "المشرفون" },
+                    { path: "/admins/list/roles", label: "الصلاحيات" },
                   ],
-                  "/admins"
+                  "/admins/list"
                 )}
                 {renderMenuItem(
                   "view_any_teacher",
@@ -162,7 +162,7 @@ const Sidebar = () => {
                   <i className="fas fa-graduation-cap" />,
                   "المدرسون",
                   [
-                    { path: "/admins/teachers", label: "المدرسون" },
+                    { path: "/admins/teachers/view", label: "المدرسون" },
                     { path: "/admins/teachers/roles", label: "الصلاحيات" },
                   ],
                   "/admins/teachers"
