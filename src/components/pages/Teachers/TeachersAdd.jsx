@@ -75,7 +75,7 @@ const AddTeacher = () => {
       });
 
       message.success("تم إضافة المدرس بنجاح");
-      navigate("/admins/teachers");
+      navigate(-1);
     } catch (error) {
       if (error.response && error.response.data && error.response.data.errors) {
         const serverErrors = error.response.data.errors;

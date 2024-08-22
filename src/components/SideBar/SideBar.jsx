@@ -131,7 +131,7 @@ const Sidebar = () => {
             <div id="sidebar-menu" className="sidebar-menu">
               <ul>
                 <li className="menu-title">
-                  <span>Main Menu</span>
+                  <span>القائمة الرئيسية </span>
                 </li>
                 {renderMenuItem(
                   "view_dashboard",
@@ -199,8 +199,6 @@ const Sidebar = () => {
                       { path: `/admin/faculties/${faculty.id}/dashboard`, label: "لوحة التحكم" },
                       { path: `/admin/faculties/${faculty.id}/students`, label: "الطلاب" },
                       { path: `/admin/faculties/${faculty.id}/groups`, label: "المجموعات" },
-                      { path: `/admin/faculties/${faculty.id}/assignments`, label: "الواجبات" },
-                      { path: `/admin/faculties/${faculty.id}/exams`, label: "الامتحانات" },
                       { path: `/admin/faculties/${faculty.id}/courses`, label: "المقررات" },
                     ],
                     `/admin/faculties/${faculty.id}`
