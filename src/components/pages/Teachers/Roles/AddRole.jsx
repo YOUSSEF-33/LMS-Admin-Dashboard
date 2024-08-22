@@ -93,7 +93,7 @@ const AddTeacherRole = () => {
     try {
       await axiosInstance.post("/v1/admin/roles/teachers-roles", formData);
       message.success("تم اضافة الصلاحية بنجاح")
-      navigate("/admins/teachers/roles");
+      navigate(-1);
     } catch (error) {
       if (error.response && error.response.data && error.response.data.errors) {
         const serverErrors = error.response.data.errors;

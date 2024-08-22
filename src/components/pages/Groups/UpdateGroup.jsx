@@ -53,7 +53,7 @@ const UpdateGroup = () => {
         try {
             await axiosInstance.put(`/v1/admin/groups/${groupId}`, formData);
             message.success("تم تحديث المجموعة بنجاح");
-            navigate(`/admin/faculties/${formData.faculty_id}/groups`);
+            navigate(-1);
         } catch (error) {
             if (error.response && error.response.data && error.response.data.errors && error.response.status === 422) {
                 const serverErrors = error.response.data.errors;

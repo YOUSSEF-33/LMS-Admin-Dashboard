@@ -152,7 +152,7 @@ const AddStudent = () => {
                 }
             });
             message.success("تم إنشاء الطالب بنجاح");
-            navigate(`/admin/faculties/${facultyId}/students`);
+            navigate(-1);
         } catch (error) {
             if (error.response && error.response.data && error.response.data.errors && error.response.status === 422) {
                 const serverErrors = error.response.data.errors;

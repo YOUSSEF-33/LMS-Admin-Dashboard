@@ -37,7 +37,7 @@ const AddAdmin = () => {
     if (!validateForm()) return;
     try {
       await axiosInstance.post("v1/admins/register", formData);
-      navigate("/admins");
+      navigate(-1);
     } catch (error) {
       if (error.response && error.response.status === 422) {
         const serverErrors = error.response.data.errors;

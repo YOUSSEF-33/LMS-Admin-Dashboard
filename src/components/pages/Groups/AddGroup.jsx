@@ -35,7 +35,7 @@ const AddGroup = () => {
         try {
             await axiosInstance.post("v1/admin/groups", formData);
             message.success("تم إنشاء المجموعة بنجاح");
-            navigate(`/admin/faculties/${facultyId}/groups`);
+            navigate(-1);
         } catch (error) {
             if (error.response && error.response.data && error.response.data.errors && error.response.status === 422) {
                 const serverErrors = error.response.data.errors;

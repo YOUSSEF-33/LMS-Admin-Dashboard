@@ -205,8 +205,6 @@ import AddQuiz from "./components/pages/Quizes/AddQuiz";
 import UpdateQuiz from "./components/pages/Quizes/UpdateQuiz";
 import QuizDetails from "./components/pages/Quizes/QuizDetails";
 
-
-
 const AppContainer = () => {
   return (
     <Routes>
@@ -216,6 +214,8 @@ const AppContainer = () => {
       <Route path="/" element={<Layout />}>
         <Route element={<RequireAuth allowedRole="admin" />}>
           <Route path="/" element={<AdminDashboard />} />
+
+          {/* Admin Management */}
           <Route element={<RequirePermission allowedPermission={"view_any_admin"} />}>
             <Route path="/admins/list/view" element={<Admins />} />
           </Route>
@@ -225,12 +225,16 @@ const AppContainer = () => {
           <Route element={<RequirePermission allowedPermission="edit_admin" />}>
             <Route path="/admins/list/edit/:id" element={<EditAdmin />} />
           </Route>
+
+          {/* Role Management */}
           <Route element={<RequirePermission allowedPermission="view_any_role" />}>
             <Route path="/admins/list/roles" element={<RolesList />} />
           </Route>
           <Route element={<RequirePermission allowedPermission="create_role" />}>
             <Route path="/admins/list/roles/create" element={<AddRole />} />
           </Route>
+
+          {/* Faculty Management */}
           <Route element={<RequirePermission allowedPermission="view_any_faculty" />}>
             <Route path="/admin/all-faculties" element={<ListFaculties />} />
           </Route>
@@ -246,6 +250,8 @@ const AppContainer = () => {
           <Route element={<RequirePermission allowedPermission="edit_faculty" />}>
             <Route path="/admin/faculties/:id/exams" element={<ListExams />} />
           </Route>
+
+          {/* Student Management */}
           <Route element={<RequirePermission allowedPermission="view_any_student" />}>
             <Route path="/admin/faculties/:id/students" element={<StudentsList />} />
           </Route>
@@ -255,29 +261,26 @@ const AppContainer = () => {
           <Route element={<RequirePermission allowedPermission="edit_student" />}>
             <Route path="/admin/faculties/:id/students/:studentId/edit" element={<UpdateStudent />} />
           </Route>
+
+          {/* Assignment Management */}
           <Route element={<RequirePermission allowedPermission="edit_faculty" />}>
             <Route path="/admin/faculties/:id/assignments" element={<ListAssignments />} />
           </Route>
+
+          {/* Course Management */}
           <Route element={<RequirePermission allowedPermission="edit_faculty" />}>
             <Route path="/admin/faculties/:id/courses" element={<ListCourses />} />
-          </Route>
-          <Route element={<RequirePermission allowedPermission="view_any_department" />}>
-            <Route path="/admin/faculties/:id/departments" element={<DepartmentsList />} />
-          </Route>
-          <Route element={<RequirePermission allowedPermission="view_any_department" />}>
-            <Route path="/admins/teachers/view" element={<TeachersList />} />
-          </Route>
-          <Route element={<RequirePermission allowedPermission="view_any_department" />}>
-            <Route path="/admins/teachers/create" element={<AddTeacher />} />
-          </Route>
-          <Route element={<RequirePermission allowedPermission="view_any_department" />}>
-            <Route path="/admins/teachers/edit/:id" element={<EditTeacher />} />
           </Route>
           <Route element={<RequirePermission allowedPermission="create_course" />}>
             <Route path="/admin/faculties/:id/courses/create" element={<AddCourse />} />
           </Route>
-          <Route element={<RequirePermission allowedPermission="view_any_department" />}>
+          <Route element={<RequirePermission allowedPermission="edit_course" />}>
             <Route path="/admin/faculties/:id/courses/:courseId/edit" element={<UpdateCourse />} />
+          </Route>
+
+          {/* Department Management */}
+          <Route element={<RequirePermission allowedPermission="view_any_department" />}>
+            <Route path="/admin/faculties/:id/departments" element={<DepartmentsList />} />
           </Route>
           <Route element={<RequirePermission allowedPermission="create_department" />}>
             <Route path="/admin/faculties/:id/departments/create" element={<AddDepartment />} />
@@ -285,6 +288,8 @@ const AppContainer = () => {
           <Route element={<RequirePermission allowedPermission="edit_department" />}>
             <Route path="/admin/faculties/:id/departments/:departmentId/edit" element={<UpdateDepartment />} />
           </Route>
+
+          {/* Group Management */}
           <Route element={<RequirePermission allowedPermission="view_any_group" />}>
             <Route path="/admin/faculties/:id/groups" element={<GroupsList />} />
           </Route>
@@ -294,6 +299,19 @@ const AppContainer = () => {
           <Route element={<RequirePermission allowedPermission="edit_group" />}>
             <Route path="/admin/faculties/:id/groups/:groupId/edit" element={<UpdateGroup />} />
           </Route>
+
+          {/* Teacher Management */}
+          <Route element={<RequirePermission allowedPermission="view_any_department" />}>
+            <Route path="/admins/teachers/view" element={<TeachersList />} />
+          </Route>
+          <Route element={<RequirePermission allowedPermission="create_teacher" />}>
+            <Route path="/admins/teachers/create" element={<AddTeacher />} />
+          </Route>
+          <Route element={<RequirePermission allowedPermission="edit_teacher" />}>
+            <Route path="/admins/teachers/edit/:id" element={<EditTeacher />} />
+          </Route>
+
+          {/* Teacher Role Management */}
           <Route element={<RequirePermission allowedPermission="view_any_role" />}>
             <Route path="/admins/teachers/roles" element={<TeachersRolesList />} />
           </Route>
@@ -303,6 +321,8 @@ const AppContainer = () => {
           <Route element={<RequirePermission allowedPermission="edit_role" />}>
             <Route path="/admins/teachers/roles/:id/edit" element={<UpdateTeacherRole />} />
           </Route>
+
+          {/* Course Content Category Management */}
           <Route element={<RequirePermission allowedPermission="view_any_course_content_category" />}>
             <Route path="/admin/faculties/:id/courses/:courseId/categories" element={<ListCategory />} />
           </Route>
@@ -312,6 +332,8 @@ const AppContainer = () => {
           <Route element={<RequirePermission allowedPermission="edit_course_content_category" />}>
             <Route path="/admin/faculties/:id/courses/:courseId/categories/:categoryId/edit" element={<UpdateCategory />} />
           </Route>
+
+          {/* Lesson Management */}
           <Route element={<RequirePermission allowedPermission="view_any_lesson" />}>
             <Route path="/admin/faculties/:id/courses/:courseId/categories/:categoryId/lessons" element={<ListLessons />} />
           </Route>
@@ -330,13 +352,16 @@ const AppContainer = () => {
           <Route element={<RequirePermission allowedPermission="edit_lesson" />}>
             <Route path="/admin/faculties/:id/courses/:courseId/categories/:categoryId/lessons/:lessonId/lesson-content/:contentId/edit" element={<UpdateLessonContent />} />
           </Route>
-          {/* TODO: change the permisson */}
+
+          {/* Announcements */}
           <Route element={<RequirePermission allowedPermission="edit_lesson" />}>
             <Route path="/admin/announcements/create" element={<AddAnnouncement />} />
           </Route>
           <Route element={<RequirePermission allowedPermission="edit_lesson" />}>
             <Route path="/admin/announcements" element={<ListAnnouncements />} />
           </Route>
+
+          {/* Assignments */}
           <Route element={<RequirePermission allowedPermission="edit_lesson" />}>
             <Route path="/admin/faculties/:id/courses/:courseId/categories/:categoryId/lessons/create-assignment" element={<AddAssignment />} />
           </Route>
@@ -349,6 +374,8 @@ const AppContainer = () => {
           <Route element={<RequirePermission allowedPermission="edit_lesson" />}>
             <Route path="/admin/faculties/:id/courses/:courseId/categories/:categoryId/assignments/:assignmentId/submissions/:submissionId" element={<SubmissionDetails />} />
           </Route>
+
+          {/* Quizzes */}
           <Route element={<RequirePermission allowedPermission="edit_lesson" />}>
             <Route path="/admin/faculties/:id/courses/:courseId/categories/:categoryId/lessons/create-quiz" element={<AddQuiz />} />
           </Route>
@@ -361,6 +388,7 @@ const AppContainer = () => {
           <Route element={<RequirePermission allowedPermission="edit_lesson" />}>
             <Route path="/admin/faculties/:id/courses/:courseId/categories/:categoryId/quizes/:quizId/submissions/:submissionId" element={<SubmissionDetails />} />
           </Route>
+
         </Route>
       </Route>
     </Routes>
@@ -368,4 +396,3 @@ const AppContainer = () => {
 };
 
 export default AppContainer;
-

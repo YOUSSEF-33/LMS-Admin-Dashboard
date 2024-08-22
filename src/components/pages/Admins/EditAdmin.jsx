@@ -44,7 +44,7 @@ const EditAdmin = () => {
     console.log(formData)
     try {
       await axiosInstance.post("v1/admin/roles/sync", formData);
-      navigate("/admins");
+      navigate(-1);
     } catch (error) {
       console.error("Error updating admin role:", error);
       console.log(error.response.data.message)

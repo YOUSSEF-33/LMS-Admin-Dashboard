@@ -52,9 +52,14 @@ const UpdateStudent = () => {
             const response = await axiosInstance.get(`/v1/admin/students/${studentId}`);
             if (response.data && response.data.data) {
                 const student = response.data.data;
-                const data = await fetch(student.profile_image.url);
-                const blob = await data.blob();
-                const file = await convertBlobToPng(blob, student.profile_image.name);
+                let file = null;
+
+                // If student has a profile image, convert it to a file for handling
+                if (student.profile_image?.url) {
+                    const data = await fetch(student.profile_image.url);
+                    const blob = await data.blob();
+                    file = await convertBlobToPng(blob, student.profile_image.name);
+                }
 
                 setFormData({
                     first_name: student.first_name,
@@ -75,8 +80,8 @@ const UpdateStudent = () => {
                     student_image: file,
                 });
 
-                setStudentImagePreview(student.profile_image.url); // Assuming profile_image.url is the URL of the student's image
-                setInitialImageURL(student.profile_image.url); // Store initial image URL
+                setStudentImagePreview(student.profile_image?.url); // Assuming profile_image.url is the URL of the student's image
+                setInitialImageURL(student.profile_image?.url); // Store initial image URL
 
                 // Fetch file content for the initial image
                 setInitialImageFile(file); // Store initial image file
@@ -231,7 +236,7 @@ const UpdateStudent = () => {
                 }
             });
             message.success("تم تحديث بيانات الطالب بنجاح");
-            navigate(`/admin/faculties/${facultyId}/students`);
+            navigate(-1);
         } catch (error) {
             if (error.response && error.response.data && error.response.data.errors && error.response.status === 422) {
                 const serverErrors = error.response.data.errors;

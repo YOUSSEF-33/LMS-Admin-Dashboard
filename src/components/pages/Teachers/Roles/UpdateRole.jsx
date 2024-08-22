@@ -120,7 +120,7 @@ const UpdateTeacherRole = () => {
 
       await axiosInstance.put(`/v1/admin/roles/teachers-roles/${id}`, payload);
       message.success("تم تعديل الصلاحية بنجاح")
-      navigate("/admins/teachers/roles");
+      navigate(-1);
     } catch (error) {
       if (error.response && error.response.data && error.response.data.errors) {
         const serverErrors = error.response.data.errors;
