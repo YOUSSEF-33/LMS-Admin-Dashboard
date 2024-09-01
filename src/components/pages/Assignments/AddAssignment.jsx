@@ -168,7 +168,7 @@ const AddAssignment = () => {
 
     const validateForm = () => {
         const newErrors = {};
-        if (!formData.title) newErrors.title = "عنوان المهمة مطلوب";
+        if (!formData.title) newErrors.title = "عنوان التسليم مطلوب";
         if (!formData.description) newErrors.description = "الوصف مطلوب";
         if (formData.groups.length === 0) newErrors.groups = "يجب اختيار مجموعة واحدة على الأقل";
         if (!formData.dead_line) newErrors.dead_line = "تاريخ الاستحقاق مطلوب";
@@ -227,11 +227,11 @@ const AddAssignment = () => {
                     'Content-Type': 'multipart/form-data'
                 }
             });
-            message.success("تمت إضافة المهمة بنجاح");
+            message.success("تمت إضافة التسليم بنجاح");
             navigate(-1);
         } catch (error) {
             console.error("Error creating assignment:", error);
-            message.error("حدث خطأ أثناء إنشاء المهمة");
+            message.error("حدث خطأ أثناء إنشاء التسليم");
         }
     };
 
@@ -242,12 +242,12 @@ const AddAssignment = () => {
                     <div className="row align-items-center">
                         <div className="col-sm-12">
                             <div className="page-sub-header">
-                                <h3 className="page-title">إضافة مهمة</h3>
+                                <h3 className="page-title">إضافة تسليم</h3>
                                 <ul className="breadcrumb">
                                     <li className="breadcrumb-item">
                                         <Link to="/assignments">المهام</Link>
                                     </li>
-                                    <li className="breadcrumb-item active">إضافة مهمة</li>
+                                    <li className="breadcrumb-item active">إضافة تسليم</li>
                                 </ul>
                             </div>
                         </div>
@@ -260,12 +260,12 @@ const AddAssignment = () => {
                                 <form onSubmit={handleSubmit}>
                                     <div className="row">
                                         <div className="col-12">
-                                            <h5 className="form-title student-info">معلومات المهمة <span><FeatherIcon icon="more-vertical" /></span></h5>
+                                            <h5 className="form-title student-info">معلومات التسليم <span><FeatherIcon icon="more-vertical" /></span></h5>
                                         </div>
                                         <div className="col-12">
                                             <div className="form-group local-forms">
                                                 <label>العنوان <span className="login-danger">*</span></label>
-                                                <input type="text" name="title" className="form-control" placeholder="أدخل عنوان المهمة" value={formData.title} onChange={handleInputChange} />
+                                                <input type="text" name="title" className="form-control" placeholder="أدخل عنوان التسليم" value={formData.title} onChange={handleInputChange} />
                                                 {errors.title && <div className="text-danger">{errors.title}</div>}
                                             </div>
                                         </div>
@@ -275,7 +275,7 @@ const AddAssignment = () => {
                                                 <ReactQuill
                                                     value={formData.description}
                                                     onChange={handleDescriptionChange}
-                                                    placeholder="أدخل وصف المهمة"
+                                                    placeholder="أدخل وصف التسليم"
                                                     modules={modules}
                                                     formats={formats}
                                                     style={{ direction: 'ltr' ,height:'100px', marginBottom:'10px' }}
@@ -350,7 +350,6 @@ const AddAssignment = () => {
                                                             />
                                                         </div>
                                                     </div>
-                                                    {(question.type === 'FILES' || question.type === 'ONE_CHOICE' || question.type === 'TWO_CHOICES') && (
                                                         <div className="col-12 mb-2">
                                                             <label className="mx-2 mt-2">المرفقات</label>
                                                             <Upload
@@ -363,7 +362,6 @@ const AddAssignment = () => {
                                                                 <Button icon={<UploadOutlined />}>اختر الملفات</Button>
                                                             </Upload>
                                                         </div>
-                                                    )}
                                                     {(question.type === 'ONE_CHOICE' || question.type === 'TWO_CHOICES') && (
                                                         <>
                                                             <div className="col-12 ">
@@ -421,7 +419,7 @@ const AddAssignment = () => {
                                         </div>
                                         <div className="col-12">
                                             <div className="student-submit">
-                                                <button type="submit" className="btn btn-primary">إضافة المهمة</button>
+                                                <button type="submit" className="btn btn-primary">إضافة التسليم</button>
                                             </div>
                                         </div>
                                     </div>

@@ -103,7 +103,12 @@ const ListAssignmentContents = () => {
     };
 
     const renderQuestion = (question) => {
-        const questionTypeText = question.type === 'ONE_CHOICE' ? 'اختيار واحد' : question.type === 'TWO_CHOICES' ? 'اختيارين' : question.type;
+        const questionTypeText = 
+        question.type === 'ONE_CHOICE' ? 'اختيار واحد' : 
+        question.type === 'TWO_CHOICES' ? 'اختيارين' : 
+        question.type == 'FILES' ? 'مرفقات' :
+        question.type == 'TEXT' ? 'مقالي' :
+        question.type;
 
         return (
             <div key={question.id}>
@@ -157,11 +162,6 @@ const ListAssignmentContents = () => {
             title: 'الكود',
             dataIndex: 'code',
             key: 'code',
-        },
-        {
-            title: 'الهاتف',
-            dataIndex: 'phone',
-            key: 'phone',
         },
         {
             title: 'المجموعة',
@@ -218,7 +218,7 @@ const ListAssignmentContents = () => {
                 <div className='mt-5'>
                     <div className="row">
                         <p className="text-muted">
-                            <strong>تاريخ التسليم:</strong> {moment(assignment.dead_line).format('YYYY-MM-DD HH:mm:ss')}
+                            <strong>تاريخ التسليم:</strong> {moment(assignment.dead_line).format('YYYY-MM-DD HH:mm')}
                         </p>
                         <p className="text-muted">
                             <strong>الدرجات الكلية:</strong> {assignment.total_marks}

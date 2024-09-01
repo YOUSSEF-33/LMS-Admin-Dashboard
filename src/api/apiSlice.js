@@ -2,7 +2,7 @@ import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 //import { logout, selectCurrentToken, setCredentials } from '../authentication/authSlice';
 
 const baseQuery = fetchBaseQuery({
-  baseUrl: 'https://bnu-api-staging.knownlege.com/api/v1',
+  baseUrl: 'http://knownlege.test/api/v1',
   //credentials: 'include', // Include credentials in the requests
   prepareHeaders: (headers, { getState }) => {
     const token = selectCurrentToken(getState());

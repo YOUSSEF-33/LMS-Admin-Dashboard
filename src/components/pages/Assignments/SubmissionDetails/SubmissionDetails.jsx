@@ -18,6 +18,7 @@ const SubmissionDetails = () => {
     const [submissions, setSubmissions] = useState([]);
     const [currentPage, setCurrentPage] = useState(1);
     const [totalSubmissions, setTotalSubmissions] = useState(0);
+    const [studentId, setStudentId] = useState(null);
 
     useEffect(() => {
         fetchSubmissionDetails();
@@ -52,23 +53,32 @@ const SubmissionDetails = () => {
         try {
             const response = await axiosInstance.get(`v1/admin/courses/${courseId}/course-content-categories/${categoryId}/assignments/${assignmentId}/submissions/${submissionId}`);
             setSubmission(response.data.data);
+            const studentId = response.data.data.students[0]?.id; 
+            setStudentId(studentId);
 
             const initialMarks = {};
             const initialMarkingTypes = {};
             response.data.data.questions.forEach(question => {
                 if (question.submitted_answers.length === 0) {
-                    initialMarks[`${question.id}-no-answer`] = 0;
-                    initialMarkingTypes[`${question.id}-no-answer`] = 'zero';
+                    initialMarks[question.id] = 0;
+                    marks[question.id] = 0;
+                    initialMarkingTypes[question.id] = 'zero';
                 } else {
                     question.submitted_answers.forEach(answer => {
-                        const key = `${question.id}-${answer.id}`;
+                        const key = question.id;
+                        const isCorrect = isAnswerCorrect(question, answer);
                         if (question.type === 'ONE_CHOICE' || question.type === 'TWO_CHOICES') {
-                            const isCorrect = isAnswerCorrect(question, answer);
                             initialMarks[key] = isCorrect ? question.total_marks : 0;
+                            marks[key] =  isCorrect ? question.total_marks : 0;
                             initialMarkingTypes[key] = isCorrect ? 'full' : 'zero';
+                        } else if (isCorrect) {
+                            initialMarks[key] = question.total_marks;
+                            marks[key] = question.total_marks;
+                            initialMarkingTypes[key] = 'full';
                         } else {
+                            marks[key] = answer.result || 0;
                             initialMarks[key] = answer.result || 0;
-                            initialMarkingTypes[key] = 'custom';
+                            initialMarkingTypes[key] = answer.result == 0 ? 'zero' : 'custom';
                         }
                     });
                 }
@@ -87,8 +97,11 @@ const SubmissionDetails = () => {
         navigate(`/admin/faculties/${facultyId}/courses/${courseId}/categories/${categoryId}/assignments/${assignmentId}/submissions/${submissionId}`);
     };
 
-    const handleMarkChange = (questionId, answerId, value, type) => {
-        const key = `${questionId}-${answerId}`;
+    const handleMarkChange = (questionId, value, type) => {
+        const key = questionId;
+        if (isNaN(value)) {
+            value = 0;
+        }
         setMarks(prevMarks => ({
             ...prevMarks,
             [key]: value
@@ -97,24 +110,17 @@ const SubmissionDetails = () => {
             ...prevTypes,
             [key]: type
         }));
-    };
+    };    
 
     const isAnswerCorrect = (question, submittedAnswer) => {
-        if (question.type === 'ONE_CHOICE' || question.type === 'TWO_CHOICES') {
-            const submittedChoices = JSON.parse(submittedAnswer.text);
-            return question.answers.every(answer => submittedChoices.includes(answer)) &&
-                   submittedChoices.every(choice => question.answers.includes(choice));
-        }
-        return null; // Return null for other question types
+        return question.total_marks === submittedAnswer.result;
     };
 
     const handleSubmit = async () => {
         try {
             for (const [key, value] of Object.entries(marks)) {
-                const [questionId, answerId] = key.split('-');
-                if (answerId !== 'no-answer') {
-                    await axiosInstance.put(`v1/admin/questions/${questionId}/marks/${answerId}`, { marks: value });
-                }
+                const questionId = key;
+                await axiosInstance.put(`v1/admin/questions/${questionId}/marks/${studentId}`, { marks: value });
             }
             await axiosInstance.patch(`v1/admin/courses/${courseId}/course-content-categories/${categoryId}/assignments/${assignmentId}/submissions/${submissionId}`);
             message.success('تم حفظ وتقديم العلامات بنجاح');
@@ -126,7 +132,6 @@ const SubmissionDetails = () => {
     };
 
     const goToNextSubmission = () => {
-        console.log(submissions);
         let currentIndex = 0;
         for(let i = 0; i < submissions.length; i++ ){
            if(submissions[i] == submissionId){
@@ -134,7 +139,6 @@ const SubmissionDetails = () => {
              break;
            }
         }
-        console.log(currentIndex);
         if (currentIndex === submissions.length - 1 && submissions.length === 25) {
             // If at the last submission of the current page and there might be more submissions, load the next page
             setCurrentPage(prevPage => prevPage + 1);
@@ -166,17 +170,24 @@ const SubmissionDetails = () => {
 
     return (
         <div className="content container-fluid">
+            {console.log(submission)}
             <Card title="تفاصيل التسليم" className="mb-4">
                 <h4>{submission.title}</h4>
-                <p>{submission.description}</p>
-                <p>العلامات الإجمالية: {submission.total_marks}</p>
-                <p>تاريخ التسليم النهائي: {moment(submission.dead_line).format('YYYY-MM-DD HH:mm:ss')}</p>
+                {submission.students[0].total_result &&
+                (
+                     <p> درجة الطالب الحالية : {submission.students[0].total_result} </p>
+                )}
+                <p> الدرجة الكاملة: {submission.total_marks}</p>
+                <p>تم التسليم في: {moment(submission.students[0].submitted_at).format('YYYY-MM-DD hh:mm A')}</p>
+                {submission.students[0].reviewed_at &&
+                (
+                     <p>تم المراجعة في: {moment(submission.students[0].reviewed_at).format('YYYY-MM-DD hh:mm A')}</p>
+                )}
             </Card>
 
             {submission.questions.map((question, index) => (
                 <Card key={question.id} title={`سؤال ${index + 1}: ${question.title}`} className="mb-4">
-                    <p>نوع السؤال: {question.type}</p>
-                    <p>العلامات الإجمالية للسؤال: {question.total_marks}</p>
+                    <p> الدرجة الكاملة للسؤال : {question.total_marks}</p>
 
                     {question.question_attatchments && question.question_attatchments.length > 0 && (
                         <div>
@@ -196,7 +207,7 @@ const SubmissionDetails = () => {
                     {question.submitted_answers && question.submitted_answers.length > 0 ? (
                         question.submitted_answers.map((answer) => {
                             const isCorrect = isAnswerCorrect(question, answer);
-                            const key = `${question.id}-${answer.id}`;
+                            const key = question.id;
                             return (
                                 <Card 
                                     key={answer.id} 
@@ -205,17 +216,19 @@ const SubmissionDetails = () => {
                                         backgroundColor: isCorrect === true ? 'rgba(0, 255, 0, 0.1)' : 'transparent'
                                     }}
                                 >
-                                    <p>الاجابات: {answer.text && answer.text !== "null" ? JSON.parse(answer.text).join(', ') : "لا يوجد نص"}</p>
-                                    <p>النتيجة الحالية: {marks[key]}</p>
-                                    {(question.type === 'ONE_CHOICE' || question.type === 'TWO_CHOICES') && (
-                                        <Tag color={isCorrect ? 'green' : 'red'}>
-                                            {isCorrect ? 'صحيحة' : 'غير صحيحة'}
-                                        </Tag>
+                                    {answer.text && (
+                                        <>
+                                        <b>اجابة الطالب:</b>
+                                        <p>{JSON.parse(answer.text).join(', ')}</p>
+                                        </>
+                                    ) }
+                                    {answer.text == null && answer.answer_attachments.length == 0 && (
+                                        <b>لم يتم تقديم اجابة لهذا السؤال</b>
                                     )}
 
                                     {answer.answer_attachments && answer.answer_attachments.length > 0 && (
                                         <div>
-                                            <h6>مرفقات الإجابة:</h6>
+                                            <h6>مرفقات اجابة الطالب:</h6>
                                             <ul>
                                                 {answer.answer_attachments.map((attachment) => (
                                                     <li key={attachment.id}>
@@ -227,23 +240,29 @@ const SubmissionDetails = () => {
                                             </ul>
                                         </div>
                                     )}
+                                    <hr />
+                                    <p>النتيجة الحالية: {marks[key]}</p>
+                                    <Tag color={isCorrect ? 'green' : 'red'}>
+                                        {isCorrect ? 'صحيحة' : 'غير صحيحة'}
+                                    </Tag>
 
                                     <div style={{ marginTop: '10px' }}>
                                         <Radio.Group 
                                             value={markingTypes[key]}
                                             onChange={(e) => {
                                                 const value = e.target.value;
+                                                {console.log(e.target.value)}
                                                 if (value === 'full') {
-                                                    handleMarkChange(question.id, answer.id, question.total_marks, 'full');
+                                                    handleMarkChange(question.id, question.total_marks, 'full');
                                                 } else if (value === 'zero') {
-                                                    handleMarkChange(question.id, answer.id, 0, 'zero');
+                                                    handleMarkChange(question.id, 0, 'zero');
                                                 } else {
-                                                    handleMarkChange(question.id, answer.id, marks[key], 'custom');
+                                                    handleMarkChange(question.id, marks[key], 'custom');
                                                 }
                                             }}
                                         >
                                             <Radio.Button value="full">
-                                                <CheckCircleOutlined /> العلامة الكاملة
+                                                <CheckCircleOutlined /> الدرجة الكاملة
                                             </Radio.Button>
                                             <Radio.Button value="zero">
                                                 <CloseCircleOutlined /> صفر
@@ -257,7 +276,7 @@ const SubmissionDetails = () => {
                                                 style={{ width: '100px', marginLeft: '10px' }}
                                                 type="number"
                                                 value={marks[key]}
-                                                onChange={(e) => handleMarkChange(question.id, answer.id, parseFloat(e.target.value), 'custom')}
+                                                onChange={(e) => handleMarkChange(question.id, parseFloat(e.target.value), 'custom')}
                                             />
                                         )}
                                     </div>
@@ -266,26 +285,48 @@ const SubmissionDetails = () => {
                         })
                     ) : (
                         <Card 
-                            style={{ 
-                                marginBottom: '10px',
-                                backgroundColor: 'transparent'
-                            }}
-                        >
-                            <p>لم يتم تقديم إجابة لهذا السؤال.</p>
-                            <p>العلامة الافتراضية: 0</p>
-                            <div>
-                                {question.options && question.options.length > 0 && (
-                                    <div className="mb-3">
-                                        <h6>الخيارات:</h6>
-                                        {question.options.map((option, index) => (
-                                            <Tag key={index} color="blue" style={{ marginBottom: '5px' }}>
-                                                {option}
-                                            </Tag>
-                                        ))}
-                                    </div>
-                                )}
-                            </div>
-                        </Card>
+        style={{ 
+            marginBottom: '10px',
+            backgroundColor: 'transparent'
+        }}
+    >
+        <b>لم يتم تقديم إجابة لهذا السؤال.</b>
+        <br />
+        <p> {marks[question.id] !== null ? 'الدرجة الحالية: ' + marks[question.id] : 'الدرجة الافتراضية: 0' } </p>
+        <div style={{ marginTop: '10px' }}>
+            <Radio.Group 
+                value={markingTypes[question.id]}
+                onChange={(e) => {
+                    const value = e.target.value;
+                    if (value === 'full') {
+                        handleMarkChange(question.id, question.total_marks, 'full');
+                    } else if (value === 'zero') {
+                        handleMarkChange(question.id, 0, 'zero');
+                    } else {
+                        handleMarkChange(question.id, marks[question.id], 'custom');
+                    }
+                }}
+            >
+                <Radio.Button value="full">
+                    <CheckCircleOutlined /> الدرجة الكاملة
+                </Radio.Button>
+                <Radio.Button value="zero">
+                    <CloseCircleOutlined /> صفر
+                </Radio.Button>
+                <Radio.Button value="custom">
+                    علامة مخصصة
+                </Radio.Button>
+            </Radio.Group>
+            {markingTypes[`${question.id}`] === 'custom' && (
+                <Input
+                    style={{ width: '100px', marginLeft: '10px' }}
+                    type="number"
+                    value={marks[question.id]}
+                    onChange={(e) => handleMarkChange(question.id, parseFloat(e.target.value), 'custom')}
+                />
+            )}
+        </div>
+    </Card>
                     )}
                 </Card>
             ))}
