@@ -56,7 +56,8 @@ const AddAssignment = () => {
                 type: "ONE_CHOICE",
                 options: ["", ""],
                 answers: [],
-                question_attachments: []
+                question_attachments: [],
+                question_right_answers: [],
             }
         ]
     });
@@ -103,7 +104,8 @@ const AddAssignment = () => {
                     type: "ONE_CHOICE",
                     options: ["", ""],
                     answers: [],
-                    question_attachments: []
+                    question_attachments: [],
+                    question_right_answers: [],
                 }
             ]
         }));
@@ -166,6 +168,16 @@ const AddAssignment = () => {
         }));
     };
 
+    const handleQuestionRightAnswerChange = (questionIndex, { fileList }) => {
+        setFormData(prev => ({
+            ...prev,
+            questions: prev.questions.map((q, i) =>
+                i === questionIndex ? { ...q, question_right_answers: fileList } : q
+            )
+        }));
+    };
+    
+
     const validateForm = () => {
         const newErrors = {};
         if (!formData.title) newErrors.title = "عنوان التسليم مطلوب";
@@ -217,6 +229,11 @@ const AddAssignment = () => {
             if (question.question_attachments.length > 0) {
                 question.question_attachments.forEach((file, fileIndex) => {
                     formDataToSend.append(`questions[${index}][question_attachments]`, file.originFileObj);
+                });
+            }
+            if (question.question_right_answers.length > 0) {
+                question.question_attachments.forEach((file, fileIndex) => {
+                    formDataToSend.append(`questions[${index}][question_right_answers]`, file.originFileObj);
                 });
             }
         });
@@ -356,6 +373,18 @@ const AddAssignment = () => {
                                                                 listType="picture"
                                                                 fileList={question.question_attachments}
                                                                 onChange={(info) => handleAttachmentChange(index, info)}
+                                                                beforeUpload={() => false}
+                                                                multiple
+                                                            >
+                                                                <Button icon={<UploadOutlined />}>اختر الملفات</Button>
+                                                            </Upload>
+                                                        </div>
+                                                        <div className="col-12 mb-2">
+                                                            <label className="mx-2 mt-2">صور للاجابة النموذجية (للتصحيح التلقائي)</label>
+                                                            <Upload
+                                                                listType="picture"
+                                                                fileList={question.question_right_answers}
+                                                                onChange={(info) => handleQuestionRightAnswerChange(index, info)}
                                                                 beforeUpload={() => false}
                                                                 multiple
                                                             >

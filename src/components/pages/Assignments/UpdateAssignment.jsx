@@ -106,6 +106,28 @@ const UpdateAssignment = () => {
                         question_attachments: resolvedFiles
                     };
                 }
+
+                if (q.question_right_answers) {
+                    const filePromises = q.question_right_answers.map(async file => {
+                        const fileResponse = await fetch(file.url);
+                        const blob = await fileResponse.blob();
+                        return {
+                            uid: file.id,
+                            name: file.name,
+                            status: 'done',
+                            url: file.url,
+                            size: blob.size,
+                            type: blob.type,
+                            originFileObj: new File([blob], file.name, { type: blob.type })
+                        };
+                    });
+                    const resolvedFiles = await Promise.all(filePromises);
+                    return {
+                        ...q,
+                        question_right_answers: resolvedFiles
+                    };
+                }
+
                 return q;
             });
 
@@ -154,7 +176,8 @@ const UpdateAssignment = () => {
                 type: "ONE_CHOICE",
                 options: ["", ""],
                 answers: [],
-                question_attachments: []
+                question_attachments: [],
+                question_right_answers: [],
             }]
         }));
     };
@@ -201,6 +224,15 @@ const UpdateAssignment = () => {
             ...prev,
             questions: prev.questions.map((q, i) =>
                 i === questionIndex ? { ...q, question_attachments: fileList } : q
+            )
+        }));
+    };
+    
+    const handleQuestionRightAnswerChange = (questionIndex, { fileList }) => {
+        setFormData(prev => ({
+            ...prev,
+            questions: prev.questions.map((q, i) =>
+                i === questionIndex ? { ...q, question_right_answers: fileList } : q
             )
         }));
     };
@@ -269,6 +301,12 @@ const UpdateAssignment = () => {
             if (question.question_attachments) {
                 question.question_attachments.forEach((file, fileIndex) => {
                     formDataToSend.append(`questions[${index}][question_attachments]`, file.originFileObj);
+                });
+            }
+
+            if (question.question_right_answers) {
+                question.question_right_answers.forEach((file, fileIndex) => {
+                    formDataToSend.append(`questions[${index}][question_right_answers]`, file.originFileObj);
                 });
             }
         });
@@ -445,6 +483,18 @@ const UpdateAssignment = () => {
                                                         >
                                                             <Button icon={<UploadOutlined />}>اختر الملفات</Button>
                                                         </Upload>
+                                                    </div>
+                                                    <div className="col-12 mb-2">
+                                                            <label className="mx-2 mt-2">صور للاجابة النموذجية (للتصحيح التلقائي)</label>
+                                                            <Upload
+                                                                listType="picture"
+                                                                fileList={question.question_right_answers}
+                                                                onChange={(info) => handleQuestionRightAnswerChange(index, info)}
+                                                                beforeUpload={() => false}
+                                                                multiple
+                                                            >
+                                                                <Button icon={<UploadOutlined />}>اختر الملفات</Button>
+                                                            </Upload>
                                                     </div>
                                                     <div className="col-12 mb-2">
                                                         <button type="button" className="btn btn-danger" onClick={() => handleDeleteQuestion(index)}>

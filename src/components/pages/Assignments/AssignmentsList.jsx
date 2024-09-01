@@ -131,9 +131,19 @@ const ListAssignmentContents = () => {
 
                 {question.question_attatchments && question.question_attatchments.length > 0 && (
                     <div>
-                        <h6>مرفقات السؤال:</h6>
                         <ul>
                             {question.question_attatchments.map((attachment) => (
+                                <li key={attachment.id}>
+                                    <a href={attachment.url} target="_blank" rel="noopener noreferrer">
+                                        {attachment.name}
+                                    </a>
+                                </li>
+                            ))}
+                        </ul>
+                        <br />
+                        <h6>الاجابة النموذجية:</h6>
+                        <ul>
+                            {question.question_right_answers.map((attachment) => (
                                 <li key={attachment.id}>
                                     <a href={attachment.url} target="_blank" rel="noopener noreferrer">
                                         {attachment.name}
